@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.40
 
 using Markdown
 using InteractiveUtils
@@ -17,14 +17,36 @@ end
 # ╔═╡ 9b4ce6c2-da7b-11ee-251b-8bc123c638b2
 using PlutoUI, Plots
 
+# ╔═╡ 944c25eb-8c6f-49b3-99bc-d9ac449a6c2e
+md"""
+# 01wk-01: 줄리아 프로그래밍 (1)
+"""
+
 # ╔═╡ bab377cb-3b33-4fb2-a040-22ba7cb9c033
 md"""
-# 1. 강의영상
+## 1. 강의영상
+"""
+
+# ╔═╡ 855ecb11-b6a9-4a78-9e5f-28e69aaa4d81
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://www.youtube.com/embed/playlist?list=PLQqh36zP38-
+xGyp9RjaXMgiGifaQCAp8z&si=3P7hHNtpVpRhJzAS
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
+
+# ╔═╡ 1b2747d3-5551-45a5-a1c7-1888d7fd28fc
+md"""
+줄리아 및 플루토 설치부분은 윈도우 컴퓨터로 실습을 진행하여 강의영상을 촬영하지 못했습니다. 수강정정기간 도중 신청한 학생은 개별적으로 설치 문의하시기 바랍니다. 
 """
 
 # ╔═╡ d74dcf5a-3154-4c13-89e0-ab5b04eb422f
 md"""
-# 2. Imports
+## 2. Imports
 """
 
 # ╔═╡ 2d5aa4fd-334d-4b67-9447-20d71dda4d89
@@ -35,12 +57,12 @@ Plots.plotly()
 
 # ╔═╡ 5f451d66-392c-4843-b725-1d09a2fe35fd
 md"""
-# 3. 줄리아 vs (R,Python)
+## 3. 줄리아 vs (R,Python)
 """
 
 # ╔═╡ fc4555e6-3d64-4393-b782-ad543b9ff0ed
 md"""
-## A. 신기한 변수이름
+### A. 신기한 변수이름
 """
 
 # ╔═╡ b8ab403c-9bc3-4467-a333-a0f84d7c5d92
@@ -72,11 +94,11 @@ x̄ = (1+2+3)/3
 β̂ = 2.4
 
 # ╔═╡ 317b2432-73a8-451c-b784-6c7c16dcc5b7
-x₁ = 1
+x₇ = 1
 
 # ╔═╡ a053cb96-3379-4566-a4ab-fc71c6bda6e8
 md"""
-## B. 신기한 연산자
+### B. 신기한 연산자
 """
 
 # ╔═╡ aa4dcb86-1442-43ad-9ba5-5be64da404df
@@ -100,7 +122,7 @@ md"""
 
 # ╔═╡ 53dc36c4-0cc7-4d9a-b72d-bbd0d6296682
 md"""
-## C. 편리한 함수사용
+### C. 편리한 함수사용
 """
 
 # ╔═╡ 0a2cb594-5c1a-4c5d-9fe4-2501f888e974
@@ -135,7 +157,7 @@ md"""
 
 # ╔═╡ f3f605ef-ecc1-43d7-8570-746b6196b34b
 md"""
-## D. 편리한 매트릭스 선언
+### D. 편리한 매트릭스 선언
 """
 
 # ╔═╡ dd982018-c9dc-48e3-88ca-0215c520e930
@@ -144,7 +166,7 @@ X = [1 2
 
 # ╔═╡ abf14fd7-1d6f-4d23-90d2-c2c30f0754cd
 md"""
-## E. 간결한 연산
+### E. 간결한 연산
 """
 
 # ╔═╡ a8a79e4c-e3f0-4147-80ce-732bc8c185f6
@@ -173,7 +195,7 @@ XX'
 
 # ╔═╡ ee64f7a5-4d23-4a06-a9b6-11043b4b178f
 md"""
-## F. 인덱스
+### F. 인덱스
 """
 
 # ╔═╡ 14aa4bf5-9f01-4e79-b3f0-e49daeae12da
@@ -184,7 +206,7 @@ lst[1]
 
 # ╔═╡ 14f0f686-1a41-4eb8-9354-e004505b34b2
 md"""
-## G. 컴프리헨션
+### G. 컴프리헨션
 """
 
 # ╔═╡ defe15c2-7153-46e9-9ece-4a9be738be3b
@@ -192,7 +214,7 @@ md"""
 
 # ╔═╡ 976688f3-5748-4435-b842-7f402362babc
 md"""
-## H. 튜플
+### H. 튜플
 """
 
 # ╔═╡ 83c56718-06b7-4953-b831-c02c069cf890
@@ -216,17 +238,26 @@ x1,x3
 
 # ╔═╡ 35ac1d21-1026-432a-bd49-91efd71ec6c6
 md"""
-# 4. 플루토 vs 주피터
+## 4. 플루토 vs 주피터
 """
 
 # ╔═╡ 920d4a27-0b5c-487e-9e43-32f3ec26c4a1
 md"""
-## A. 변수이름이 중복될 경우
+### A. 변수이름이 중복될 경우
 """
+
+# ╔═╡ 9922b0a6-dad2-40ba-beb5-235d32d08086
+# ╠═╡ disabled = true
+#=╠═╡
+a=1
+  ╠═╡ =#
+
+# ╔═╡ f97e3e4d-99c7-445c-8a58-18d15f5e3d2d
+a = 2
 
 # ╔═╡ a455455d-97a1-4583-85a3-4d2599ace0ef
 md"""
-## B. 인터렉티브 노트북
+### B. 인터렉티브 노트북
 """
 
 # ╔═╡ edc51a4b-0081-4237-bc0a-56abf7252efc
@@ -240,7 +271,7 @@ z = x + y
 
 # ╔═╡ 44e0cc5f-a3d6-4b19-8621-ec1dcec4f8c8
 md"""
-## C. 여러줄의 코드 -- 단점같음
+### C. 여러줄의 코드 -- 단점같음
 """
 
 # ╔═╡ 9a33e66c-0831-43de-bb10-c8324b62a95a
@@ -306,7 +337,7 @@ md"줄리아프로그래밍: 담당교수 $(name)"
 
 # ╔═╡ 116480c6-33d6-458e-b589-ea824ffe1ea7
 md"""
-## E. 인터렉티브 플랏
+### E. 인터렉티브 플랏
 """
 
 # ╔═╡ df72114f-6e2e-4af0-b80d-d443b8e7c560
@@ -314,12 +345,12 @@ scatter([1,2,3,4],[1,2,4,3])
 
 # ╔═╡ 06a20ad0-24bc-4f6d-b7ec-d22df054c28f
 md"""
-# 5. 위젯
+## 5. 위젯
 """
 
 # ╔═╡ 62997e2b-3177-4949-97d2-19f356829171
 md"""
-## A. 슬라이더
+### A. 슬라이더
 """
 
 # ╔═╡ 5fd8e8c7-ad55-4dce-832f-0c49a74d691c
@@ -365,7 +396,7 @@ end
 
 # ╔═╡ 39cbd840-3821-4255-bccc-a837fcbe3c4f
 md"""
-## B. 라디오버튼
+### B. 라디오버튼
 """
 
 # ╔═╡ 90956254-e8f6-4284-9691-652311dc4f2f
@@ -387,14 +418,15 @@ md"""
 # ╔═╡ e11e00a1-2b3d-453a-8fe7-d2127fd67838
 md"""저는 "$vote"파 입니다"""
 
-# ╔═╡ 9922b0a6-dad2-40ba-beb5-235d32d08086
-# ╠═╡ disabled = true
-#=╠═╡
-a=1
-  ╠═╡ =#
+# ╔═╡ e8cd9c81-dff3-40a0-8c6a-434eb9b1bd9c
+md"""
+## 6. HW
+"""
 
-# ╔═╡ f97e3e4d-99c7-445c-8a58-18d15f5e3d2d
-a = 2
+# ╔═╡ 5bdabf7c-2d60-4e6d-84fa-8f12be760914
+md"""
+Julia+플루토를 설치한 뒤 강의노트를 불러오고 스크린샷을 LMS에 제출
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1496,7 +1528,10 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
+# ╟─944c25eb-8c6f-49b3-99bc-d9ac449a6c2e
 # ╟─bab377cb-3b33-4fb2-a040-22ba7cb9c033
+# ╟─855ecb11-b6a9-4a78-9e5f-28e69aaa4d81
+# ╟─1b2747d3-5551-45a5-a1c7-1888d7fd28fc
 # ╟─d74dcf5a-3154-4c13-89e0-ab5b04eb422f
 # ╠═9b4ce6c2-da7b-11ee-251b-8bc123c638b2
 # ╠═2d5aa4fd-334d-4b67-9447-20d71dda4d89
@@ -1590,5 +1625,7 @@ version = "1.4.1+1"
 # ╠═28a73360-59f0-4ff6-a5bc-b51dfd7e2c1a
 # ╟─b7b53e73-66b7-494a-a376-e00244d1dbb8
 # ╠═e11e00a1-2b3d-453a-8fe7-d2127fd67838
+# ╟─e8cd9c81-dff3-40a0-8c6a-434eb9b1bd9c
+# ╟─5bdabf7c-2d60-4e6d-84fa-8f12be760914
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
