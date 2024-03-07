@@ -14,427 +14,174 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 9b4ce6c2-da7b-11ee-251b-8bc123c638b2
-using PlutoUI, Plots
+# ╔═╡ 23dfa92f-61aa-4439-a33b-610fad44af83
+using Plots,PlutoUI,Statistics,Distributions,LaTeXStrings
 
-# ╔═╡ 944c25eb-8c6f-49b3-99bc-d9ac449a6c2e
+# ╔═╡ d8caa196-1053-4393-8022-242a6ec72f0f
 md"""
-# 01wk-01: 줄리아 프로그래밍 (1)
+# 01wk-2: 줄리아 프로그래밍 (2)
 """
 
-# ╔═╡ bab377cb-3b33-4fb2-a040-22ba7cb9c033
+# ╔═╡ aea5b34d-24f2-44c3-8501-b701ffae3e36
 md"""
 ## 1. 강의영상
 """
 
-# ╔═╡ 855ecb11-b6a9-4a78-9e5f-28e69aaa4d81
-html"""
-<div style="display: flex; justify-content: center;">
-<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-<iframe src=
-"
-https://www.youtube.com/embed/playlist?list=PLQqh36zP38-
-xGyp9RjaXMgiGifaQCAp8z&si=3P7hHNtpVpRhJzAS
-"
-width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-"""
-
-# ╔═╡ 1b2747d3-5551-45a5-a1c7-1888d7fd28fc
-md"""
-줄리아 및 플루토 설치부분은 윈도우 컴퓨터로 실습을 진행하여 강의영상을 촬영하지 못했습니다. 수강정정기간 도중 신청한 학생은 개별적으로 설치 문의하시기 바랍니다. 
-"""
-
-# ╔═╡ d74dcf5a-3154-4c13-89e0-ab5b04eb422f
+# ╔═╡ 52674168-9876-4c4a-824d-61712d88081c
 md"""
 ## 2. Imports
 """
 
-# ╔═╡ 2d5aa4fd-334d-4b67-9447-20d71dda4d89
+# ╔═╡ ee46ab98-3b2f-43e0-886c-8b3c3cea7b36
 PlutoUI.TableOfContents()
 
-# ╔═╡ 34605b2e-b908-4575-ab50-b548327edb05
+# ╔═╡ 5588f0c2-34b2-4bee-970a-5fe0d5d70d80
 Plots.plotly()
 
-# ╔═╡ 5f451d66-392c-4843-b725-1d09a2fe35fd
+# ╔═╡ 0395327a-dc20-11ee-3125-a31ca27ebbef
 md"""
-## 3. 줄리아 vs (R,Python)
+## 3. 함수의 선언
 """
 
-# ╔═╡ fc4555e6-3d64-4393-b782-ad543b9ff0ed
+# ╔═╡ 175663e4-f7fb-4e62-9954-a554d7aede70
 md"""
-### A. 신기한 변수이름
+-- 방법1: 수학책 느낌..
 """
 
-# ╔═╡ b8ab403c-9bc3-4467-a333-a0f84d7c5d92
+# ╔═╡ f796450f-bcdd-434f-be5c-345e40c3e5b0
+f(x,y) = √(x^2+y^2)
+
+# ╔═╡ 51e2d2b3-5d31-4508-aaab-dac453581503
+f(2,3)
+
+# ╔═╡ f9e32aeb-3758-4777-98f6-d9a24513ea92
 md"""
--- 일반적인 변수이름
+-- 방법2: 람다
 """
 
-# ╔═╡ 50c3f495-5570-4eda-9c4b-663db29fa992
-n = 100
+# ╔═╡ 2cda549a-ea90-4d6e-a966-237f12614f3f
+g = (x -> 2x)
 
-# ╔═╡ b4948c5a-45a0-4cc6-9037-605fddd22c51
+# ╔═╡ cf7979a3-e294-4328-9594-c5488cc164f7
+g(2)
+
+# ╔═╡ d96b3375-5b38-453c-9787-f5c73eb13f25
+(x->2x)(3)
+
+# ╔═╡ 47c3f7ac-37b8-4f18-bc88-6ce9998d72c6
 md"""
--- 신기한 변수이름들
+-- 방법3: R, Python 
 """
 
-# ╔═╡ a3eb5452-abf0-4b05-8a6f-f9e53166ce7c
-δ = 0.1 
-
-# ╔═╡ 113f26a7-abd4-46bd-b3d2-fc2aeef12328
-π # 이미 저장되어있음. 
-
-# ╔═╡ 8305b24d-3d6f-421d-832e-7ff638a76b20
-ℯ # 이미 저장되어있음
-
-# ╔═╡ 192be54a-b99d-4390-808f-b5015aa2eb1d
-x̄ = (1+2+3)/3
-
-# ╔═╡ cc3ac75c-8153-4b62-95a3-68e3bf3fa6a0
-β̂ = 2.4
-
-# ╔═╡ 317b2432-73a8-451c-b784-6c7c16dcc5b7
-x₇ = 1
-
-# ╔═╡ a053cb96-3379-4566-a4ab-fc71c6bda6e8
-md"""
-### B. 신기한 연산자
-"""
-
-# ╔═╡ aa4dcb86-1442-43ad-9ba5-5be64da404df
-md"""
--- `≈` 연산자
-"""
-
-# ╔═╡ 6a656877-944d-49cf-8367-2627cb21a1a4
-1 ≈ 1.000000000000001
-
-# ╔═╡ 677459ab-bf9c-458c-8a02-7d8b14217ae9
-1 == 1.000000000000001
-
-# ╔═╡ 8a7f4fa1-e61a-4164-9f67-a4a1f17700e8
-md"""
--- 비교연산자
-"""
-
-# ╔═╡ 99516c11-06ae-4cdc-8c38-68cb4d0367d6
-1 ≤ 1.0
-
-# ╔═╡ 53dc36c4-0cc7-4d9a-b72d-bbd0d6296682
-md"""
-### C. 편리한 함수사용
-"""
-
-# ╔═╡ 0a2cb594-5c1a-4c5d-9fe4-2501f888e974
-md"""
--- 일반함수
-"""
-
-# ╔═╡ 1dd1961b-20fc-4805-9fd9-18e743036b20
-f(x) = x+5
-
-# ╔═╡ bc73915a-b65c-4a3a-83a9-4b4b1d9b6b3f
-f(2)
-
-# ╔═╡ 59177c93-6ed8-4f1b-9047-7dacbd0d0fc2
-md"""
--- 함성함수
-"""
-
-# ╔═╡ b21a3c67-8854-4f4a-bc7f-c611127151f7
-g(x) = 2x
-
-# ╔═╡ 4d8b1cbc-7147-400d-b922-8cb99d15c4cf
-(g∘f)(1)
-
-# ╔═╡ e0b880d3-c755-4cf2-9d83-efb05dc7de0d
-md"""
-`-` 파이프연산자
-"""
-
-# ╔═╡ b996020b-b910-42d5-adf8-586678a28615
-1 |> f |> g
-
-# ╔═╡ f3f605ef-ecc1-43d7-8570-746b6196b34b
-md"""
-### D. 편리한 매트릭스 선언
-"""
-
-# ╔═╡ dd982018-c9dc-48e3-88ca-0215c520e930
-X = [1 2 
-	 3 4]
-
-# ╔═╡ abf14fd7-1d6f-4d23-90d2-c2c30f0754cd
-md"""
-### E. 간결한 연산
-"""
-
-# ╔═╡ a8a79e4c-e3f0-4147-80ce-732bc8c185f6
-md"""
--- 예시1
-"""
-
-# ╔═╡ 8b94d99c-d17f-442d-ac48-544ff11636b0
-2(1+2)
-
-# ╔═╡ 309e43e4-26b3-4370-958f-e776e2364031
-md"""
--- 예시2
-"""
-
-# ╔═╡ a4ece2bd-9c80-4654-abe1-563da8f5d78b
-X'X
-
-# ╔═╡ 8b920d78-0dbe-4cff-83be-4c1abda9e92c
-md"""
--- 주의: 의미가 명확한 경우만 생략가능
-"""
-
-# ╔═╡ 7454e22a-8e92-4136-804b-02e8f507420c
-XX'
-
-# ╔═╡ ee64f7a5-4d23-4a06-a9b6-11043b4b178f
-md"""
-### F. 인덱스
-"""
-
-# ╔═╡ 14aa4bf5-9f01-4e79-b3f0-e49daeae12da
-lst = [11,22,33]
-
-# ╔═╡ 05be06e6-5bb7-4c31-acb7-bab97652b557
-lst[1]
-
-# ╔═╡ 14f0f686-1a41-4eb8-9354-e004505b34b2
-md"""
-### G. 컴프리헨션
-"""
-
-# ╔═╡ defe15c2-7153-46e9-9ece-4a9be738be3b
-[x^2 for x in [1,2,3]]
-
-# ╔═╡ 976688f3-5748-4435-b842-7f402362babc
-md"""
-### H. 튜플
-"""
-
-# ╔═╡ 83c56718-06b7-4953-b831-c02c069cf890
-md"""
--- 언패킹
-"""
-
-# ╔═╡ ef1acd1d-4ddd-4532-97a1-b41bba8a7b75
-x1,x2,x3 = 1,2,3
-
-# ╔═╡ 7f8243ce-dd87-4214-8122-cbab194e9c30
-md"""
--- 다중출력
-"""
-
-# ╔═╡ 7f6ed435-1972-419c-a27c-0bd69a47faa9
-x1,x2
-
-# ╔═╡ ddf7bfe6-43bd-4acb-aab8-3c91aaa7cde6
-x1,x3
-
-# ╔═╡ 35ac1d21-1026-432a-bd49-91efd71ec6c6
-md"""
-## 4. 플루토 vs 주피터
-"""
-
-# ╔═╡ 920d4a27-0b5c-487e-9e43-32f3ec26c4a1
-md"""
-### A. 변수이름이 중복될 경우
-"""
-
-# ╔═╡ 9922b0a6-dad2-40ba-beb5-235d32d08086
-# ╠═╡ disabled = true
-#=╠═╡
-a=1
-  ╠═╡ =#
-
-# ╔═╡ f97e3e4d-99c7-445c-8a58-18d15f5e3d2d
-a = 2
-
-# ╔═╡ a455455d-97a1-4583-85a3-4d2599ace0ef
-md"""
-### B. 인터렉티브 노트북
-"""
-
-# ╔═╡ edc51a4b-0081-4237-bc0a-56abf7252efc
-x = 1
-
-# ╔═╡ bb8bc581-bd2b-4d45-95fd-9f7be09b0383
-y = 2
-
-# ╔═╡ 8af35e77-1ea0-4f79-97d9-11749fdd8765
-z = x + y
-
-# ╔═╡ 44e0cc5f-a3d6-4b19-8621-ec1dcec4f8c8
-md"""
-### C. 여러줄의 코드 -- 단점같음
-"""
-
-# ╔═╡ 9a33e66c-0831-43de-bb10-c8324b62a95a
-md"""
--- 예제1: 줄리아에서는 한 셀에 여러줄의 코드를 작성할 수 없다. 
-"""
-
-# ╔═╡ c0e51846-4c1f-45db-a930-6a3c93b9c742
-k=1
-k=k+1
-
-# ╔═╡ 50d8de79-d55a-4958-b310-28752f11665d
-md"""
--- 예제2: 줄리아에서 한 셀에 여러줄의 코드를 작성하고 싶다면 아래와 같이 begin - end 를 사용한다.
-"""
-
-# ╔═╡ 159827aa-aa38-4f3d-b1f3-8e138d72cde4
-begin 
-	k=1 
-	k=k+1
+# ╔═╡ f7c174a5-bb0a-4903-b673-63ab1fb05167
+function h(x)
+	return ℯ^x / (1+ ℯ^x)
 end
 
-# ╔═╡ d666c6ce-9831-4902-81d0-29de1c6c0c2e
-k
+# ╔═╡ ae127a52-033e-47ba-a2eb-8e2b35ae1ec0
+h(3)
 
-# ╔═╡ 79df769a-2b67-49d6-86a8-b1220e7dd993
+# ╔═╡ b4785081-45e3-4054-8512-8dd91e81b49f
 md"""
--- 예제3: 줄리아에서 한 셀에 여러줄의 코드를 작성하는 다른 방법은 let - end 를 사용하는 것이다.
+-- 예제: 각각 아래와 같은 함수가 있다고 할때 
+
+-  $l(x) = ax+b$ 
+-  $h(x)=\frac{e^x}{1+e^x}$
+
+함수 $(h\circ l)(x)$ 의 개형은 $a$,$b$ 에 따라서 어떻게 변화하는지 논의하라. 
 """
 
-# ╔═╡ fb3175b4-63f1-4723-8381-fa4dd46245b0
-let
-	l=1
-	l=l+1
-end
+# ╔═╡ 1a79bbf1-7927-4295-a6ff-2a187ad0e6cf
+a = @bind a Slider(-5:0.1:5,show_value=true)
 
-# ╔═╡ a77e4af8-1d18-4391-b509-7267d23e3bfe
-l
+# ╔═╡ 8bab9543-f2ba-4f8d-9c02-485de54a0f19
+b = @bind b Slider(-5:0.1:5,show_value=true)
 
-# ╔═╡ eb1d514a-bfae-4132-adf5-a4fba73f63e0
-md"""
-## D. 마크다운 셀
-"""
-
-# ╔═╡ f5761099-b753-48a1-ac93-d3c1ef5ee0f1
-md"""
--- 마크다운셀이 따로 있는게 아니고 `md"..."`를 이용하여 사용하면 된다.
-"""
-
-# ╔═╡ 6d068573-9f54-4c46-8c5b-08ca7f93a551
-md"줄리아프로그래밍: 담당교수 최규빈"
-
-# ╔═╡ 0d0a3c5f-d891-4983-a120-1950f8ce45af
-md"""
--- `$()`를 이용하여 변수를 끼워넣을 수 있다. (마치 파이썬에서 f string처럼!!)
-"""
-
-# ╔═╡ 7b534287-d060-4216-968f-181eeb68ded6
-name = "최규빈"
-
-# ╔═╡ 16bd1844-f8b3-4811-9c96-18d481593bff
-md"줄리아프로그래밍: 담당교수 $(name)"
-
-# ╔═╡ 116480c6-33d6-458e-b589-ea824ffe1ea7
-md"""
-### E. 인터렉티브 플랏
-"""
-
-# ╔═╡ df72114f-6e2e-4af0-b80d-d443b8e7c560
-scatter([1,2,3,4],[1,2,4,3])
-
-# ╔═╡ 06a20ad0-24bc-4f6d-b7ec-d22df054c28f
-md"""
-## 5. 위젯
-"""
-
-# ╔═╡ 62997e2b-3177-4949-97d2-19f356829171
-md"""
-### A. 슬라이더
-"""
-
-# ╔═╡ 5fd8e8c7-ad55-4dce-832f-0c49a74d691c
-md"""
--- 슬라이더를 이용하여 $\alpha$ 값을 설정.
-"""
-
-# ╔═╡ e06912a1-14e3-4664-9967-4a6f624a3c32
-@bind α Slider(-1:0.1:1)
-
-# ╔═╡ f1c32574-dd94-425c-890a-7692524ab5f7
-α
-
-# ╔═╡ 07a46c0f-bb89-446e-a6ad-f78efa078a1b
-md"""
--- 숫자가 옆에 보이는 슬라이더
-"""
-
-# ╔═╡ 982537c6-7189-403c-aca4-819e93604747
-@bind β Slider(-1:0.1:1,show_value=true)
-
-# ╔═╡ 30905821-8eb2-476f-bd32-65f7ee9a6fcc
-md"""
--- 슬라이더를 오브젝트로 받을수도 있음
-"""
-
-# ╔═╡ 7fec9962-bd09-4a17-8602-7a30c35f8aa3
-gamma_selector = @bind γ Slider(-1:0.1:1,show_value=true)
-
-# ╔═╡ 2f13d9e1-70c5-4b49-8e7a-82298640d2a3
-gamma_selector
-
-# ╔═╡ 0bef159a-69fa-4af9-8fe5-8ee4977e02f0
-md"""
--- 응용: $f(x)=(x-\alpha)(x-\beta)(x-γ)=0$ 의 그래프
-"""
-
-# ╔═╡ 2e8c063e-a9cc-49c4-b428-ee32de46ddd9
+# ╔═╡ ac75b059-c8e1-4112-a4d4-ec5956c8b058
 let 
-	f(x) = (x-α)*(x-β)*(x-γ)
-	plot(-1:0.01:1,f)
-end 
+	l(x) = a*x+b 
+	plot(h ∘ l, -20,20, legend=false)
+	xlims!(-25,25)
+	title!("l(x)=($a)x+($b)")
+end
 
-# ╔═╡ 39cbd840-3821-4255-bccc-a837fcbe3c4f
+# ╔═╡ 747793d3-ee9c-4d1b-867c-38a2f9624e9e
 md"""
-### B. 라디오버튼
+## 4. 브로드캐스팅 ($\star$)
 """
 
-# ╔═╡ 90956254-e8f6-4284-9691-652311dc4f2f
+# ╔═╡ d8a5e876-8ab3-47c7-85b9-3966f935e042
+[1,2,3] + [3,4,-2]
+
+# ╔═╡ c8416fc8-2a59-45cd-a929-ed4dac57d43c
+[1,2,3] .+ 1
+
+# ╔═╡ ac1e7e15-cd86-4470-8445-36e356cfd08f
+@. [1,2,3] + 1
+
+# ╔═╡ 134ecfc1-abf4-45a0-a17b-9b444b464529
+(@. [1,2,3] |> (x -> x^2)) |> mean
+
+# ╔═╡ 7573ee0e-dbd4-4bf1-aae2-fc9f08a6c4f2
 md"""
--- 라디오버튼 사용: @bind vote Radio(리스트)
+## 5. 이변량 정규분포의 pdf
 """
 
-# ╔═╡ c17da9ad-b9ed-46c5-a74e-1ad5466a27f9
-@bind vote Radio(["찍먹","부먹"])
-
-# ╔═╡ 28a73360-59f0-4ff6-a5bc-b51dfd7e2c1a
-vote
-
-# ╔═╡ b7b53e73-66b7-494a-a376-e00244d1dbb8
+# ╔═╡ 5de089f8-5a28-442b-8fee-3da504d42c2f
 md"""
--- 선택결과를 `md"..."`로 출력
+-- 이변량 정규분포라는게 있었죠..
 """
 
-# ╔═╡ e11e00a1-2b3d-453a-8fe7-d2127fd67838
-md"""저는 "$vote"파 입니다"""
-
-# ╔═╡ e8cd9c81-dff3-40a0-8c6a-434eb9b1bd9c
+# ╔═╡ ed78f992-4061-44d0-b470-846e3480eb5f
 md"""
-## 6. HW
+$$f(x,y)=\frac{1}{2\pi\sigma_X\sigma_Y\sqrt{1-\rho^2}}e^{-\frac{1}{2(1-\rho^2)}\left[\Big(\frac{x-\mu_X}{\sigma_X}\Big)^2+\Big(\frac{y-\mu_Y}{\sigma_Y}\Big)^2-2\rho\frac{(x-\mu_X)(y-\mu_y)}{\sigma_X \sigma_Y}\right]}$$
 """
 
-# ╔═╡ 5bdabf7c-2d60-4e6d-84fa-8f12be760914
+# ╔═╡ 0e7094d2-1b0a-4f17-af67-1adf26c235ff
 md"""
-Julia+플루토를 설치한 뒤 강의노트를 불러오고 스크린샷을 LMS에 제출
+함수선언 
 """
+
+# ╔═╡ d18f6b25-b1ab-428f-b27a-3e947eedfb53
+md"""
+파라메터
+-  $\rho$ = $(@bind ρ Slider(-0.99:0.01:0.99, show_value=true))
+-  $\mu_X$ = $(@bind μ₁ Slider(-1:0.1:1, show_value=true))
+-  $\mu_Y$ = $(@bind μ₂ Slider(-1:0.1:1, show_value=true))
+-  $\sigma_X$ = $(@bind σ₁ Slider(0.01:0.01:2, show_value=true))
+-  $\sigma_Y$ = $(@bind σ₂ Slider(0.01:0.01:2, show_value=true))
+"""
+
+# ╔═╡ f4c66d21-e0c5-47c2-9099-d8484fd3a97b
+function pdf(x,y)
+	x = (x-μ₁)/σ₁
+	y = (y-μ₂)/σ₂
+	c1 = 2π*σ₁*σ₂*√(1-ρ^2)
+	c2 = 2(1-ρ^2)
+	return 1/c1 * exp(-1/c2 * (x^2+y^2-2ρ*x*y))
+end
+
+# ╔═╡ 5c63f745-e6a0-4aa7-9583-283afb76ef09
+p1 = plot(-5:0.1:5, -5:0.1:5, pdf, st=[:surface],legend=false);
+
+# ╔═╡ 1d7cd0ef-f5ce-4c16-98ff-eee960b1a1fa
+p2 = plot(-5:0.1:5, -5:0.1:5, pdf, st=[:contour],legend=false);
+
+# ╔═╡ e0c2c56b-37ce-4389-9d1b-28ceae124e56
+plot(p1,p2)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
+Distributions = "~0.25.107"
+LaTeXStrings = "~1.3.1"
 Plots = "~1.39.0"
 PlutoUI = "~0.7.58"
 """
@@ -445,7 +192,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "52934e2881e5b365a298a28396240865a5fc2a3c"
+project_hash = "edc56a5f804182eaf51ca82c8c032399f3bf927d"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -480,6 +227,12 @@ git-tree-sha1 = "4b859a208b2397a7a623a03449e4636bdb17bcf2"
 uuid = "83423d85-b0ee-5818-9007-b63ccbeb887a"
 version = "1.16.1+1"
 
+[[deps.Calculus]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "f641eb0a4f00c343bbc32346e1217b86f3ce9dad"
+uuid = "49dc2e85-a5d0-5ad3-a950-438e2897f1b9"
+version = "0.5.1"
+
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
 git-tree-sha1 = "59939d8a997469ee05c4b4944560a820f9ba0d73"
@@ -503,12 +256,10 @@ deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "Requires", "Statist
 git-tree-sha1 = "a1f44953f2382ebb937d60dafbe2deea4bd23249"
 uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
 version = "0.10.0"
+weakdeps = ["SpecialFunctions"]
 
     [deps.ColorVectorSpace.extensions]
     SpecialFunctionsExt = "SpecialFunctions"
-
-    [deps.ColorVectorSpace.weakdeps]
-    SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [[deps.Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
@@ -563,6 +314,22 @@ git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 version = "1.9.1"
 
+[[deps.Distributions]]
+deps = ["FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
+git-tree-sha1 = "7c302d7a5fec5214eb8a5a4c466dcf7a51fcf169"
+uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
+version = "0.25.107"
+
+    [deps.Distributions.extensions]
+    DistributionsChainRulesCoreExt = "ChainRulesCore"
+    DistributionsDensityInterfaceExt = "DensityInterface"
+    DistributionsTestExt = "Test"
+
+    [deps.Distributions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    DensityInterface = "b429d917-457f-4dbc-8f4c-0cc954292b1d"
+    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
 git-tree-sha1 = "2fb1e02f2b635d0845df5d7c167fec4dd739b00d"
@@ -573,6 +340,12 @@ version = "0.9.3"
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
+
+[[deps.DualNumbers]]
+deps = ["Calculus", "NaNMath", "SpecialFunctions"]
+git-tree-sha1 = "5837a837389fccf076445fce071c8ddaea35a566"
+uuid = "fa6b7ba4-c1ee-5f82-b5fc-ecf0adba8f74"
+version = "0.6.8"
 
 [[deps.EpollShim_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -607,6 +380,18 @@ version = "4.4.4+1"
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
+[[deps.FillArrays]]
+deps = ["LinearAlgebra", "Random"]
+git-tree-sha1 = "5b93957f6dcd33fc343044af3d48c215be2562f1"
+uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
+version = "1.9.3"
+weakdeps = ["PDMats", "SparseArrays", "Statistics"]
+
+    [deps.FillArrays.extensions]
+    FillArraysPDMatsExt = "PDMats"
+    FillArraysSparseArraysExt = "SparseArrays"
+    FillArraysStatisticsExt = "Statistics"
+
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
 git-tree-sha1 = "335bfdceacc84c5cdf16aadc768aa5ddfc5383cc"
@@ -619,11 +404,10 @@ git-tree-sha1 = "21efd19106a55620a188615da6d3d06cd7f6ee03"
 uuid = "a3f928ae-7b40-5064-980b-68af3947d34b"
 version = "2.13.93+0"
 
-[[deps.Formatting]]
-deps = ["Logging", "Printf"]
-git-tree-sha1 = "fb409abab2caf118986fc597ba84b50cbaf00b87"
-uuid = "59287772-0a20-5a39-b81b-1366585eb4c0"
-version = "0.4.3"
+[[deps.Format]]
+git-tree-sha1 = "f3cf88025f6d03c194d73f5d13fee9004a108329"
+uuid = "1fa38f19-a742-5d3f-a2b9-30dd87b9d5f8"
+version = "1.3.6"
 
 [[deps.FreeType2_jll]]
 deps = ["Artifacts", "Bzip2_jll", "JLLWrappers", "Libdl", "Zlib_jll"]
@@ -680,15 +464,21 @@ version = "1.0.2"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
-git-tree-sha1 = "ac7b73d562b8f4287c3b67b4c66a5395a19c1ae8"
+git-tree-sha1 = "db864f2d91f68a5912937af80327d288ea1f3aee"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "1.10.2"
+version = "1.10.3"
 
 [[deps.HarfBuzz_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "Graphite2_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Pkg"]
 git-tree-sha1 = "129acf094d168394e80ee1dc4bc06ec835e510a3"
 uuid = "2e76f6c2-a576-52d4-95c1-20adfe4de566"
 version = "2.8.1+1"
+
+[[deps.HypergeometricFunctions]]
+deps = ["DualNumbers", "LinearAlgebra", "OpenLibm_jll", "SpecialFunctions"]
+git-tree-sha1 = "f218fe3736ddf977e0e772bc9a586b2383da2685"
+uuid = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
+version = "0.3.23"
 
 [[deps.Hyperscript]]
 deps = ["Test"]
@@ -771,10 +561,10 @@ uuid = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 version = "1.3.1"
 
 [[deps.Latexify]]
-deps = ["Formatting", "InteractiveUtils", "LaTeXStrings", "MacroTools", "Markdown", "OrderedCollections", "Printf", "Requires"]
-git-tree-sha1 = "f428ae552340899a935973270b8d98e5a31c49fe"
+deps = ["Format", "InteractiveUtils", "LaTeXStrings", "MacroTools", "Markdown", "OrderedCollections", "Requires"]
+git-tree-sha1 = "cad560042a7cc108f5a4c24ea1431a9221f22c1b"
 uuid = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
-version = "0.16.1"
+version = "0.16.2"
 
     [deps.Latexify.extensions]
     DataFramesExt = "DataFrames"
@@ -955,15 +745,21 @@ version = "0.8.1+0"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
-git-tree-sha1 = "51901a49222b09e3743c65b8847687ae5fc78eb2"
+git-tree-sha1 = "af81a32750ebc831ee28bdaaba6e1067decef51e"
 uuid = "4d8831e6-92b7-49fb-bdf8-b643e874388c"
-version = "1.4.1"
+version = "1.4.2"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
 git-tree-sha1 = "60e3045590bd104a16fefb12836c00c0ef8c7f8c"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
 version = "3.0.13+0"
+
+[[deps.OpenSpecFun_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "13652491f6856acfd2db29360e1bbcd4565d04f1"
+uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
+version = "0.5.5+0"
 
 [[deps.Opus_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -980,6 +776,12 @@ version = "1.6.3"
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
 version = "10.42.0+0"
+
+[[deps.PDMats]]
+deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
+git-tree-sha1 = "949347156c25054de2db3b166c52ac4728cbad65"
+uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
+version = "0.11.31"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
@@ -1049,9 +851,9 @@ version = "1.2.0"
 
 [[deps.Preferences]]
 deps = ["TOML"]
-git-tree-sha1 = "9e8fed0505b0c15b4c1295fd59ea47b411c019cf"
+git-tree-sha1 = "9306f6085165d270f7e3db02af26a400d580f5c6"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
-version = "1.4.2"
+version = "1.4.3"
 
 [[deps.Printf]]
 deps = ["Unicode"]
@@ -1062,6 +864,12 @@ deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll
 git-tree-sha1 = "37b7bb7aabf9a085e0044307e1717436117f2b3b"
 uuid = "c0090381-4147-56d7-9ebc-da0b1113ec56"
 version = "6.5.3+1"
+
+[[deps.QuadGK]]
+deps = ["DataStructures", "LinearAlgebra"]
+git-tree-sha1 = "9b23c31e76e333e6fb4c1595ae6afa74966a729e"
+uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
+version = "2.9.4"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
@@ -1100,6 +908,18 @@ git-tree-sha1 = "838a3a4188e2ded87a4f9f184b4b0d78a1e91cb7"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.3.0"
 
+[[deps.Rmath]]
+deps = ["Random", "Rmath_jll"]
+git-tree-sha1 = "f65dcb5fa46aee0cf9ed6274ccbd597adc49aa7b"
+uuid = "79098fc4-a85e-5d69-aa6a-4863f24498fa"
+version = "0.7.1"
+
+[[deps.Rmath_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "6ed52fdd3382cf21947b15e8870ac0ddbff736da"
+uuid = "f50d1b31-88e8-58de-be2c-1cc44531875f"
+version = "0.4.0+0"
+
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 version = "0.7.0"
@@ -1137,6 +957,18 @@ version = "1.2.1"
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
+[[deps.SpecialFunctions]]
+deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
+git-tree-sha1 = "e2cfc4012a19088254b3950b85c3c1d8882d864d"
+uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
+version = "2.3.1"
+
+    [deps.SpecialFunctions.extensions]
+    SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
+
+    [deps.SpecialFunctions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
@@ -1153,6 +985,24 @@ deps = ["DataAPI", "DataStructures", "LinearAlgebra", "LogExpFunctions", "Missin
 git-tree-sha1 = "1d77abd07f617c4868c33d4f5b9e1dbb2643c9cf"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.34.2"
+
+[[deps.StatsFuns]]
+deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
+git-tree-sha1 = "cef0472124fab0695b58ca35a77c6fb942fdab8a"
+uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
+version = "1.3.1"
+
+    [deps.StatsFuns.extensions]
+    StatsFunsChainRulesCoreExt = "ChainRulesCore"
+    StatsFunsInverseFunctionsExt = "InverseFunctions"
+
+    [deps.StatsFuns.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
+
+[[deps.SuiteSparse]]
+deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
+uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
@@ -1180,9 +1030,9 @@ deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[deps.TranscodingStreams]]
-git-tree-sha1 = "54194d92959d8ebaa8e26227dbe3cdefcdcd594f"
+git-tree-sha1 = "3caa21522e7efac1ba21834a03734c57b4611c7e"
 uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
-version = "0.10.3"
+version = "0.10.4"
 weakdeps = ["Random", "Test"]
 
     [deps.TranscodingStreams.extensions]
@@ -1528,104 +1378,40 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╟─944c25eb-8c6f-49b3-99bc-d9ac449a6c2e
-# ╟─bab377cb-3b33-4fb2-a040-22ba7cb9c033
-# ╟─855ecb11-b6a9-4a78-9e5f-28e69aaa4d81
-# ╟─1b2747d3-5551-45a5-a1c7-1888d7fd28fc
-# ╟─d74dcf5a-3154-4c13-89e0-ab5b04eb422f
-# ╠═9b4ce6c2-da7b-11ee-251b-8bc123c638b2
-# ╠═2d5aa4fd-334d-4b67-9447-20d71dda4d89
-# ╠═34605b2e-b908-4575-ab50-b548327edb05
-# ╟─5f451d66-392c-4843-b725-1d09a2fe35fd
-# ╟─fc4555e6-3d64-4393-b782-ad543b9ff0ed
-# ╟─b8ab403c-9bc3-4467-a333-a0f84d7c5d92
-# ╠═50c3f495-5570-4eda-9c4b-663db29fa992
-# ╟─b4948c5a-45a0-4cc6-9037-605fddd22c51
-# ╠═a3eb5452-abf0-4b05-8a6f-f9e53166ce7c
-# ╠═113f26a7-abd4-46bd-b3d2-fc2aeef12328
-# ╠═8305b24d-3d6f-421d-832e-7ff638a76b20
-# ╠═192be54a-b99d-4390-808f-b5015aa2eb1d
-# ╠═cc3ac75c-8153-4b62-95a3-68e3bf3fa6a0
-# ╠═317b2432-73a8-451c-b784-6c7c16dcc5b7
-# ╟─a053cb96-3379-4566-a4ab-fc71c6bda6e8
-# ╟─aa4dcb86-1442-43ad-9ba5-5be64da404df
-# ╠═6a656877-944d-49cf-8367-2627cb21a1a4
-# ╠═677459ab-bf9c-458c-8a02-7d8b14217ae9
-# ╟─8a7f4fa1-e61a-4164-9f67-a4a1f17700e8
-# ╠═99516c11-06ae-4cdc-8c38-68cb4d0367d6
-# ╟─53dc36c4-0cc7-4d9a-b72d-bbd0d6296682
-# ╟─0a2cb594-5c1a-4c5d-9fe4-2501f888e974
-# ╠═1dd1961b-20fc-4805-9fd9-18e743036b20
-# ╠═bc73915a-b65c-4a3a-83a9-4b4b1d9b6b3f
-# ╟─59177c93-6ed8-4f1b-9047-7dacbd0d0fc2
-# ╠═b21a3c67-8854-4f4a-bc7f-c611127151f7
-# ╠═4d8b1cbc-7147-400d-b922-8cb99d15c4cf
-# ╟─e0b880d3-c755-4cf2-9d83-efb05dc7de0d
-# ╠═b996020b-b910-42d5-adf8-586678a28615
-# ╟─f3f605ef-ecc1-43d7-8570-746b6196b34b
-# ╠═dd982018-c9dc-48e3-88ca-0215c520e930
-# ╟─abf14fd7-1d6f-4d23-90d2-c2c30f0754cd
-# ╟─a8a79e4c-e3f0-4147-80ce-732bc8c185f6
-# ╠═8b94d99c-d17f-442d-ac48-544ff11636b0
-# ╟─309e43e4-26b3-4370-958f-e776e2364031
-# ╠═a4ece2bd-9c80-4654-abe1-563da8f5d78b
-# ╟─8b920d78-0dbe-4cff-83be-4c1abda9e92c
-# ╠═7454e22a-8e92-4136-804b-02e8f507420c
-# ╟─ee64f7a5-4d23-4a06-a9b6-11043b4b178f
-# ╠═14aa4bf5-9f01-4e79-b3f0-e49daeae12da
-# ╠═05be06e6-5bb7-4c31-acb7-bab97652b557
-# ╟─14f0f686-1a41-4eb8-9354-e004505b34b2
-# ╠═defe15c2-7153-46e9-9ece-4a9be738be3b
-# ╟─976688f3-5748-4435-b842-7f402362babc
-# ╟─83c56718-06b7-4953-b831-c02c069cf890
-# ╠═ef1acd1d-4ddd-4532-97a1-b41bba8a7b75
-# ╟─7f8243ce-dd87-4214-8122-cbab194e9c30
-# ╠═7f6ed435-1972-419c-a27c-0bd69a47faa9
-# ╠═ddf7bfe6-43bd-4acb-aab8-3c91aaa7cde6
-# ╟─35ac1d21-1026-432a-bd49-91efd71ec6c6
-# ╟─920d4a27-0b5c-487e-9e43-32f3ec26c4a1
-# ╠═9922b0a6-dad2-40ba-beb5-235d32d08086
-# ╠═f97e3e4d-99c7-445c-8a58-18d15f5e3d2d
-# ╟─a455455d-97a1-4583-85a3-4d2599ace0ef
-# ╠═edc51a4b-0081-4237-bc0a-56abf7252efc
-# ╠═bb8bc581-bd2b-4d45-95fd-9f7be09b0383
-# ╠═8af35e77-1ea0-4f79-97d9-11749fdd8765
-# ╟─44e0cc5f-a3d6-4b19-8621-ec1dcec4f8c8
-# ╟─9a33e66c-0831-43de-bb10-c8324b62a95a
-# ╠═c0e51846-4c1f-45db-a930-6a3c93b9c742
-# ╟─50d8de79-d55a-4958-b310-28752f11665d
-# ╠═159827aa-aa38-4f3d-b1f3-8e138d72cde4
-# ╠═d666c6ce-9831-4902-81d0-29de1c6c0c2e
-# ╟─79df769a-2b67-49d6-86a8-b1220e7dd993
-# ╠═fb3175b4-63f1-4723-8381-fa4dd46245b0
-# ╠═a77e4af8-1d18-4391-b509-7267d23e3bfe
-# ╟─eb1d514a-bfae-4132-adf5-a4fba73f63e0
-# ╟─f5761099-b753-48a1-ac93-d3c1ef5ee0f1
-# ╠═6d068573-9f54-4c46-8c5b-08ca7f93a551
-# ╟─0d0a3c5f-d891-4983-a120-1950f8ce45af
-# ╠═7b534287-d060-4216-968f-181eeb68ded6
-# ╠═16bd1844-f8b3-4811-9c96-18d481593bff
-# ╟─116480c6-33d6-458e-b589-ea824ffe1ea7
-# ╠═df72114f-6e2e-4af0-b80d-d443b8e7c560
-# ╟─06a20ad0-24bc-4f6d-b7ec-d22df054c28f
-# ╟─62997e2b-3177-4949-97d2-19f356829171
-# ╟─5fd8e8c7-ad55-4dce-832f-0c49a74d691c
-# ╠═e06912a1-14e3-4664-9967-4a6f624a3c32
-# ╠═f1c32574-dd94-425c-890a-7692524ab5f7
-# ╟─07a46c0f-bb89-446e-a6ad-f78efa078a1b
-# ╠═982537c6-7189-403c-aca4-819e93604747
-# ╟─30905821-8eb2-476f-bd32-65f7ee9a6fcc
-# ╠═7fec9962-bd09-4a17-8602-7a30c35f8aa3
-# ╠═2f13d9e1-70c5-4b49-8e7a-82298640d2a3
-# ╟─0bef159a-69fa-4af9-8fe5-8ee4977e02f0
-# ╠═2e8c063e-a9cc-49c4-b428-ee32de46ddd9
-# ╟─39cbd840-3821-4255-bccc-a837fcbe3c4f
-# ╟─90956254-e8f6-4284-9691-652311dc4f2f
-# ╠═c17da9ad-b9ed-46c5-a74e-1ad5466a27f9
-# ╠═28a73360-59f0-4ff6-a5bc-b51dfd7e2c1a
-# ╟─b7b53e73-66b7-494a-a376-e00244d1dbb8
-# ╠═e11e00a1-2b3d-453a-8fe7-d2127fd67838
-# ╟─e8cd9c81-dff3-40a0-8c6a-434eb9b1bd9c
-# ╟─5bdabf7c-2d60-4e6d-84fa-8f12be760914
+# ╟─d8caa196-1053-4393-8022-242a6ec72f0f
+# ╟─aea5b34d-24f2-44c3-8501-b701ffae3e36
+# ╟─52674168-9876-4c4a-824d-61712d88081c
+# ╠═23dfa92f-61aa-4439-a33b-610fad44af83
+# ╠═ee46ab98-3b2f-43e0-886c-8b3c3cea7b36
+# ╠═5588f0c2-34b2-4bee-970a-5fe0d5d70d80
+# ╟─0395327a-dc20-11ee-3125-a31ca27ebbef
+# ╟─175663e4-f7fb-4e62-9954-a554d7aede70
+# ╠═f796450f-bcdd-434f-be5c-345e40c3e5b0
+# ╠═51e2d2b3-5d31-4508-aaab-dac453581503
+# ╟─f9e32aeb-3758-4777-98f6-d9a24513ea92
+# ╠═2cda549a-ea90-4d6e-a966-237f12614f3f
+# ╠═cf7979a3-e294-4328-9594-c5488cc164f7
+# ╠═d96b3375-5b38-453c-9787-f5c73eb13f25
+# ╟─47c3f7ac-37b8-4f18-bc88-6ce9998d72c6
+# ╠═f7c174a5-bb0a-4903-b673-63ab1fb05167
+# ╠═ae127a52-033e-47ba-a2eb-8e2b35ae1ec0
+# ╟─b4785081-45e3-4054-8512-8dd91e81b49f
+# ╠═1a79bbf1-7927-4295-a6ff-2a187ad0e6cf
+# ╠═8bab9543-f2ba-4f8d-9c02-485de54a0f19
+# ╠═ac75b059-c8e1-4112-a4d4-ec5956c8b058
+# ╟─747793d3-ee9c-4d1b-867c-38a2f9624e9e
+# ╠═d8a5e876-8ab3-47c7-85b9-3966f935e042
+# ╠═c8416fc8-2a59-45cd-a929-ed4dac57d43c
+# ╠═ac1e7e15-cd86-4470-8445-36e356cfd08f
+# ╠═134ecfc1-abf4-45a0-a17b-9b444b464529
+# ╟─7573ee0e-dbd4-4bf1-aae2-fc9f08a6c4f2
+# ╟─5de089f8-5a28-442b-8fee-3da504d42c2f
+# ╟─ed78f992-4061-44d0-b470-846e3480eb5f
+# ╟─0e7094d2-1b0a-4f17-af67-1adf26c235ff
+# ╠═f4c66d21-e0c5-47c2-9099-d8484fd3a97b
+# ╠═5c63f745-e6a0-4aa7-9583-283afb76ef09
+# ╠═1d7cd0ef-f5ce-4c16-98ff-eee960b1a1fa
+# ╟─d18f6b25-b1ab-428f-b27a-3e947eedfb53
+# ╠═e0c2c56b-37ce-4389-9d1b-28ceae124e56
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
