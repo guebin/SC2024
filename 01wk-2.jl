@@ -103,10 +103,14 @@ md"""
 """
 
 # ╔═╡ 1a79bbf1-7927-4295-a6ff-2a187ad0e6cf
-a = @bind a Slider(-5:0.1:5,show_value=true,default=4.5)
+md"a= $(@bind a Slider(-5:0.1:5,show_value=true,default=4.5))"
+# 버전에 따라서 아래의 코드가 실행될 수도 있음. 실해된다면 아래의 코드로 할것
+# a = @bind a Slider(-5:0.1:5,show_value=true,default=4.5)
 
 # ╔═╡ 8bab9543-f2ba-4f8d-9c02-485de54a0f19
-b = @bind b Slider(-5:0.1:5,show_value=true,default=0)
+md"b= $(@bind b Slider(-5:0.1:5,show_value=true,default=0))"
+# 버전에 따라서 아래의 코드가 실행될 수도 있음. 실해된다면 아래의 코드로 할것
+# b = @bind b Slider(-5:0.1:5,show_value=true,default=0)
 
 # ╔═╡ ac75b059-c8e1-4112-a4d4-ec5956c8b058
 let 
