@@ -15,7 +15,7 @@ macro bind(def, element)
 end
 
 # ╔═╡ 23dfa92f-61aa-4439-a33b-610fad44af83
-using Plots,PlutoUI,Statistics,Distributions,LaTeXStrings
+using Plots,PlutoUI,Statistics,Distributions
 
 # ╔═╡ d8caa196-1053-4393-8022-242a6ec72f0f
 md"""
@@ -26,6 +26,9 @@ md"""
 md"""
 ## 1. 강의영상
 """
+
+# ╔═╡ d9bb39c7-1149-420a-90bb-13f69e8167a7
+
 
 # ╔═╡ 52674168-9876-4c4a-824d-61712d88081c
 md"""
@@ -48,38 +51,32 @@ md"""
 -- 방법1: 수학책 느낌..
 """
 
-# ╔═╡ f796450f-bcdd-434f-be5c-345e40c3e5b0
-f(x,y) = √(x^2+y^2)
+# ╔═╡ 2ca6e09c-a74c-404b-a45f-728dd4027a4d
+f(x,y)= √(x^2+y^2)
 
-# ╔═╡ 51e2d2b3-5d31-4508-aaab-dac453581503
-f(2,3)
+# ╔═╡ 4395d81a-fa7a-4c3f-a283-c3855a8de09f
+f(3,-3)
 
 # ╔═╡ f9e32aeb-3758-4777-98f6-d9a24513ea92
 md"""
 -- 방법2: 람다
 """
 
-# ╔═╡ 2cda549a-ea90-4d6e-a966-237f12614f3f
-g = (x -> 2x)
+# ╔═╡ 28b3486f-353d-4718-9ac2-02d283b1154b
+g = x-> 2x-1
 
-# ╔═╡ cf7979a3-e294-4328-9594-c5488cc164f7
-g(2)
-
-# ╔═╡ d96b3375-5b38-453c-9787-f5c73eb13f25
-(x->2x)(3)
+# ╔═╡ 17d11cef-64a8-4bf1-8eee-bfed0a252462
+g(3)
 
 # ╔═╡ 47c3f7ac-37b8-4f18-bc88-6ce9998d72c6
 md"""
 -- 방법3: R, Python 
 """
 
-# ╔═╡ f7c174a5-bb0a-4903-b673-63ab1fb05167
+# ╔═╡ 145f20e3-c6c6-4027-b2b2-5eec970646d9
 function h(x)
-	return ℯ^x / (1+ ℯ^x)
+	return ℯ^x / (1+ℯ^x)
 end
-
-# ╔═╡ ae127a52-033e-47ba-a2eb-8e2b35ae1ec0
-h(3)
 
 # ╔═╡ b4785081-45e3-4054-8512-8dd91e81b49f
 md"""
@@ -91,36 +88,70 @@ md"""
 함수 $(h\circ l)(x)$ 의 개형은 $a$,$b$ 에 따라서 어떻게 변화하는지 논의하라. 
 """
 
-# ╔═╡ 1a79bbf1-7927-4295-a6ff-2a187ad0e6cf
-a = @bind a Slider(-5:0.1:5,show_value=true,default=4.5)
+# ╔═╡ 8f450fbd-ffd5-4e7a-950e-17ed9cd53448
+a = @bind a Slider(-5:0.01:5, show_value=true)
 
-# ╔═╡ 8bab9543-f2ba-4f8d-9c02-485de54a0f19
-b = @bind b Slider(-5:0.1:5,show_value=true,default=0)
+# ╔═╡ 85a3757f-fcc3-4e9f-8599-9733814c1ac3
+b = @bind b Slider(-5:0.01:5, show_value=true)
 
-# ╔═╡ ac75b059-c8e1-4112-a4d4-ec5956c8b058
+# ╔═╡ 64af2316-e03c-44f8-882c-97a9594d2615
 let 
-	l(x) = a*x+b 
-	plot(h∘l, -20,20, legend=false)
+	l(x) = a*x+b
+	h(x) = ℯ^x / (1+ℯ^x)
+	plot(h∘l,legend=false,-20,20)
 	xlims!(-25,25)
-	title!("l(x)=($a)x+($b)")
-end
+end 
 
 # ╔═╡ 747793d3-ee9c-4d1b-867c-38a2f9624e9e
 md"""
 ## 4. 브로드캐스팅 ($\star$)
 """
 
-# ╔═╡ d8a5e876-8ab3-47c7-85b9-3966f935e042
-[1,2,3] + [3,4,-2]
+# ╔═╡ 4f26f505-d45c-44b2-bf49-3a122ab2e519
+md"""
+-- 예시1: 벡터 + 벡터
+"""
 
-# ╔═╡ c8416fc8-2a59-45cd-a929-ed4dac57d43c
+# ╔═╡ 05b2b0fd-eb15-4ad1-9b15-f72acad9e4c3
+[1,2,3] + [3,4,5]
+
+# ╔═╡ 539f24be-9dd7-4f43-96db-31cc0511030b
+md"""
+-- 예시2: 벡터 + 스칼라
+"""
+
+# ╔═╡ f645d882-419b-4522-92d3-f8aa7bef09e0
 [1,2,3] .+ 1
 
-# ╔═╡ ac1e7e15-cd86-4470-8445-36e356cfd08f
-@. [1,2,3] + 1
+# ╔═╡ b2c5fdae-d194-4fbd-a487-3ab189bd551a
+md"""
+-- 예시3: f: 스칼라 -> 스칼라
+"""
 
-# ╔═╡ 134ecfc1-abf4-45a0-a17b-9b444b464529
-(@. [1,2,3] |> (x -> x^2)) |> mean
+# ╔═╡ dc4a66c5-3443-4c6a-8499-96e284d0dbe1
+[1,2,3] .|> (x -> x^2)
+
+# ╔═╡ 057dfd82-dc49-4452-82d4-289b2be5d509
+(@. [1,2,3] |> (x->x^2) |> (x-> x-1)) |> mean
+
+# ╔═╡ d6c36859-676d-4819-a4f8-5a5603f913aa
+md"""
+-- 예시4: f: 벡터 -> 스칼라
+"""
+
+# ╔═╡ 04e9e536-2661-4e58-a94f-7d7ef149670f
+[1,2,3] |> mean
+
+# ╔═╡ 33ad2f2c-237e-4d80-ac07-4e9b29d51aed
+md"""
+-- 예시5: f: 스칼라 -> 벡터
+"""
+
+# ╔═╡ 94ac4077-1f93-40dd-b737-6ca94626b7e0
+let 
+	f = x -> (ℯ^x / (1+ℯ^x), 1- ℯ^x / (1+ℯ^x))
+	[-1,0,1,2,3] .|> f
+end
 
 # ╔═╡ 7573ee0e-dbd4-4bf1-aae2-fc9f08a6c4f2
 md"""
@@ -142,46 +173,44 @@ md"""
 함수선언 
 """
 
-# ╔═╡ d18f6b25-b1ab-428f-b27a-3e947eedfb53
+# ╔═╡ e6a5fb7a-ba76-42b9-a3e0-c1a5ca01ed59
 md"""
 파라메터
--  $\rho$ = $(@bind ρ Slider(-0.99:0.01:0.99, show_value=true, default=0.8))
--  $\mu_X$ = $(@bind μ₁ Slider(-1:0.1:1, show_value=true, default=0))
--  $\mu_Y$ = $(@bind μ₂ Slider(-1:0.1:1, show_value=true, default=0))
--  $\sigma_X$ = $(@bind σ₁ Slider(0.01:0.01:2, show_value=true, default=1))
--  $\sigma_Y$ = $(@bind σ₂ Slider(0.01:0.01:2, show_value=true, default=1))
+-  $\rho$ = $(@bind ρ Slider(-0.99:0.01:0.99, show_value=true))
+-  $\mu_X$ = $(@bind μ₁ Slider(-1:0.1:1, show_value=true))
+-  $\mu_Y$ = $(@bind μ₂ Slider(-1:0.1:1, show_value=true))
+-  $\sigma_X$ = $(@bind σ₁ Slider(0.01:0.01:2, show_value=true))
+-  $\sigma_Y$ = $(@bind σ₂ Slider(0.01:0.01:2, show_value=true))
 """
 
-# ╔═╡ f4c66d21-e0c5-47c2-9099-d8484fd3a97b
+# ╔═╡ 607586dd-9214-4b3c-9ffa-07299f40c082
 function pdf(x,y)
 	x = (x-μ₁)/σ₁
 	y = (y-μ₂)/σ₂
-	c1 = 2π*σ₁*σ₂*√(1-ρ^2)
+	c1 = 2π*σ₁*σ₂√(1-ρ^2)
 	c2 = 2(1-ρ^2)
-	return 1/c1 * exp(-1/c2 * (x^2+y^2-2ρ*x*y))
+	return 1/c1 * exp(-1/c2*(x^2+y^2-2ρ*x*y))
 end
 
-# ╔═╡ 5c63f745-e6a0-4aa7-9583-283afb76ef09
+# ╔═╡ 53a6c087-1087-4f02-a9ba-345624d00098
 p1 = plot(-5:0.1:5, -5:0.1:5, pdf, st=[:surface],legend=false);
 
-# ╔═╡ 1d7cd0ef-f5ce-4c16-98ff-eee960b1a1fa
+# ╔═╡ e24be9ce-3497-4a55-b306-02856de4a6ba
 p2 = plot(-5:0.1:5, -5:0.1:5, pdf, st=[:contour],legend=false);
 
-# ╔═╡ e0c2c56b-37ce-4389-9d1b-28ceae124e56
+# ╔═╡ 5d1bf633-7335-441b-93b6-4b070ab158d7
 plot(p1,p2)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 Distributions = "~0.25.107"
-LaTeXStrings = "~1.3.1"
 Plots = "~1.39.0"
 PlutoUI = "~0.7.58"
 """
@@ -192,7 +221,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "edc56a5f804182eaf51ca82c8c032399f3bf927d"
+project_hash = "ec384906f97938401f0091b47d2b1652f10d2305"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1380,38 +1409,44 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─d8caa196-1053-4393-8022-242a6ec72f0f
 # ╟─aea5b34d-24f2-44c3-8501-b701ffae3e36
+# ╠═d9bb39c7-1149-420a-90bb-13f69e8167a7
 # ╟─52674168-9876-4c4a-824d-61712d88081c
 # ╠═23dfa92f-61aa-4439-a33b-610fad44af83
 # ╠═ee46ab98-3b2f-43e0-886c-8b3c3cea7b36
 # ╠═5588f0c2-34b2-4bee-970a-5fe0d5d70d80
 # ╟─0395327a-dc20-11ee-3125-a31ca27ebbef
 # ╟─175663e4-f7fb-4e62-9954-a554d7aede70
-# ╠═f796450f-bcdd-434f-be5c-345e40c3e5b0
-# ╠═51e2d2b3-5d31-4508-aaab-dac453581503
+# ╠═2ca6e09c-a74c-404b-a45f-728dd4027a4d
+# ╠═4395d81a-fa7a-4c3f-a283-c3855a8de09f
 # ╟─f9e32aeb-3758-4777-98f6-d9a24513ea92
-# ╠═2cda549a-ea90-4d6e-a966-237f12614f3f
-# ╠═cf7979a3-e294-4328-9594-c5488cc164f7
-# ╠═d96b3375-5b38-453c-9787-f5c73eb13f25
+# ╠═28b3486f-353d-4718-9ac2-02d283b1154b
+# ╠═17d11cef-64a8-4bf1-8eee-bfed0a252462
 # ╟─47c3f7ac-37b8-4f18-bc88-6ce9998d72c6
-# ╠═f7c174a5-bb0a-4903-b673-63ab1fb05167
-# ╠═ae127a52-033e-47ba-a2eb-8e2b35ae1ec0
+# ╠═145f20e3-c6c6-4027-b2b2-5eec970646d9
 # ╟─b4785081-45e3-4054-8512-8dd91e81b49f
-# ╠═1a79bbf1-7927-4295-a6ff-2a187ad0e6cf
-# ╠═8bab9543-f2ba-4f8d-9c02-485de54a0f19
-# ╠═ac75b059-c8e1-4112-a4d4-ec5956c8b058
+# ╠═8f450fbd-ffd5-4e7a-950e-17ed9cd53448
+# ╠═85a3757f-fcc3-4e9f-8599-9733814c1ac3
+# ╠═64af2316-e03c-44f8-882c-97a9594d2615
 # ╟─747793d3-ee9c-4d1b-867c-38a2f9624e9e
-# ╠═d8a5e876-8ab3-47c7-85b9-3966f935e042
-# ╠═c8416fc8-2a59-45cd-a929-ed4dac57d43c
-# ╠═ac1e7e15-cd86-4470-8445-36e356cfd08f
-# ╠═134ecfc1-abf4-45a0-a17b-9b444b464529
+# ╟─4f26f505-d45c-44b2-bf49-3a122ab2e519
+# ╠═05b2b0fd-eb15-4ad1-9b15-f72acad9e4c3
+# ╟─539f24be-9dd7-4f43-96db-31cc0511030b
+# ╠═f645d882-419b-4522-92d3-f8aa7bef09e0
+# ╟─b2c5fdae-d194-4fbd-a487-3ab189bd551a
+# ╠═dc4a66c5-3443-4c6a-8499-96e284d0dbe1
+# ╠═057dfd82-dc49-4452-82d4-289b2be5d509
+# ╟─d6c36859-676d-4819-a4f8-5a5603f913aa
+# ╠═04e9e536-2661-4e58-a94f-7d7ef149670f
+# ╟─33ad2f2c-237e-4d80-ac07-4e9b29d51aed
+# ╠═94ac4077-1f93-40dd-b737-6ca94626b7e0
 # ╟─7573ee0e-dbd4-4bf1-aae2-fc9f08a6c4f2
 # ╟─5de089f8-5a28-442b-8fee-3da504d42c2f
 # ╟─ed78f992-4061-44d0-b470-846e3480eb5f
 # ╟─0e7094d2-1b0a-4f17-af67-1adf26c235ff
-# ╠═f4c66d21-e0c5-47c2-9099-d8484fd3a97b
-# ╠═5c63f745-e6a0-4aa7-9583-283afb76ef09
-# ╠═1d7cd0ef-f5ce-4c16-98ff-eee960b1a1fa
-# ╟─d18f6b25-b1ab-428f-b27a-3e947eedfb53
-# ╠═e0c2c56b-37ce-4389-9d1b-28ceae124e56
+# ╠═607586dd-9214-4b3c-9ffa-07299f40c082
+# ╟─e6a5fb7a-ba76-42b9-a3e0-c1a5ca01ed59
+# ╠═53a6c087-1087-4f02-a9ba-345624d00098
+# ╠═e24be9ce-3497-4a55-b306-02856de4a6ba
+# ╠═5d1bf633-7335-441b-93b6-4b070ab158d7
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
