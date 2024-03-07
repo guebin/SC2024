@@ -19,7 +19,7 @@ md"""
 ---
 -- Julia 프로그래밍
 - [01wk-1](https://guebin.github.io/SC2024/01wk-1.html): 줄리아 vs (R,Python); 플루토 vs 주피터; 위젯 
-- [01wk-2](https://guebin.github.io/SC2024/01wk-2.html): 
+- [01wk-2](https://guebin.github.io/SC2024/01wk-2.html): 함수의 선언, 브로드캐스팅, 이변량 정규분포의 pdf 
 """
 
 # ╔═╡ 3ab7086d-a534-449f-a914-fe314dc0a4a1
