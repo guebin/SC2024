@@ -337,8 +337,7 @@ md"""
 """
 
 # ╔═╡ 4ef09487-f353-4bf8-9add-a221e4801098
-md"λ = $(@bind λ Slider(0.1:0.1:30, show_value=true, default=1))"
-#λ = @bind λ Slider(0.1:0.1:30, show_value=true, default=1)
+λ = @bind λ Slider(0.1:0.1:30, show_value=true, default=1)
 
 # ╔═╡ fda3dd70-f632-4958-999d-d736ff52b1dd
 let
