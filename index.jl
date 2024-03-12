@@ -9,6 +9,11 @@ md"""
 # 2024년 통계전산 강의홈페이지 
 """
 
+# ╔═╡ 39d45969-99eb-42ef-85e0-2d7bec8c9585
+md"""
+카카오톡: <http://pf.kakao.com/_txeIFG/chat>
+"""
+
 # ╔═╡ f589bb03-2bf2-4f65-b351-0e3c53eae11b
 md"""
 ### Lectures
@@ -51,6 +56,7 @@ manifest_format = "2.0"
 
 # ╔═╡ Cell order:
 # ╟─9ba3fd28-a02f-11ec-2d00-417ff6fef7d3
+# ╟─39d45969-99eb-42ef-85e0-2d7bec8c9585
 # ╟─f589bb03-2bf2-4f65-b351-0e3c53eae11b
 # ╟─1f7b4001-be12-44dc-8745-c45ed7d2ad03
 # ╟─3ab7086d-a534-449f-a914-fe314dc0a4a1

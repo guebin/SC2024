@@ -4,6 +4,16 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ 3e7b4e0d-c52e-4214-a8fb-7ae7b03a60e9
 using Distributions, Plots,PlutoUI
 
@@ -68,21 +78,17 @@ md"""
 """
 
 # ╔═╡ 4932ae65-85cd-4109-8df0-612655c323be
-
-
-# ╔═╡ 0e0c7758-0b90-436d-a0ba-267d576a8769
-
+let 
+	N = 10 # 샘플사이즈 
+	p = 0.34 # 모수 
+	distribution = Bernoulli(p) # 분포
+	X = rand(distribution,N)
+end
 
 # ╔═╡ d39cc97b-f7ad-4e54-a6ed-0497d6346acf
 md"""
 ### B. 모수 $\to$ 히스토그램
 """
-
-# ╔═╡ 5eece865-edcb-4c8d-8a72-f6ee81b7017b
-# p 슬라이더
-
-# ╔═╡ f3018814-2557-4e88-bc1e-c7fa0e4a61aa
-# 히스토그램
 
 # ╔═╡ a302696f-3667-488c-a2c0-a95eca178801
 md"""
@@ -99,11 +105,8 @@ md"""
 (방법1) -- 기본
 """
 
-# ╔═╡ b402c405-c6f6-4f53-886b-05b12021b6c3
-
-
-# ╔═╡ f5d99bb6-94c8-4e58-a3e0-209fcde0f23d
-
+# ╔═╡ e2c91f7b-b47b-4d6c-8b19-46cdc3884427
+rand(Bernoulli(0.37),100) 
 
 # ╔═╡ bba8738c-2d5c-4d40-bb3d-1a11a57fd9d6
 md"""
@@ -111,21 +114,20 @@ md"""
 """
 
 # ╔═╡ 74ab3bea-c2d2-4fe3-acd7-7de9b007b7ef
-
-
-# ╔═╡ fc389dfa-2729-449b-8f61-d9cf80b165b9
-
+rand(100)  .< 0.37 # 베르누이분포
 
 # ╔═╡ 27f8e253-01e9-44e6-bb7d-c1de2a8d37c9
 md"""
 -- 방법1,2의 비교
 """
 
-# ╔═╡ 7ad2f7d2-a8f9-4865-9590-6ef4a55e6d24
-
-
 # ╔═╡ 0afa163a-de69-4244-b6ac-cffc16b1dd50
-
+let 
+	N = 10000
+	p1 = histogram(rand(Bernoulli(0.37),N),color=1,label = "X ~ 베르누이"); title!("(a)")
+	p2 = histogram((rand(N)  .< 0.37),color="red",label = "X ~ I(Y<0.37) Y~균등"); title!("(b)")
+	plot(p1,p2)
+end
 
 # ╔═╡ 50a1bd66-19eb-41e4-a0e5-4d7369112a4d
 md"""
@@ -138,10 +140,7 @@ md"""
 """
 
 # ╔═╡ f357fd0d-7b84-4960-a2b4-261950dc5f12
-
-
-# ╔═╡ 2d7f48ce-3bc3-485f-bf14-da458b1495c3
-
+plot(p -> p*(1-p),0,1)
 
 # ╔═╡ 78f8e0a8-e1aa-4c70-a460-a179456bd8fc
 md"""
@@ -178,24 +177,34 @@ md"""
 """
 
 # ╔═╡ cf90f87b-01da-4fb2-833a-e82841b411e3
-
-
-# ╔═╡ 996f52a3-efdc-45b8-aea9-858b4def254c
-
+let 
+	N = 10 # 샘플사이즈 
+	n,p = 30, 0.34 # 모수 
+	distribution = Binomial(n,p) # 분포
+	X = rand(distribution,N)
+end
 
 # ╔═╡ 9e1dd3ca-7a75-4db8-bed9-8885d0678ad6
 md"""
 ### B. 모수 $\to$ 히스토그램
 """
 
-# ╔═╡ 8dde41a2-7164-4568-9cbe-c91f4e29bf5f
-# p 슬라이더
+# ╔═╡ f3018814-2557-4e88-bc1e-c7fa0e4a61aa
+let 
+	N = 1000
+	X = rand(Bernoulli(p),N)
+	histogram(X)
+end
 
 # ╔═╡ 8ea5c74c-95a8-4980-a144-3f2cf1fb0453
-# n 슬라이더
+n = @bind n Slider(1:30, show_value=true, default=7)
 
 # ╔═╡ f5627b38-1bee-4c03-b83c-79b2632d19bd
-# 히스토그램
+let 
+	N = 100 
+	histogram(rand(Binomial(n,p),N))
+	xlims!(0,35)
+end
 
 # ╔═╡ 33d3125e-3d5f-467c-8488-2e82f9832e51
 md"""
@@ -213,7 +222,7 @@ md"""
 """
 
 # ╔═╡ 682bf567-0e62-475c-9078-6d873b6ac911
-# 
+rand(Binomial(8,0.37),100)
 
 # ╔═╡ 4b7789e6-ff5f-4000-b8ff-7d888d4e2e97
 md"""
@@ -221,13 +230,7 @@ md"""
 """
 
 # ╔═╡ a2ca922b-432a-4215-b51b-32db273852d1
-
-
-# ╔═╡ aa72e48f-9b28-46d8-9cbc-7cd0c1191879
-
-
-# ╔═╡ e86e0e87-313a-4851-8cc3-00011d7cc252
-
+[rand(Bernoulli(0.37),8) |> sum for i in 1:100]
 
 # ╔═╡ 56c84dde-be00-48c4-a074-6f90c39e7092
 md"""
@@ -235,16 +238,7 @@ md"""
 """
 
 # ╔═╡ 3d63d57c-a54f-4571-a514-c686d6415b70
-
-
-# ╔═╡ ce2c1125-8114-4b74-a86a-2dacffd4a811
-
-
-# ╔═╡ 12d5fd97-7a1c-405f-87d6-fa5317636852
-
-
-# ╔═╡ 87fcf7c3-0659-486f-9924-2978e2fe45b2
-
+[(rand(8) .< 0.37) |> sum for i in 1:100]
 
 # ╔═╡ 7a474be8-a3f0-4b7f-94ab-90eda88bfefc
 md"""
@@ -257,7 +251,10 @@ md"""
 """
 
 # ╔═╡ 7e1e6e3f-f13a-414d-9b12-b1a610f61444
-
+let
+	n = 10
+	plot(p -> n*p*(1-p), 0,1)
+end 
 
 # ╔═╡ 6c429ac2-2cca-45a5-a3dc-e09f94275732
 md"""
@@ -427,6 +424,15 @@ md"""
 
 `2`. "균등분포 $\to$ 베르누이 $\to$ 이항분포 $\approx$ 포아송" 의 방법으로 $Poi(12)$의 분포를 근사하고 히스토그램을 비교해보라. 
 """
+
+# ╔═╡ 8dde41a2-7164-4568-9cbe-c91f4e29bf5f
+p = @bind p Slider(0.1:0.1:0.9, show_value=true, default=0.3)
+
+# ╔═╡ b856783d-3018-4190-992e-1bcfdb25808b
+# ╠═╡ disabled = true
+#=╠═╡
+p = @bind p Slider(0.1:0.1:0.9, show_value=true, default=0.3)
+  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1645,31 +1651,25 @@ version = "1.4.1+1"
 # ╟─68ce3dd0-fa08-468d-bd54-1f2f383faab6
 # ╟─5d2716e2-c5d3-470e-8178-500f313172c4
 # ╠═4932ae65-85cd-4109-8df0-612655c323be
-# ╠═0e0c7758-0b90-436d-a0ba-267d576a8769
 # ╟─d39cc97b-f7ad-4e54-a6ed-0497d6346acf
-# ╠═5eece865-edcb-4c8d-8a72-f6ee81b7017b
+# ╠═b856783d-3018-4190-992e-1bcfdb25808b
 # ╠═f3018814-2557-4e88-bc1e-c7fa0e4a61aa
 # ╟─a302696f-3667-488c-a2c0-a95eca178801
 # ╟─b1eb6071-3da2-44ce-bc8e-7ad7f5910bb3
 # ╟─caa9606b-a2b9-4d2b-93c5-453f4525b051
-# ╠═b402c405-c6f6-4f53-886b-05b12021b6c3
-# ╠═f5d99bb6-94c8-4e58-a3e0-209fcde0f23d
+# ╠═e2c91f7b-b47b-4d6c-8b19-46cdc3884427
 # ╟─bba8738c-2d5c-4d40-bb3d-1a11a57fd9d6
 # ╠═74ab3bea-c2d2-4fe3-acd7-7de9b007b7ef
-# ╠═fc389dfa-2729-449b-8f61-d9cf80b165b9
 # ╟─27f8e253-01e9-44e6-bb7d-c1de2a8d37c9
-# ╠═7ad2f7d2-a8f9-4865-9590-6ef4a55e6d24
 # ╠═0afa163a-de69-4244-b6ac-cffc16b1dd50
 # ╟─50a1bd66-19eb-41e4-a0e5-4d7369112a4d
 # ╟─1a2e694b-322d-48e4-b381-ab2cd277366f
 # ╠═f357fd0d-7b84-4960-a2b4-261950dc5f12
-# ╠═2d7f48ce-3bc3-485f-bf14-da458b1495c3
 # ╟─78f8e0a8-e1aa-4c70-a460-a179456bd8fc
 # ╟─82b80b24-6fb2-43c4-a72c-d0c7b46c403c
 # ╟─c147f8a3-43b7-447c-9d15-fc6635af4221
 # ╟─d74a7832-9481-44fc-9e93-7c4e6dda5664
 # ╠═cf90f87b-01da-4fb2-833a-e82841b411e3
-# ╠═996f52a3-efdc-45b8-aea9-858b4def254c
 # ╟─9e1dd3ca-7a75-4db8-bed9-8885d0678ad6
 # ╠═8dde41a2-7164-4568-9cbe-c91f4e29bf5f
 # ╠═8ea5c74c-95a8-4980-a144-3f2cf1fb0453
@@ -1680,13 +1680,8 @@ version = "1.4.1+1"
 # ╠═682bf567-0e62-475c-9078-6d873b6ac911
 # ╟─4b7789e6-ff5f-4000-b8ff-7d888d4e2e97
 # ╠═a2ca922b-432a-4215-b51b-32db273852d1
-# ╠═aa72e48f-9b28-46d8-9cbc-7cd0c1191879
-# ╠═e86e0e87-313a-4851-8cc3-00011d7cc252
 # ╟─56c84dde-be00-48c4-a074-6f90c39e7092
 # ╠═3d63d57c-a54f-4571-a514-c686d6415b70
-# ╠═ce2c1125-8114-4b74-a86a-2dacffd4a811
-# ╠═12d5fd97-7a1c-405f-87d6-fa5317636852
-# ╠═87fcf7c3-0659-486f-9924-2978e2fe45b2
 # ╟─7a474be8-a3f0-4b7f-94ab-90eda88bfefc
 # ╟─d24f2b08-8997-4cc5-8f87-4a5cbd8290f2
 # ╠═7e1e6e3f-f13a-414d-9b12-b1a610f61444
