@@ -28,15 +28,15 @@ md"""
 """
 
 # ╔═╡ 3e2405d2-5c92-42cd-bbc6-66c1add0d282
-# html"""
-# <div style="display: flex; justify-content: center;">
-# <div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-# <iframe src=
-# "
-# https://www.youtube.com/embed/playlist?list=PLQqh36zP38-ycDx8HFZQt_HHG7vLQCHOr
-# "
-# width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-# """
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://youtube.com/embed/playlist?list=PLQqh36zP38-wfhA6K1wV-4Z7q_2gNH0pj&si=9stjFHkK1_1ETpvk
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
 
 # ╔═╡ 77c4a801-d098-4f45-9b99-4e7e6f55a10b
 md"""
@@ -144,10 +144,7 @@ md"""
 """
 
 # ╔═╡ de89581f-47fd-48e9-a6d9-d22311700e83
-let 
-	p = 0:0.01:1 
-	plot(p, p -> p*(1-p))
-end 
+plot(p -> p*(1-p),0,1)
 
 # ╔═╡ 78f8e0a8-e1aa-4c70-a460-a179456bd8fc
 md"""
@@ -275,8 +272,7 @@ md"""
 # ╔═╡ 7e1e6e3f-f13a-414d-9b12-b1a610f61444
 let 
 	n = 10 
-	p = 0:0.01:1 
-	plot(p, p-> n*p*(1-p))
+	plot(p-> n*p*(1-p),0,1)
 end 
 
 # ╔═╡ 6c429ac2-2cca-45a5-a3dc-e09f94275732
@@ -394,9 +390,9 @@ md"""
 # ╔═╡ f415c9dd-b493-4f29-a222-84c8c9e5f5dd
 md"""
 사실: 전북대 맥도날드에는 항상 1분에 평균 6명의 손님이 방문한다. (느낌? 평균이 6인 포아송)
-- 그럼 10초에는 대충 ??명의 손님이 오지 않겠어?
-- 그럼 1초에는 대충 ??명의 손님이 오지 않겠어?
-- 그럼 0.1초에는 대충 ??명의 손님이 오지 않겠어?
+- 그럼 10초에는 대충 1명의 손님이 오지 않겠어?
+- 그럼 1초에는 대충 0.1명의 손님이 오지 않겠어?
+- 그럼 0.1초에는 대충 0.01명의 손님이 오지 않겠어?
 
 생각: (x,x+0.1초) 에서 방문객의 분포와 (x+0.1초,x+0.2초) 방문객의 분포는 독립일까? 분포는 다를까? 
 - 딱봐도 분포는 같고, 독립이어보임. 
@@ -1705,7 +1701,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─05e369d7-e0b8-4ef4-8831-938423a6717e
 # ╟─db4dd854-1764-4a62-a77d-498ac1c008b1
-# ╠═3e2405d2-5c92-42cd-bbc6-66c1add0d282
+# ╟─3e2405d2-5c92-42cd-bbc6-66c1add0d282
 # ╟─77c4a801-d098-4f45-9b99-4e7e6f55a10b
 # ╠═3e7b4e0d-c52e-4214-a8fb-7ae7b03a60e9
 # ╠═5bf2d19f-b8bb-43be-bc35-a963a01f71cb

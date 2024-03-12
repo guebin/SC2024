@@ -284,7 +284,12 @@ md"""
 """
 
 # ╔═╡ 8f4f4c31-b997-4bf7-b8ee-77f5c1c90b75
-#
+let 
+	N = 30 # 샘플사이즈 
+	λ = 203.67 # 모수
+	distribution = Poisson(λ) # 분포
+	X = rand(distribution,N)
+end
 
 # ╔═╡ 3b13a7d5-d476-4d97-bfef-374bbf136b53
 md"""
@@ -309,10 +314,13 @@ md"""
 """
 
 # ╔═╡ 4ef09487-f353-4bf8-9add-a221e4801098
-# lambda 슬라이더
+λ = @bind λ Slider(0.1:0.1:30, show_value=true, default=1)
 
 # ╔═╡ fda3dd70-f632-4958-999d-d736ff52b1dd
-# 히스토그램
+let 
+	histogram(rand(Poisson(λ),100))
+	xlims!(0,50)
+end
 
 # ╔═╡ bbc73fe7-ba62-4b53-95e9-adb9e3c09e69
 md"""
@@ -325,7 +333,7 @@ md"""
 """
 
 # ╔═╡ 6c30a97e-34a1-488b-9da6-0f71e5b1e71b
-# 
+rand(Poisson(3),10)
 
 # ╔═╡ 0c6f0e07-b19f-4020-a3ab-e16bc3aaa68a
 md"""
@@ -338,9 +346,19 @@ md"""
 	이항분포에서 (1) $n\to \infty$ (2) $p\to 0$ 이면 이것은 평균이 $\lambda=np$ 인 포아송분포와 비슷해진다. 즉 평균이 $\lambda$인 포아송분포는 $B(n,\frac{\lambda}{n})$로 대신 만들 수 있다. 
 """
 
-# ╔═╡ 45841bb0-8881-48af-baae-ea5555a0482e
-# (a) (포아송분포처럼 보일 순 있지만) 이항분포
-# (b) 포아송분포
+# ╔═╡ 1d70c560-3b81-47e7-8a35-334c9736b413
+let 
+	N = 1000
+	λ = 3 
+	n = 10000
+	p = λ/n
+	@show λ, (n,p)
+	#---#
+	p1 = histogram(rand(Poisson(λ),N)); title!("(a) 포아송분포"); xlims!(0,12)
+	p2 = histogram(rand(Binomial(n,p),N)); title!("(b) (포아송분포처럼 보이지만) 이항분포" ); xlims!(0,12)
+	plot(p1,p2,layout=(2,1))
+
+end 
 
 # ╔═╡ 60321f75-4f38-4ef0-ba6a-023ead960ea4
 md"""
@@ -349,10 +367,10 @@ md"""
 
 # ╔═╡ f415c9dd-b493-4f29-a222-84c8c9e5f5dd
 md"""
-사실: 전북대 맥도날드에는 항상 1분에 평균 6명의 손님이 방문한다. (느낌? 평균이 6인 포아송)
-- 그럼 10초에는 대충 ??명의 손님이 오지 않겠어?
-- 그럼 1초에는 대충 ??명의 손님이 오지 않겠어?
-- 그럼 0.1초에는 대충 ??명의 손님이 오지 않겠어?
+가정: 전북대 맥도날드에는 항상 1분에 평균 6명의 손님이 방문한다. (느낌? 평균이 6인 포아송)
+- 그럼 10초에는 대충 1명의 손님이 오지 않겠어?
+- 그럼 1초에는 대충 0.1명의 손님이 오지 않겠어?
+- 그럼 0.1초에는 대충 0.01명의 손님이 오지 않겠어?
 
 생각: (x,x+0.1초) 에서 방문객의 분포와 (x+0.1초,x+0.2초) 방문객의 분포는 독립일까? 분포는 다를까? 
 - 딱봐도 분포는 같고, 독립이어보임. 
@@ -364,7 +382,14 @@ md"""
 """
 
 # ╔═╡ 813dd023-684f-49fe-a202-c01c58fe2530
-#
+let 
+	N = 1000
+	λ = 6
+	n,p = 600,0.01
+	p1 = histogram(rand(Poisson(λ),N)); xlims!(0,15)
+	p2 = histogram([rand(Bernoulli(p),n) |> sum for i in 1:N]); xlims!(0,15)
+	plot(p1,p2,layout=(2,1))
+end 
 
 # ╔═╡ cdcf3ac3-4873-424e-a035-d3c5e7857e7f
 md""" 
@@ -409,9 +434,17 @@ md"""
 -- 실습
 """
 
-# ╔═╡ 91ce515f-b508-462f-9d3a-5a14d634b41d
-# (a) Poi(5)+Poi(4.5)") ; xlims!(0,25)
-# (b) Poi(9.5)") ; xlims!(0,25)
+# ╔═╡ e2ebbcc9-2704-4599-8a60-bc1510a7f723
+let 
+	N = 1000
+	p1 = histogram(rand(Poisson(5),N) .+ rand(Poisson(4.5),N))
+	title!("(a) Poi(5)+Poi(4.5)")
+	xlims!(0,30)
+	p2 = histogram(rand(Poisson(9.5),N))
+	title!("(b) Poi(9.5)")
+	xlims!(0,30)
+	plot(p1,p2,layout=(2,1))
+end
 
 # ╔═╡ bde63d4b-aee5-41a1-9dde-f2777ff7879d
 md"""
@@ -1700,7 +1733,7 @@ version = "1.4.1+1"
 # ╠═6c30a97e-34a1-488b-9da6-0f71e5b1e71b
 # ╟─0c6f0e07-b19f-4020-a3ab-e16bc3aaa68a
 # ╟─3e4b7b2b-dbab-4a34-81b7-cdb15d15a21a
-# ╠═45841bb0-8881-48af-baae-ea5555a0482e
+# ╠═1d70c560-3b81-47e7-8a35-334c9736b413
 # ╟─60321f75-4f38-4ef0-ba6a-023ead960ea4
 # ╟─f415c9dd-b493-4f29-a222-84c8c9e5f5dd
 # ╠═813dd023-684f-49fe-a202-c01c58fe2530
@@ -1712,7 +1745,7 @@ version = "1.4.1+1"
 # ╟─794cbef2-e38e-456b-8b61-0d270f764a33
 # ╟─a6f03cd0-4eae-4521-a7d3-cd1a1ba61f4d
 # ╟─5a3cd616-68dd-41ba-a3a8-7f1199c51707
-# ╠═91ce515f-b508-462f-9d3a-5a14d634b41d
+# ╠═e2ebbcc9-2704-4599-8a60-bc1510a7f723
 # ╟─bde63d4b-aee5-41a1-9dde-f2777ff7879d
 # ╟─35749112-78e1-47da-b409-80374e4cd327
 # ╟─00000000-0000-0000-0000-000000000001
