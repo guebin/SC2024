@@ -173,7 +173,9 @@ md"""
 md"""
 -- 대의적정의 ($\star$)
 
-$$X \sim B(n,p) \Leftrightarrow X \overset{d}{=} Z_1+Z_2+ \dots +Z_n$, where $Z_i \overset{iid}{\sim} Bernoulli(p)$$
+!!! note "이항분포의 대의적 정의"
+	베르누이 분포를 합치면 이항분포가 되며, 이항분포는 베르누이 분포의 합으로 쪼갤 수 있다. 
+	 $X \sim B(n,p) \Leftrightarrow X \overset{d}{=} Z_1+Z_2+ \dots +Z_n$, where $Z_i \overset{iid}{\sim} Bernoulli(p)$
 """
 
 # ╔═╡ d74a7832-9481-44fc-9e93-7c4e6dda5664
@@ -201,7 +203,8 @@ let
 end
 
 # ╔═╡ 8ea5c74c-95a8-4980-a144-3f2cf1fb0453
-n = @bind n Slider(1:1:30, show_value = true)
+md"n = $(@bind n Slider(1:1:30, show_value = true, default=10))"
+#n = @bind n Slider(1:1:30, show_value = true)
 
 # ╔═╡ f5627b38-1bee-4c03-b83c-79b2632d19bd
 let
@@ -324,7 +327,8 @@ md"""
 
 # ╔═╡ cc97ee44-c237-46bc-8a51-a7f288ce3787
 md"""
-> 느낌: 단위시간(혹은 면적)
+!!! note "포아송분포의 느낌"
+	단위시간 (혹은 단위공간) 에서 발생하는 어떠한 이벤트 수를 X라고 하면 X는 포아송분포를 따름. 
 """
 
 # ╔═╡ 11b8b1d0-4a93-4c16-b961-fc9c85742a14
@@ -362,7 +366,8 @@ md"""
 
 # ╔═╡ 3e4b7b2b-dbab-4a34-81b7-cdb15d15a21a
 md"""
-- 이론: 이항분포에서 (1) $n\to \infty$ (2) $p\to 0$ (3) $np=\lambda$ 이면 이것은 평균이 $\lambda$인 포아송분포로 근사함. 즉 평균이 $\lambda$인 포아송분포는 $B(n,\frac{\lambda}{n})$로 근사할 수 있다. 이때 $n$이 커질수록 더 정확해짐. 
+!!! note "이론: 이항분포의 포아송근사" 
+	이항분포에서 (1) $n\to \infty$ (2) $p\to 0$ 이면 이것은 평균이 $\lambda=np$ 인 포아송분포와 비슷해진다. 즉 평균이 $\lambda$인 포아송분포는 $B(n,\frac{\lambda}{n})$로 대신 만들 수 있다. 
 """
 
 # ╔═╡ 45841bb0-8881-48af-baae-ea5555a0482e
@@ -417,8 +422,9 @@ let
 end
 
 # ╔═╡ cdcf3ac3-4873-424e-a035-d3c5e7857e7f
-md"""
-하여튼 (1) "엄청 짧은 시간"에 (2) "엄청 작은 확률"의 베르누이 시행이 (3) "엄청 많이 독립적으로 반복"되는 느낌을 꼭 기억하세요!
+md""" 
+!!! note "포아송 프로세스 느낌"
+	하여튼 (1) **"엄청 짧은 시간"**에 (2) **"엄청 작은 확률"**의 베르누이 시행이 (3) **"엄청 많이 독립적으로 반복"**되는 느낌을 꼭 기억하세요!
 """
 
 # ╔═╡ 85e113f2-625c-4d57-b3fe-1167b9f3c5ca
@@ -439,8 +445,18 @@ md"""
 # ╔═╡ 54703f3f-0ed5-4909-b24b-2701f6f904fb
 md"""
 -- 포아송분포의 합은 다시 포아송분포가 된다. 
-- 이론: $X \sim Poi(\lambda_1), Y\sim Poi(\lambda_2),~ X \perp Y \Rightarrow X + Y \sim Poi(\lambda_1 + \lambda_2)$ 
-- 의미? (1) 1분동안 맥도날드 매장에 들어오는 남자의 수는 평균이 5인 포아송 분포를 따름 (2) 1분동안 맥도날드 매장에 들어오는 여자의 수는 평균이 4.5인 포아송분포를 따름 (3) 남자와 여자가 매장에 오는 사건은 독립 => 1분동안 맥도날드 매장에 오는 사람은 평균이 9.5인 포아송 분포를 따른다는 의미. 
+"""
+
+# ╔═╡ 794cbef2-e38e-456b-8b61-0d270f764a33
+md"""
+!!! note "이론: 포아송분포의 합"
+	포아송분포의 합은 다시 포아송분포가 된다. 
+	$X \sim Poi(\lambda_1), Y\sim Poi(\lambda_2),~ X \perp Y \Rightarrow X + Y \sim Poi(\lambda_1 + \lambda_2)$ 
+"""
+
+# ╔═╡ a6f03cd0-4eae-4521-a7d3-cd1a1ba61f4d
+md"""
+의미? (1) 1분동안 맥도날드 매장에 들어오는 남자의 수는 평균이 5인 포아송 분포를 따름 (2) 1분동안 맥도날드 매장에 들어오는 여자의 수는 평균이 4.5인 포아송분포를 따름 (3) 남자와 여자가 매장에 오는 사건은 독립 => 1분동안 맥도날드 매장에 오는 사람은 평균이 9.5인 포아송 분포를 따른다는 의미. 
 """
 
 # ╔═╡ 5a3cd616-68dd-41ba-a3a8-7f1199c51707
@@ -471,12 +487,14 @@ md"""
 """
 
 # ╔═╡ 8dde41a2-7164-4568-9cbe-c91f4e29bf5f
-p = @bind p Slider(0.1:0.1:0.9, show_value=true, default=0.3)
+md"p = $(@bind p Slider(0.1:0.1:0.9, show_value=true, default=0.3))"
+#p = @bind p Slider(0.1:0.1:0.9, show_value=true, default=0.3)
 
 # ╔═╡ a0c5fa5c-4fef-4862-9ce2-895c03eba9d5
 # ╠═╡ disabled = true
 #=╠═╡
-p = @bind p Slider(0.1:0.1:0.9, show_value= true, default=0.3)
+md"p = $(@bind p Slider(0.1:0.1:0.9, show_value= true, default=0.3))"
+#p = @bind p Slider(0.1:0.1:0.9, show_value= true, default=0.3)
   ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1760,6 +1778,8 @@ version = "1.4.1+1"
 # ╟─914b8c7f-e444-4fa9-bc5f-27228a76193a
 # ╟─58ab80d4-f59d-4471-9a3f-3153873e9107
 # ╟─54703f3f-0ed5-4909-b24b-2701f6f904fb
+# ╟─794cbef2-e38e-456b-8b61-0d270f764a33
+# ╟─a6f03cd0-4eae-4521-a7d3-cd1a1ba61f4d
 # ╟─5a3cd616-68dd-41ba-a3a8-7f1199c51707
 # ╠═91ce515f-b508-462f-9d3a-5a14d634b41d
 # ╟─bde63d4b-aee5-41a1-9dde-f2777ff7879d
