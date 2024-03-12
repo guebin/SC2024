@@ -4,16 +4,6 @@
 using Markdown
 using InteractiveUtils
 
-# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
-macro bind(def, element)
-    quote
-        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
-        local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
-        el
-    end
-end
-
 # ╔═╡ 3e7b4e0d-c52e-4214-a8fb-7ae7b03a60e9
 using Distributions, Plots,PlutoUI
 
@@ -77,18 +67,22 @@ md"""
 -- 난수생성코드 (줄리아문법)
 """
 
-# ╔═╡ 239478fc-539d-48de-aba8-73dafcb4a6c9
-let 
-	p = 0.6 # 파라메터
-	N = 10 # 샘플수 
-	distribution = Bernoulli(p) # 분포오브젝트 자체를 정의 
-	X = rand(distribution,N) # N-samples 
-end
+# ╔═╡ 4932ae65-85cd-4109-8df0-612655c323be
+
+
+# ╔═╡ 0e0c7758-0b90-436d-a0ba-267d576a8769
+
 
 # ╔═╡ d39cc97b-f7ad-4e54-a6ed-0497d6346acf
 md"""
 ### B. 모수 $\to$ 히스토그램
 """
+
+# ╔═╡ 5eece865-edcb-4c8d-8a72-f6ee81b7017b
+# p 슬라이더
+
+# ╔═╡ f3018814-2557-4e88-bc1e-c7fa0e4a61aa
+# 히스토그램
 
 # ╔═╡ a302696f-3667-488c-a2c0-a95eca178801
 md"""
@@ -106,7 +100,10 @@ md"""
 """
 
 # ╔═╡ b402c405-c6f6-4f53-886b-05b12021b6c3
-rand(Bernoulli(0.37),100)
+
+
+# ╔═╡ f5d99bb6-94c8-4e58-a3e0-209fcde0f23d
+
 
 # ╔═╡ bba8738c-2d5c-4d40-bb3d-1a11a57fd9d6
 md"""
@@ -114,24 +111,21 @@ md"""
 """
 
 # ╔═╡ 74ab3bea-c2d2-4fe3-acd7-7de9b007b7ef
-rand(100) # 유니폼에서 100개의 샘플 추출
 
-# ╔═╡ 435bbf1e-531b-4a0e-9b69-3b756e2371b3
-rand(100) .< 0.37 # 0.37보다 작은것만 성공
+
+# ╔═╡ fc389dfa-2729-449b-8f61-d9cf80b165b9
+
 
 # ╔═╡ 27f8e253-01e9-44e6-bb7d-c1de2a8d37c9
 md"""
 -- 방법1,2의 비교
 """
 
-# ╔═╡ d0d7b51a-9edf-426b-b3e4-cded5f91e6c7
-let 
-	X = rand(Bernoulli(0.37),1000) # 방법1
-	Y = rand(1000) .< 0.37 # 방법2
-	p1 = histogram(X,label="X ~ 베르누이",color=1)
-	p2 = histogram(Y,label="X:=I(Y<p), Y~균등분포",color=2)
-	plot(p1,p2)
-end 
+# ╔═╡ 7ad2f7d2-a8f9-4865-9590-6ef4a55e6d24
+
+
+# ╔═╡ 0afa163a-de69-4244-b6ac-cffc16b1dd50
+
 
 # ╔═╡ 50a1bd66-19eb-41e4-a0e5-4d7369112a4d
 md"""
@@ -143,11 +137,11 @@ md"""
 `-` 분산의 그래프 
 """
 
-# ╔═╡ de89581f-47fd-48e9-a6d9-d22311700e83
-let 
-	p = 0:0.01:1 
-	plot(p, p -> p*(1-p))
-end 
+# ╔═╡ f357fd0d-7b84-4960-a2b4-261950dc5f12
+
+
+# ╔═╡ 2d7f48ce-3bc3-485f-bf14-da458b1495c3
+
 
 # ╔═╡ 78f8e0a8-e1aa-4c70-a460-a179456bd8fc
 md"""
@@ -183,35 +177,25 @@ md"""
 -- 난수생성코드 (줄리아문법)
 """
 
-# ╔═╡ 886524f9-447a-4661-adb3-f345314d4750
-let 
-	p,n = 0.6,30 # 파라메터
-	N = 10 # 샘플수 
-	distribution = Binomial(n,p) # 분포오브젝트 자체를 정의 
-	X = rand(distribution,N) # N-samples 
-end
+# ╔═╡ cf90f87b-01da-4fb2-833a-e82841b411e3
+
+
+# ╔═╡ 996f52a3-efdc-45b8-aea9-858b4def254c
+
 
 # ╔═╡ 9e1dd3ca-7a75-4db8-bed9-8885d0678ad6
 md"""
 ### B. 모수 $\to$ 히스토그램
 """
 
-# ╔═╡ ae9b80c4-eee7-4032-aa5e-ab195fb75722
-let
-	N = 100
-	histogram(rand(Bernoulli(p),N))
-end
+# ╔═╡ 8dde41a2-7164-4568-9cbe-c91f4e29bf5f
+# p 슬라이더
 
 # ╔═╡ 8ea5c74c-95a8-4980-a144-3f2cf1fb0453
-md"n = $(@bind n Slider(1:1:30, show_value = true, default=10))"
-#n = @bind n Slider(1:1:30, show_value = true)
+# n 슬라이더
 
 # ╔═╡ f5627b38-1bee-4c03-b83c-79b2632d19bd
-let
-	N = 100
-	histogram(rand(Binomial(n,p),N))
-	xlims!(0,30)
-end
+# 히스토그램
 
 # ╔═╡ 33d3125e-3d5f-467c-8488-2e82f9832e51
 md"""
@@ -229,7 +213,7 @@ md"""
 """
 
 # ╔═╡ 682bf567-0e62-475c-9078-6d873b6ac911
-rand(Binomial(8,0.37),100)
+# 
 
 # ╔═╡ 4b7789e6-ff5f-4000-b8ff-7d888d4e2e97
 md"""
@@ -237,13 +221,13 @@ md"""
 """
 
 # ╔═╡ a2ca922b-432a-4215-b51b-32db273852d1
-rand(Bernoulli(0.37),8)
+
 
 # ╔═╡ aa72e48f-9b28-46d8-9cbc-7cd0c1191879
-[rand(Bernoulli(0.37),8) for i in 1:100]
+
 
 # ╔═╡ e86e0e87-313a-4851-8cc3-00011d7cc252
-[rand(Bernoulli(0.37),8) for i in 1:100] .|> sum
+
 
 # ╔═╡ 56c84dde-be00-48c4-a074-6f90c39e7092
 md"""
@@ -251,16 +235,16 @@ md"""
 """
 
 # ╔═╡ 3d63d57c-a54f-4571-a514-c686d6415b70
-rand(8) # 유니폼에서 8개를 뽑는다. 
+
 
 # ╔═╡ ce2c1125-8114-4b74-a86a-2dacffd4a811
-rand(8) .< 0.37 # 성공확률이 0.37인 베르누이에서 8개의 샘플을 뽑은셈 
+
 
 # ╔═╡ 12d5fd97-7a1c-405f-87d6-fa5317636852
-[rand(8) .< 0.37 for i in 1:100]
+
 
 # ╔═╡ 87fcf7c3-0659-486f-9924-2978e2fe45b2
-[rand(8) .< 0.37 for i in 1:100] .|> sum # (n,p)=(8,0.37)인 이항분포에서 100개를 뽑은셈 
+
 
 # ╔═╡ 7a474be8-a3f0-4b7f-94ab-90eda88bfefc
 md"""
@@ -273,11 +257,7 @@ md"""
 """
 
 # ╔═╡ 7e1e6e3f-f13a-414d-9b12-b1a610f61444
-let 
-	n = 10 
-	p = 0:0.01:1 
-	plot(p, p-> n*p*(1-p))
-end 
+
 
 # ╔═╡ 6c429ac2-2cca-45a5-a3dc-e09f94275732
 md"""
@@ -307,12 +287,7 @@ md"""
 """
 
 # ╔═╡ 8f4f4c31-b997-4bf7-b8ee-77f5c1c90b75
-let 
-	λ = 5.3 # 파라메터
-	N = 10 # 샘플수 
-	distribution = Poisson(λ) # 분포오브젝트 자체를 정의 
-	X = rand(distribution,N) # N-samples 
-end
+#
 
 # ╔═╡ 3b13a7d5-d476-4d97-bfef-374bbf136b53
 md"""
@@ -337,14 +312,10 @@ md"""
 """
 
 # ╔═╡ 4ef09487-f353-4bf8-9add-a221e4801098
-λ = @bind λ Slider(0.1:0.1:30, show_value=true, default=1)
+# lambda 슬라이더
 
 # ╔═╡ fda3dd70-f632-4958-999d-d736ff52b1dd
-let
-	N = 100
-	histogram(rand(Poisson(λ),N))
-	xlims!(0,60)
-end
+# 히스토그램
 
 # ╔═╡ bbc73fe7-ba62-4b53-95e9-adb9e3c09e69
 md"""
@@ -357,7 +328,7 @@ md"""
 """
 
 # ╔═╡ 6c30a97e-34a1-488b-9da6-0f71e5b1e71b
-rand(Poisson(3),10)
+# 
 
 # ╔═╡ 0c6f0e07-b19f-4020-a3ab-e16bc3aaa68a
 md"""
@@ -371,19 +342,8 @@ md"""
 """
 
 # ╔═╡ 45841bb0-8881-48af-baae-ea5555a0482e
-let 
-	N = 1000
-	λ = 5
-	n = 7
-	p = λ/n
-	X = rand(Binomial(n,p),N)
-	Y = rand(Poisson(λ),N)
-	@show (n,p), λ
-	#--#
-	p1= histogram(X); xlims!(0,50); title!("(a) (포아송처럼 보일순 있지만) 이항분포")
-	p2= histogram(Y); xlims!(0,50); title!("(b) 포아송")
-	plot(p1,p2,layout=(2,1))	
-end
+# (a) (포아송분포처럼 보일 순 있지만) 이항분포
+# (b) 포아송분포
 
 # ╔═╡ 60321f75-4f38-4ef0-ba6a-023ead960ea4
 md"""
@@ -407,19 +367,7 @@ md"""
 """
 
 # ╔═╡ 813dd023-684f-49fe-a202-c01c58fe2530
-let 
-	N = 1000
-	λ = 6
-	n = 600
-	p = 0.01
-	X = [rand(Bernoulli(p),n) for i in 1:N] .|> sum
-	Y = rand(Poisson(λ),N)
-	@show (n,p), λ
-	#--#
-	p1= histogram(X); xlims!(0,50); title!("(a) 베르누이 -> 이항분포 ≈ 포아송")
-	p2= histogram(Y); xlims!(0,50); title!("(b) 포아송")
-	plot(p1,p2,layout=(2,1))	
-end
+#
 
 # ╔═╡ cdcf3ac3-4873-424e-a035-d3c5e7857e7f
 md""" 
@@ -465,14 +413,8 @@ md"""
 """
 
 # ╔═╡ 91ce515f-b508-462f-9d3a-5a14d634b41d
-let 
-	N= 10000
-	X = rand(Poisson(5),N) # 남자
-	Y = rand(Poisson(4.5),N) # 여자
-	p1 = X.+Y |> histogram ; title!("(a) Poi(5)+Poi(4.5)") ; xlims!(0,25)
-	p2 = rand(Poisson(9.5),N) |> histogram ; title!("(b) Poi(9.5)") ; xlims!(0,25)
-	plot(p1,p2,layout=(2,1))
-end
+# (a) Poi(5)+Poi(4.5)") ; xlims!(0,25)
+# (b) Poi(9.5)") ; xlims!(0,25)
 
 # ╔═╡ bde63d4b-aee5-41a1-9dde-f2777ff7879d
 md"""
@@ -485,17 +427,6 @@ md"""
 
 `2`. "균등분포 $\to$ 베르누이 $\to$ 이항분포 $\approx$ 포아송" 의 방법으로 $Poi(12)$의 분포를 근사하고 히스토그램을 비교해보라. 
 """
-
-# ╔═╡ 8dde41a2-7164-4568-9cbe-c91f4e29bf5f
-md"p = $(@bind p Slider(0.1:0.1:0.9, show_value=true, default=0.3))"
-#p = @bind p Slider(0.1:0.1:0.9, show_value=true, default=0.3)
-
-# ╔═╡ a0c5fa5c-4fef-4862-9ce2-895c03eba9d5
-# ╠═╡ disabled = true
-#=╠═╡
-md"p = $(@bind p Slider(0.1:0.1:0.9, show_value= true, default=0.3))"
-#p = @bind p Slider(0.1:0.1:0.9, show_value= true, default=0.3)
-  ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1713,27 +1644,32 @@ version = "1.4.1+1"
 # ╟─74dbc7ae-3293-495b-bb3c-e633bfa76c33
 # ╟─68ce3dd0-fa08-468d-bd54-1f2f383faab6
 # ╟─5d2716e2-c5d3-470e-8178-500f313172c4
-# ╠═239478fc-539d-48de-aba8-73dafcb4a6c9
+# ╠═4932ae65-85cd-4109-8df0-612655c323be
+# ╠═0e0c7758-0b90-436d-a0ba-267d576a8769
 # ╟─d39cc97b-f7ad-4e54-a6ed-0497d6346acf
-# ╠═a0c5fa5c-4fef-4862-9ce2-895c03eba9d5
-# ╠═ae9b80c4-eee7-4032-aa5e-ab195fb75722
+# ╠═5eece865-edcb-4c8d-8a72-f6ee81b7017b
+# ╠═f3018814-2557-4e88-bc1e-c7fa0e4a61aa
 # ╟─a302696f-3667-488c-a2c0-a95eca178801
 # ╟─b1eb6071-3da2-44ce-bc8e-7ad7f5910bb3
 # ╟─caa9606b-a2b9-4d2b-93c5-453f4525b051
 # ╠═b402c405-c6f6-4f53-886b-05b12021b6c3
+# ╠═f5d99bb6-94c8-4e58-a3e0-209fcde0f23d
 # ╟─bba8738c-2d5c-4d40-bb3d-1a11a57fd9d6
 # ╠═74ab3bea-c2d2-4fe3-acd7-7de9b007b7ef
-# ╠═435bbf1e-531b-4a0e-9b69-3b756e2371b3
+# ╠═fc389dfa-2729-449b-8f61-d9cf80b165b9
 # ╟─27f8e253-01e9-44e6-bb7d-c1de2a8d37c9
-# ╠═d0d7b51a-9edf-426b-b3e4-cded5f91e6c7
+# ╠═7ad2f7d2-a8f9-4865-9590-6ef4a55e6d24
+# ╠═0afa163a-de69-4244-b6ac-cffc16b1dd50
 # ╟─50a1bd66-19eb-41e4-a0e5-4d7369112a4d
 # ╟─1a2e694b-322d-48e4-b381-ab2cd277366f
-# ╠═de89581f-47fd-48e9-a6d9-d22311700e83
+# ╠═f357fd0d-7b84-4960-a2b4-261950dc5f12
+# ╠═2d7f48ce-3bc3-485f-bf14-da458b1495c3
 # ╟─78f8e0a8-e1aa-4c70-a460-a179456bd8fc
 # ╟─82b80b24-6fb2-43c4-a72c-d0c7b46c403c
 # ╟─c147f8a3-43b7-447c-9d15-fc6635af4221
 # ╟─d74a7832-9481-44fc-9e93-7c4e6dda5664
-# ╠═886524f9-447a-4661-adb3-f345314d4750
+# ╠═cf90f87b-01da-4fb2-833a-e82841b411e3
+# ╠═996f52a3-efdc-45b8-aea9-858b4def254c
 # ╟─9e1dd3ca-7a75-4db8-bed9-8885d0678ad6
 # ╠═8dde41a2-7164-4568-9cbe-c91f4e29bf5f
 # ╠═8ea5c74c-95a8-4980-a144-3f2cf1fb0453
