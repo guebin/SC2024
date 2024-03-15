@@ -15,7 +15,7 @@ macro bind(def, element)
 end
 
 # ╔═╡ 23dfa92f-61aa-4439-a33b-610fad44af83
-using Plots,PlutoUI,Statistics,Distributions,LaTeXStrings
+using Plots,PlutoUI,Statistics,Distributions
 
 # ╔═╡ d8caa196-1053-4393-8022-242a6ec72f0f
 md"""
@@ -297,14 +297,12 @@ md"""
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 Distributions = "~0.25.107"
-LaTeXStrings = "~1.3.1"
 Plots = "~1.39.0"
 PlutoUI = "~0.7.58"
 """
@@ -315,7 +313,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "edc56a5f804182eaf51ca82c8c032399f3bf927d"
+project_hash = "ec384906f97938401f0091b47d2b1652f10d2305"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
