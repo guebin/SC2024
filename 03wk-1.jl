@@ -443,7 +443,7 @@ md"""
 !!! info "이변량 정규분포와 지수분포의 관계"
 	``\begin{bmatrix} X \\ Y \end{bmatrix} \sim N({\bf 0},{\bf I})`` 일때 반지름제곱 ``R^2=X^2+Y^2``은 평균이 2인 지수분포를 따른다. 즉 
 	
-	- ``\begin{bmatrix} X \\ Y \end{bmatrix} \sim N({\bf 0},{\bf I}) \quad \Rightarrow \quad \begin{cases} X^2+Y^2 \sim Exp(2) \\ \Theta \sim U(0,2\pi) \end{cases} ``
+	- ``\begin{bmatrix} X \\ Y \end{bmatrix} \sim N\left (\begin{bmatrix} 0 \\ 0 \end{bmatrix}, \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}\right)\quad \Rightarrow \quad \begin{cases} X^2+Y^2 \sim Exp(2) \\ \Theta \sim U(0,2\pi) \end{cases} ``
 	
 	이는 서로 독립인 2개의 표준정규분포로 지수분포를 만들 수 있다는 사실을 의미한다. 또한 역으로 아래도 성립한다. 
 	
@@ -471,11 +471,11 @@ let
 	X = rand(Normal(0,1),5000)
 	Y = rand(Normal(0,1),5000)
 	xi,yi = X[i],Y[i]
-	R² = xi^2 + yi^2
+	R² = (@. X^2 + Y^2)
 	p1 = scatter(X,Y,alpha=0.1,label= "(X,Y), X~정규, Y~정규")
 	plot!([0,xi],[0,yi],linewidth=5,label="R² = X² + Y²")
-	title!("R² = $(R²)")
-	p2 = (X.^2 + Y.^2) |> x-> histogram(x,alpha=0.5, label="왼쪽그림의 반지름")
+	title!("R² = $(xi^2+yi^2)")
+	p2 = histogram(R², alpha=0.5, label="왼쪽그림의 반지름")
 	rand(Exponential(2),5000) |> x-> histogram!(x,alpha=0.5,label="평균2인 지수분포")
 	plot(p1,p2)
 end
@@ -493,16 +493,11 @@ md"""
 # ╔═╡ c565e07f-7bfb-4dfa-9b90-90171d6b5591
 let 
 	N = 10000
-	R = .√(2*rand(Exponential(1),N))
-	Θ = rand(N).*2π
-	T = (R,Θ) -> (R*cos(Θ), R*sin(Θ))
-	XY = T.(R,Θ) 
-	X = [XY[i][1] for i in 1:N]
-	Y = [XY[i][2] for i in 1:N]
-	#scatter(X,Y)
-	p1=histogram(X)
-	p2=randn(N) |> histogram
-	plot(p1,p2,layout=(2,1),xlim=(-5,5))
+	R = sqrt.(rand(Exponential(2),N))
+	Θ = rand(N)* 2π
+	X = (@. R*sin(Θ))
+	Y = (@. R*cos(Θ))
+	histogram(X)
 end 
 
 # ╔═╡ d31dbd9c-77c6-4c18-802a-c0967ed71cab

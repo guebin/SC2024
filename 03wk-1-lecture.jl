@@ -98,7 +98,7 @@ md"""
 """
 
 # ╔═╡ 51231561-64d1-4545-93d7-980bf77847ae
-# 슬라이더 바 생성
+md"θ = $(@bind θ Slider(0.01:0.01:10,show_value=true, default=1))"
 
 # ╔═╡ dea01e57-ca18-4a54-9631-8ca3046f4bd8
 md"""
@@ -173,7 +173,7 @@ md"""
 *Fig -- (a) 줄리아에서 기하분포 추출 (b) `mygeo`에서 기하분포 추출*
 """
 
-# ╔═╡ fae9c055-f4dd-4d6e-9dc7-ddd6a74fd905
+# ╔═╡ 299ac059-4980-4e84-a8ea-4ca13c15c6ea
 
 
 # ╔═╡ aef02ab9-4e12-4030-b428-f4aa36f65ba6
@@ -187,7 +187,7 @@ md"""
 """
 
 # ╔═╡ a27efaae-2793-4d8a-8dd6-4900caa80a4a
-
+# 평균이 1/4인 지수분포 생성
 
 # ╔═╡ fc1acb74-f856-47c7-b9e1-8d635f0e35ca
 md"""
@@ -221,6 +221,18 @@ md"""
 """
 
 # ╔═╡ db26ed1c-b01a-4f06-886d-4079cf2c139f
+let 
+	f(x) = exp(-x)
+	g(x) = 1/5 * exp(-1/5 * x)
+	p1 = plot(f)
+	p2 = plot(g)
+	plot(p1,p2)
+end 
+
+# ╔═╡ 6ac8ff76-ac8f-4fb7-a2ae-e999c118fafb
+
+
+# ╔═╡ 893a198d-1b8c-410c-bfa4-a46cf8afe228
 
 
 # ╔═╡ 7889eeaa-a7b5-4cdd-8b26-c0de2d2981e0
@@ -238,6 +250,18 @@ md"""
 """
 
 # ╔═╡ 23abf65d-276d-4a5d-ae70-b41255b35b48
+let 
+	F(x) = 1 - exp(-x)
+	G(x) = 1 - exp(-1/5 * x)
+	p1 = plot(F,0,10)
+	p2 = plot(G,0,10)
+	plot(p1,p2)
+end 
+
+# ╔═╡ f557e089-33e9-4c38-8e58-fc13d60c8eae
+
+
+# ╔═╡ 34635134-5f2c-4c27-8ca5-c8a420f00e85
 
 
 # ╔═╡ ac1c2222-04b5-4af0-a55c-723b1ad57dec
@@ -259,6 +283,9 @@ md"""
 # ╔═╡ 9c2f4080-9dd5-4f85-83f7-42bf3c719e6e
 
 
+# ╔═╡ 792474a8-4452-48b3-8b98-139859af5ce4
+
+
 # ╔═╡ e234260f-b0bd-4f0e-a5cd-bdc9afad041f
 md"""
 - 빨간색: $X \sim$ 균등분포
@@ -271,6 +298,9 @@ md"""
 """
 
 # ╔═╡ b5093fca-2946-41b2-a023-d4abc17c453c
+
+
+# ╔═╡ 90cf7b92-ca10-4193-867c-13df6312c052
 
 
 # ╔═╡ d7823cc8-231f-41b4-8a33-175cd42cb2b5
@@ -318,13 +348,14 @@ md"t= $@bind t Slider(0.01:0.01:5,show_value=true,default=1.0)"
 # ╔═╡ f455bad9-640f-4f6d-ab08-04d432681de9
 md"s= $@bind s Slider(0.01:0.01:5,show_value=true,default=2.0)" # 이미 기다린시간
 
-# ╔═╡ 6de8f87f-7f99-480a-b5f6-30f0a152f5a1
-let
-	N = 5000
-	X = rand(Exponential(1),N) 
-	println("P(X>t) = $(sum(X .> t) / N)")
-	println("P(X>t+s|X>s) = $(sum(X .> t+s) / sum(X .> s))")
-end
+# ╔═╡ e0bce0f4-00dd-4680-89e1-1ffcdf989127
+
+
+# ╔═╡ 2d26f87d-4f97-4a93-a1ce-7f99642db471
+
+
+# ╔═╡ 97ca3038-8ded-415d-9f9f-41e59199aa94
+
 
 # ╔═╡ 67edeecf-a93a-488d-844b-450866d9b43f
 md"""
@@ -335,13 +366,13 @@ md"""
 """
 
 # ╔═╡ 5452a29a-2e5a-47c2-804f-7a5cad2d943f
-let 
-	N = 5000
-	X = rand(Exponential(1),N)
-	println("P(X>1) = $(sum(X.>1)/N)")
-	println("P(X>2|X>1) = $(sum(X.>2)/sum(X.>1))")
-	println("P(X>3|X>2) = $(sum(X.>3)/sum(X.>2))")
-end
+
+
+# ╔═╡ 48697fb6-fc43-4163-abf1-2abc2f8db0d7
+
+
+# ╔═╡ b6c0f5a6-8dc1-4b39-806b-3caed0ee734f
+
 
 # ╔═╡ 72edfa85-7ce4-49ea-a11a-49d714536106
 md"""
@@ -362,15 +393,7 @@ md"""
 """
 
 # ╔═╡ ecbd2a2b-e527-436a-95a1-e62d85cd91b0
-let 
-	N = 1000
-	rand(Exponential(12),N) |> histogram
-	rand(Exponential(1),N).*12 |> histogram!
-	rand(Exponential(2),N).*6 |> histogram!
-	rand(Exponential(3),N).*4 |> histogram!
-	rand(Exponential(4),N).*3 |> histogram!
-	rand(Exponential(6),N).*2 |> histogram!
-end 
+
 
 # ╔═╡ 713adf30-a586-47c7-832c-5b6588203862
 md"""
@@ -387,7 +410,7 @@ md"""
 !!! info "이변량 정규분포와 지수분포의 관계"
 	``\begin{bmatrix} X \\ Y \end{bmatrix} \sim N({\bf 0},{\bf I})`` 일때 반지름제곱 ``R^2=X^2+Y^2``은 평균이 2인 지수분포를 따른다. 즉 
 	
-	- ``\begin{bmatrix} X \\ Y \end{bmatrix} \sim N({\bf 0},{\bf I}) \quad \Rightarrow \quad \begin{cases} X^2+Y^2 \sim Exp(2) \\ \Theta \sim U(0,2\pi) \end{cases} ``
+	- ``\begin{bmatrix} X \\ Y \end{bmatrix} \sim N\left (\begin{bmatrix} 0 \\ 0 \end{bmatrix}, \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}\right) \quad \Rightarrow \quad \begin{cases} X^2+Y^2 \sim Exp(2) \\ \Theta \sim U(0,2\pi) \end{cases} ``
 	
 	이는 서로 독립인 2개의 표준정규분포로 지수분포를 만들 수 있다는 사실을 의미한다. 또한 역으로 아래도 성립한다. 
 	
@@ -401,26 +424,29 @@ md"""
 -- 의미?
 """
 
-# ╔═╡ bb42b213-ac3d-4156-9d12-445e0702968b
-@bind i Slider(1:5000,show_value=true)
-
 # ╔═╡ 413f316d-13a4-4bda-9867-b2439be20f5c
 md"""
 *Fig -- 정규분포와 지수분포의 관계 (이 그림 외우세요!)*
 """
 
+# ╔═╡ 804432ef-f6c6-4502-87e8-1fa70ff8fe88
+@bind i Slider(1:1000,show_value=true)
+
 # ╔═╡ 1f99cbe2-e472-4916-80bc-ca290ca17f8b
 let 
 	Random.seed!(43052)
-	X = rand(Normal(0,1),5000)
-	Y = rand(Normal(0,1),5000)
-	xi,yi = X[i],Y[i]
-	R² = xi^2 + yi^2
-	p1 = scatter(X,Y,alpha=0.1,label= "(X,Y), X~정규, Y~정규")
-	plot!([0,xi],[0,yi],linewidth=5,label="R² = X² + Y²")
-	title!("R² = $(R²)")
-	p2 = (X.^2 + Y.^2) |> x-> histogram(x,alpha=0.5, label="왼쪽그림의 반지름")
-	rand(Exponential(2),5000) |> x-> histogram!(x,alpha=0.5,label="평균2인 지수분포")
+	N = 1000
+	X = randn(N)
+	Y = randn(N)
+	xi = X[i]
+	yi = Y[i]
+	R² = (@. X^2 + Y^2)
+	p1 = scatter(X,Y,alpha=0.1)
+	scatter!([0,xi],[0,yi])
+	plot!([0,xi],[0,yi],linewidth=2)
+	title!("R²=$(xi^2+yi^2)")
+	p2 = histogram(R²)
+	histogram!(rand(Exponential(2),N))
 	plot(p1,p2)
 end
 
@@ -437,17 +463,12 @@ md"""
 # ╔═╡ c565e07f-7bfb-4dfa-9b90-90171d6b5591
 let 
 	N = 10000
-	R = .√(2*rand(Exponential(1),N))
-	Θ = rand(N).*2π
-	T = (R,Θ) -> (R*cos(Θ), R*sin(Θ))
-	XY = T.(R,Θ) 
-	X = [XY[i][1] for i in 1:N]
-	Y = [XY[i][2] for i in 1:N]
-	#scatter(X,Y)
-	p1=histogram(X)
-	p2=randn(N) |> histogram
-	plot(p1,p2,layout=(2,1),xlim=(-5,5))
-end 
+	R = sqrt.(rand(Exponential(2),N))
+	Θ = rand(N)* 2π
+	X = (@. R*sin(Θ))
+	Y = (@. R*cos(Θ))
+	histogram(X)
+end
 
 # ╔═╡ d31dbd9c-77c6-4c18-802a-c0967ed71cab
 md"""
@@ -470,15 +491,7 @@ md"""
 """
 
 # ╔═╡ b944f877-0984-425b-b35c-09f1d71ffb05
-let 
-	N = 10000
-	U1 = rand(N)
-	U2 = rand(N)
-	X = @. √(-2log(1-U1))*cos(2π*U2)
-	p1 = histogram(X) 
-	p2 = histogram(randn(N))
-	plot(p1,p2,layout=(2,1),xlim=(-5,5))
-end 
+
 
 # ╔═╡ 6e41df13-d03c-4def-a5b1-2166c945a626
 md"""
@@ -1777,7 +1790,7 @@ version = "1.4.1+1"
 # ╟─69324599-c085-45f9-8e6b-359c2d1a163c
 # ╠═5d39448b-2e68-475d-a6d4-a06c3b6b347a
 # ╟─f3ee3d9c-4163-469a-b96f-8536a413025c
-# ╠═fae9c055-f4dd-4d6e-9dc7-ddd6a74fd905
+# ╠═299ac059-4980-4e84-a8ea-4ca13c15c6ea
 # ╟─aef02ab9-4e12-4030-b428-f4aa36f65ba6
 # ╟─6924193e-ea15-42e9-a702-8c6b0a224f35
 # ╠═a27efaae-2793-4d8a-8dd6-4900caa80a4a
@@ -1787,15 +1800,21 @@ version = "1.4.1+1"
 # ╟─ed777a37-6351-41a1-aed3-86412c9edaac
 # ╟─8ab6d3db-1037-4afb-9d30-d16675a1bffd
 # ╠═db26ed1c-b01a-4f06-886d-4079cf2c139f
+# ╠═6ac8ff76-ac8f-4fb7-a2ae-e999c118fafb
+# ╠═893a198d-1b8c-410c-bfa4-a46cf8afe228
 # ╟─7889eeaa-a7b5-4cdd-8b26-c0de2d2981e0
 # ╟─0e381090-dac3-48fe-adbb-f25e630d25bf
 # ╠═23abf65d-276d-4a5d-ae70-b41255b35b48
+# ╠═f557e089-33e9-4c38-8e58-fc13d60c8eae
+# ╠═34635134-5f2c-4c27-8ca5-c8a420f00e85
 # ╟─ac1c2222-04b5-4af0-a55c-723b1ad57dec
 # ╟─e4a7a78e-e2c5-4332-ba6e-efe0a87dd4c8
 # ╠═9c2f4080-9dd5-4f85-83f7-42bf3c719e6e
+# ╠═792474a8-4452-48b3-8b98-139859af5ce4
 # ╟─e234260f-b0bd-4f0e-a5cd-bdc9afad041f
 # ╟─cd6507ca-e30c-4c2c-8d4a-11b714db833e
 # ╠═b5093fca-2946-41b2-a023-d4abc17c453c
+# ╠═90cf7b92-ca10-4193-867c-13df6312c052
 # ╟─d7823cc8-231f-41b4-8a33-175cd42cb2b5
 # ╟─35760f05-e335-46cb-baea-83763f3f20d5
 # ╟─fbb0395a-9ea9-4eb6-a439-51aa13024a31
@@ -1803,9 +1822,13 @@ version = "1.4.1+1"
 # ╟─45a26fc2-3c96-4130-83b2-e75c39846264
 # ╠═86f22bd5-fb69-46cc-b53e-e1e04e99b5e2
 # ╠═f455bad9-640f-4f6d-ab08-04d432681de9
-# ╠═6de8f87f-7f99-480a-b5f6-30f0a152f5a1
+# ╠═e0bce0f4-00dd-4680-89e1-1ffcdf989127
+# ╠═2d26f87d-4f97-4a93-a1ce-7f99642db471
+# ╠═97ca3038-8ded-415d-9f9f-41e59199aa94
 # ╟─67edeecf-a93a-488d-844b-450866d9b43f
 # ╠═5452a29a-2e5a-47c2-804f-7a5cad2d943f
+# ╠═48697fb6-fc43-4163-abf1-2abc2f8db0d7
+# ╠═b6c0f5a6-8dc1-4b39-806b-3caed0ee734f
 # ╟─72edfa85-7ce4-49ea-a11a-49d714536106
 # ╟─b0fefc2a-a6b6-4615-8a94-98a328a09042
 # ╟─b66b5d63-9e49-4456-88c3-d47c48870fe9
@@ -1814,8 +1837,8 @@ version = "1.4.1+1"
 # ╟─e88df4b7-5352-49e4-be65-6be16f23f003
 # ╟─5d024a81-0244-4348-b6c6-e5e9f70545bd
 # ╟─6cf0f4d7-d8f4-4478-8b30-55fbeaeee150
-# ╠═bb42b213-ac3d-4156-9d12-445e0702968b
 # ╟─413f316d-13a4-4bda-9867-b2439be20f5c
+# ╠═804432ef-f6c6-4502-87e8-1fa70ff8fe88
 # ╠═1f99cbe2-e472-4916-80bc-ca290ca17f8b
 # ╟─1cbdb4a1-0ddb-41e3-8130-ee79005cc193
 # ╟─055bcec8-5d53-4888-bf46-50eef3a3e821
