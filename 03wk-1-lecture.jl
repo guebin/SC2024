@@ -106,7 +106,14 @@ md"""
 """
 
 # ╔═╡ 39235f8a-4e2d-4b26-82f4-d95a5c2167ed
-# 
+let 
+	N = 1000
+	p1 = histogram(rand(Exponential(θ), N))
+	xlims!(0,50)
+	f(x) = 1/θ * exp(-1/θ * x)
+	p2 = plot(f,0,50)
+	plot(p1,p2)
+end 
 
 # ╔═╡ 885941da-8604-4af0-8b69-6d564348f116
 md"""
@@ -167,14 +174,33 @@ md"""
 
 # ╔═╡ 5d39448b-2e68-475d-a6d4-a06c3b6b347a
 # 성공할때까지 시도하는 함수: 성공확률 -> 1회성공까지 시도한 횟수
+function mygeo(p)
+	u = rand()
+	if u < p
+		X = 1
+	else 
+		X = 1
+		while u > p
+			u = rand()
+			X = X+1
+		end
+	end
+	return X
+end
 
 # ╔═╡ f3ee3d9c-4163-469a-b96f-8536a413025c
 md"""
 *Fig -- (a) 줄리아에서 기하분포 추출 (b) `mygeo`에서 기하분포 추출*
 """
 
-# ╔═╡ 299ac059-4980-4e84-a8ea-4ca13c15c6ea
-
+# ╔═╡ 92278bfe-a9b9-4cd3-9fe1-4ff41423f3ed
+let
+	N = 10000
+	p = 1/2 
+	p1 = [mygeo(p) for i in 1:N] |> histogram; xlims!(0,15)
+	p2 = (rand(Geometric(p),N) .+ 1) |> histogram; xlims!(0,15)
+	plot(p1,p2)
+end
 
 # ╔═╡ aef02ab9-4e12-4030-b428-f4aa36f65ba6
 md"""
@@ -188,11 +214,22 @@ md"""
 
 # ╔═╡ a27efaae-2793-4d8a-8dd6-4900caa80a4a
 # 평균이 1/4인 지수분포 생성
+let 
+	N = 10000 # 샘플수
+	λ = 4  # 포아송 평균
+	θ = 1/λ  # 지수 평균
+	n = 1000  # 시간1을 n등분
+	Δt = 1/n # 쪼개어진 시간
+	p = λ/n
+	p1 = [mygeo(p) for i in 1:N] .* Δt |> histogram; xlims!(0,5)
+	p2 = rand(Exponential(1/4),N) |> histogram; xlims!(0,5)
+	plot(p1,p2)
+end
 
 # ╔═╡ fc1acb74-f856-47c7-b9e1-8d635f0e35ca
 md"""
 (방법3) inverse cdf method 
-- 이론적인 pdf를 알고 있다는 전제가 필요함. 
+- 이론적인 cdf를 알고 있다는 전제가 필요함. 
 - 자세하게 살펴보자. 
 """
 
@@ -223,17 +260,11 @@ md"""
 # ╔═╡ db26ed1c-b01a-4f06-886d-4079cf2c139f
 let 
 	f(x) = exp(-x)
-	g(x) = 1/5 * exp(-1/5 * x)
-	p1 = plot(f)
-	p2 = plot(g)
+	g(x) = 1/5 * exp(-1/5*x)
+	p1= plot(f,0,25)
+	p2= plot(g,0,25)
 	plot(p1,p2)
-end 
-
-# ╔═╡ 6ac8ff76-ac8f-4fb7-a2ae-e999c118fafb
-
-
-# ╔═╡ 893a198d-1b8c-410c-bfa4-a46cf8afe228
-
+end
 
 # ╔═╡ 7889eeaa-a7b5-4cdd-8b26-c0de2d2981e0
 md"""
@@ -251,18 +282,12 @@ md"""
 
 # ╔═╡ 23abf65d-276d-4a5d-ae70-b41255b35b48
 let 
-	F(x) = 1 - exp(-x)
-	G(x) = 1 - exp(-1/5 * x)
-	p1 = plot(F,0,10)
-	p2 = plot(G,0,10)
+	F(x) = 1- exp(-x)
+	G(x) = 1- exp(-1/5*x)
+	p1= plot(F,0,25)
+	p2= plot(G,0,25)
 	plot(p1,p2)
-end 
-
-# ╔═╡ f557e089-33e9-4c38-8e58-fc13d60c8eae
-
-
-# ╔═╡ 34635134-5f2c-4c27-8ca5-c8a420f00e85
-
+end
 
 # ╔═╡ ac1c2222-04b5-4af0-a55c-723b1ad57dec
 md"""
@@ -281,10 +306,20 @@ md"""
 """
 
 # ╔═╡ 9c2f4080-9dd5-4f85-83f7-42bf3c719e6e
-
-
-# ╔═╡ 792474a8-4452-48b3-8b98-139859af5ce4
-
+let 
+	F(x) = 1- exp(-x) 
+	G(x) = 1- exp(-1/5*x)
+	Finv(x) = -log(1-x)
+	Ginv(x) = -5log(1-x)
+	U = rand(5)
+	p1= plot(F,0,25)
+	scatter!([0,0,0,0,0],U)
+	scatter!(Finv.(U),[0,0,0,0,0])
+	p2= plot(G,0,25)
+	scatter!([0,0,0,0,0],U)
+	scatter!(Ginv.(U),[0,0,0,0,0])
+	plot(p1,p2)
+end
 
 # ╔═╡ e234260f-b0bd-4f0e-a5cd-bdc9afad041f
 md"""
@@ -298,10 +333,12 @@ md"""
 """
 
 # ╔═╡ b5093fca-2946-41b2-a023-d4abc17c453c
-
-
-# ╔═╡ 90cf7b92-ca10-4193-867c-13df6312c052
-
+let 
+	N = 5000
+	Finv(x) = -log(1-x)
+	rand(N) .|> Finv |> histogram
+	rand(Exponential(1),N) |> histogram!
+end
 
 # ╔═╡ d7823cc8-231f-41b4-8a33-175cd42cb2b5
 md"""
@@ -349,13 +386,15 @@ md"t= $@bind t Slider(0.01:0.01:5,show_value=true,default=1.0)"
 md"s= $@bind s Slider(0.01:0.01:5,show_value=true,default=2.0)" # 이미 기다린시간
 
 # ╔═╡ e0bce0f4-00dd-4680-89e1-1ffcdf989127
-
+#P(X>t) = P(X> t+s|X>s)
 
 # ╔═╡ 2d26f87d-4f97-4a93-a1ce-7f99642db471
-
-
-# ╔═╡ 97ca3038-8ded-415d-9f9f-41e59199aa94
-
+let 
+	N = 100000
+	X = rand(Exponential(5),N) 
+	println("P(X>t)=$(sum(X .> t)/N)")
+	println("P(X>t)=$(sum(X .> s+t)/sum(X .> s))")
+end
 
 # ╔═╡ 67edeecf-a93a-488d-844b-450866d9b43f
 md"""
@@ -364,12 +403,6 @@ md"""
 - 무기억성 = 과거는 중요하지 않음! 
 -  $P(X>1)=P(X>2|X>1)=P(X>3|X>2)=...$ 
 """
-
-# ╔═╡ 5452a29a-2e5a-47c2-804f-7a5cad2d943f
-
-
-# ╔═╡ 48697fb6-fc43-4163-abf1-2abc2f8db0d7
-
 
 # ╔═╡ b6c0f5a6-8dc1-4b39-806b-3caed0ee734f
 
@@ -393,7 +426,15 @@ md"""
 """
 
 # ╔═╡ ecbd2a2b-e527-436a-95a1-e62d85cd91b0
-
+let
+	N = 10000
+	rand(Exponential(12), N) |> histogram
+	rand(Exponential(1), N) .* 12 |> histogram!
+	rand(Exponential(2), N) .* 6 |> histogram!
+	rand(Exponential(3), N) .* 4 |> histogram!
+	rand(Exponential(4), N) .* 3 |> histogram!
+	rand(Exponential(6), N) .* 2 |> histogram!
+end 
 
 # ╔═╡ 713adf30-a586-47c7-832c-5b6588203862
 md"""
@@ -435,18 +476,14 @@ md"""
 # ╔═╡ 1f99cbe2-e472-4916-80bc-ca290ca17f8b
 let 
 	Random.seed!(43052)
-	N = 1000
-	X = randn(N)
-	Y = randn(N)
-	xi = X[i]
-	yi = Y[i]
-	R² = (@. X^2 + Y^2)
+	X = randn(5000)
+	Y = randn(5000)
+	xi,yi = X[i],Y[i]
 	p1 = scatter(X,Y,alpha=0.1)
 	scatter!([0,xi],[0,yi])
-	plot!([0,xi],[0,yi],linewidth=2)
-	title!("R²=$(xi^2+yi^2)")
-	p2 = histogram(R²)
-	histogram!(rand(Exponential(2),N))
+	plot!([0,xi],[0,yi],linewidth=3)
+	p2 = (@. X^2+Y^2) |> histogram
+	rand(Exponential(2),5000) |> histogram!
 	plot(p1,p2)
 end
 
@@ -462,13 +499,13 @@ md"""
 
 # ╔═╡ c565e07f-7bfb-4dfa-9b90-90171d6b5591
 let 
-	N = 10000
-	R = sqrt.(rand(Exponential(2),N))
-	Θ = rand(N)* 2π
-	X = (@. R*sin(Θ))
-	Y = (@. R*cos(Θ))
+	N = 5000 
+	R = .√(rand(Exponential(2),N))
+	Θ = rand(N) * 2π
+	X = (@. R*cos(Θ))
 	histogram(X)
-end
+	histogram!(randn(N))
+end 
 
 # ╔═╡ d31dbd9c-77c6-4c18-802a-c0967ed71cab
 md"""
@@ -491,7 +528,14 @@ md"""
 """
 
 # ╔═╡ b944f877-0984-425b-b35c-09f1d71ffb05
-
+let 
+	N = 5000 
+	U1 = rand(N)
+	U2 = rand(N)
+	X = (@. √(-2log(1-U1))*cos(2π*U2))
+	Y = (@. √(-2log(1-U1))*sin(2π*U2))
+	histogram(X)
+end 
 
 # ╔═╡ 6e41df13-d03c-4def-a5b1-2166c945a626
 md"""
@@ -523,7 +567,8 @@ md"""
 
 # ╔═╡ de13ff8f-98ec-450c-a609-79b9683afd03
 let 
-	rand(Exponential(1),10000) .|> (x -> 1-exp(-x)) |> histogram
+	F(x) = 1-exp(-x)
+	rand(Exponential(1),10000) .|> F |> histogram
 end
 
 # ╔═╡ cd1a64c8-51f7-423e-8fa2-d67351771482
@@ -1790,7 +1835,7 @@ version = "1.4.1+1"
 # ╟─69324599-c085-45f9-8e6b-359c2d1a163c
 # ╠═5d39448b-2e68-475d-a6d4-a06c3b6b347a
 # ╟─f3ee3d9c-4163-469a-b96f-8536a413025c
-# ╠═299ac059-4980-4e84-a8ea-4ca13c15c6ea
+# ╠═92278bfe-a9b9-4cd3-9fe1-4ff41423f3ed
 # ╟─aef02ab9-4e12-4030-b428-f4aa36f65ba6
 # ╟─6924193e-ea15-42e9-a702-8c6b0a224f35
 # ╠═a27efaae-2793-4d8a-8dd6-4900caa80a4a
@@ -1800,21 +1845,15 @@ version = "1.4.1+1"
 # ╟─ed777a37-6351-41a1-aed3-86412c9edaac
 # ╟─8ab6d3db-1037-4afb-9d30-d16675a1bffd
 # ╠═db26ed1c-b01a-4f06-886d-4079cf2c139f
-# ╠═6ac8ff76-ac8f-4fb7-a2ae-e999c118fafb
-# ╠═893a198d-1b8c-410c-bfa4-a46cf8afe228
 # ╟─7889eeaa-a7b5-4cdd-8b26-c0de2d2981e0
 # ╟─0e381090-dac3-48fe-adbb-f25e630d25bf
 # ╠═23abf65d-276d-4a5d-ae70-b41255b35b48
-# ╠═f557e089-33e9-4c38-8e58-fc13d60c8eae
-# ╠═34635134-5f2c-4c27-8ca5-c8a420f00e85
 # ╟─ac1c2222-04b5-4af0-a55c-723b1ad57dec
 # ╟─e4a7a78e-e2c5-4332-ba6e-efe0a87dd4c8
 # ╠═9c2f4080-9dd5-4f85-83f7-42bf3c719e6e
-# ╠═792474a8-4452-48b3-8b98-139859af5ce4
 # ╟─e234260f-b0bd-4f0e-a5cd-bdc9afad041f
 # ╟─cd6507ca-e30c-4c2c-8d4a-11b714db833e
 # ╠═b5093fca-2946-41b2-a023-d4abc17c453c
-# ╠═90cf7b92-ca10-4193-867c-13df6312c052
 # ╟─d7823cc8-231f-41b4-8a33-175cd42cb2b5
 # ╟─35760f05-e335-46cb-baea-83763f3f20d5
 # ╟─fbb0395a-9ea9-4eb6-a439-51aa13024a31
@@ -1824,10 +1863,7 @@ version = "1.4.1+1"
 # ╠═f455bad9-640f-4f6d-ab08-04d432681de9
 # ╠═e0bce0f4-00dd-4680-89e1-1ffcdf989127
 # ╠═2d26f87d-4f97-4a93-a1ce-7f99642db471
-# ╠═97ca3038-8ded-415d-9f9f-41e59199aa94
 # ╟─67edeecf-a93a-488d-844b-450866d9b43f
-# ╠═5452a29a-2e5a-47c2-804f-7a5cad2d943f
-# ╠═48697fb6-fc43-4163-abf1-2abc2f8db0d7
 # ╠═b6c0f5a6-8dc1-4b39-806b-3caed0ee734f
 # ╟─72edfa85-7ce4-49ea-a11a-49d714536106
 # ╟─b0fefc2a-a6b6-4615-8a94-98a328a09042

@@ -28,15 +28,15 @@ md"""
 """
 
 # ╔═╡ 20697867-c74a-4485-bb97-c6a31060669a
-# html"""
-# <div style="display: flex; justify-content: center;">
-# <div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-# <iframe src=
-# "
-# https://www.youtube.com/embed/playlist?list=PLQqh36zP38-xIz4hvPmHZz0g8g04MJ0xZ
-# "
-# width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-# """
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://www.youtube.com/embed/playlist?list=PLQqh36zP38-yvqFgfnd2pNImOOAffRkr2&si=bSQfPjJWpWiw6xRA
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
 
 # ╔═╡ 64e29d20-aaf5-4fa0-ad03-b283dac52dce
 md"""
@@ -107,12 +107,13 @@ md"""
 
 # ╔═╡ 39235f8a-4e2d-4b26-82f4-d95a5c2167ed
 let 
-	N = 10000
-	p1 = rand(Exponential(θ),N) |> histogram
-	xlims!(0,100)
-	p2 = plot(x-> 1/θ*exp(-1/θ*x), 0,100)
+	N = 1000
+	p1 = histogram(rand(Exponential(θ), N))
+	xlims!(0,50)
+	f(x) = 1/θ * exp(-1/θ * x)
+	p2 = plot(f,0,50)
 	plot(p1,p2)
-end
+end 
 
 # ╔═╡ 885941da-8604-4af0-8b69-6d564348f116
 md"""
@@ -157,19 +158,18 @@ md"""
 
 # ╔═╡ 5d39448b-2e68-475d-a6d4-a06c3b6b347a
 # 성공할때까지 시도하는 함수: 성공확률 -> 1회성공까지 시도한 횟수
-function mygeo(p) 
+function mygeo(p)
 	u = rand()
 	if u < p
 		X = 1
-		return X 
 	else 
 		X = 1
 		while u > p
-			u = rand() 
-			X = X + 1
+			u = rand()
+			X = X+1
 		end
-		return X
 	end
+	return X
 end
 
 # ╔═╡ f3ee3d9c-4163-469a-b96f-8536a413025c
@@ -199,21 +199,15 @@ md"""
 
 # ╔═╡ a27efaae-2793-4d8a-8dd6-4900caa80a4a
 let 
-	N = 10000
-	λ = 4 # 단위시간에 4번 방문 -> 평균이 1/4인 지수분포 
-	n = 1000 # 단위시간을 n으로 쪼갬
-	p = λ/n 
-	Δt = (1/n) 
-	#--# 
-	X = [mygeo(p) for k in 1:N] .* Δt 
-	#X = rand(Geometric(p),N) .* Δt 
-	#--#
-	@show 1/λ,Δt,1/p # 1/λ = 첫 이벤트까지 걸리는 시간, 1/p = 첫 성공까지 걸리는시간
-	p1 = histogram(X,labels= "기하분포 --> 지수분포",color=1)
-	xlims!(0,2) 
-	p2 = rand(Exponential(1/λ),N) |> x-> histogram(x,labels="지수분포",color=2)
-	xlims!(0,2)
-	plot(p1,p2,layout=(2,1))
+	N = 10000 # 샘플수
+	λ = 4  # 포아송 평균
+	θ = 1/λ  # 지수 평균
+	n = 1000  # 시간1을 n등분
+	Δt = 1/n # 쪼개어진 시간
+	p = λ/n
+	p1 = [mygeo(p) for i in 1:N] .* Δt |> histogram; xlims!(0,5)
+	p2 = rand(Exponential(1/4),N) |> histogram; xlims!(0,5)
+	plot(p1,p2)
 end 
 
 # ╔═╡ fc1acb74-f856-47c7-b9e1-8d635f0e35ca
@@ -249,12 +243,12 @@ md"""
 
 # ╔═╡ db26ed1c-b01a-4f06-886d-4079cf2c139f
 let 
-	p1= plot(x-> exp(-x), 0, 20)
-	title!("평균=1")
-	p2= plot(x-> 1/5* exp(-x/5),0,20)
-	title!("평균=5")
+	f(x) = exp(-x)
+	g(x) = 1/5 * exp(-1/5*x)
+	p1= plot(f,0,25)
+	p2= plot(g,0,25)
 	plot(p1,p2)
-end 
+end
 
 # ╔═╡ 7889eeaa-a7b5-4cdd-8b26-c0de2d2981e0
 md"""
@@ -272,10 +266,12 @@ md"""
 
 # ╔═╡ 23abf65d-276d-4a5d-ae70-b41255b35b48
 let 
-	p1 = plot(x -> 1-exp(-x), 0, 20); title!("평균=1")
-	p2 = plot(x -> 1-exp(-x/5), 0, 20); title!("평균=5")
+	F(x) = 1- exp(-x)
+	G(x) = 1- exp(-1/5*x)
+	p1= plot(F,0,25)
+	p2= plot(G,0,25)
 	plot(p1,p2)
-end 
+end
 
 # ╔═╡ ac1c2222-04b5-4af0-a55c-723b1ad57dec
 md"""
@@ -294,17 +290,19 @@ md"""
 """
 
 # ╔═╡ 9c2f4080-9dd5-4f85-83f7-42bf3c719e6e
-let
-	Finv(x) = -log(1-x) # 평균이 1인 지수분포 cdf의 역함수
-	Ginv(x) = -5log(1-x) # 평균이 5인 지수분포 cdf의 역함수
-	u = rand(5) # 5개의 샘플을 유니폼에서 추출
-	p1 = plot(x -> -exp(-x)+1,0,20, title="평균=1")
-	scatter!([0,0,0,0,0],u) 
-	scatter!(Finv.(u),[0,0,0,0,0])
-	p2 = plot(x -> -exp(-x/5)+1,0,20, title="평균=5")
-	scatter!([0,0,0,0,0],u)
-	scatter!(Ginv.(u),[0,0,0,0,0])
-	plot(p1, p2, layout=(1,2))	
+let 
+	F(x) = 1- exp(-x) 
+	G(x) = 1- exp(-1/5*x)
+	Finv(x) = -log(1-x)
+	Ginv(x) = -5log(1-x)
+	U = rand(5)
+	p1= plot(F,0,25)
+	scatter!([0,0,0,0,0],U)
+	scatter!(Finv.(U),[0,0,0,0,0])
+	p2= plot(G,0,25)
+	scatter!([0,0,0,0,0],U)
+	scatter!(Ginv.(U),[0,0,0,0,0])
+	plot(p1,p2)
 end
 
 # ╔═╡ e234260f-b0bd-4f0e-a5cd-bdc9afad041f
@@ -320,11 +318,11 @@ md"""
 
 # ╔═╡ b5093fca-2946-41b2-a023-d4abc17c453c
 let 
-	N = 10000
-	p1 = rand(N) .|> (x-> -5log(1-x)) |> histogram
-	p2 = rand(Exponential(5),N) |> histogram
-	plot(p1,p2)
-end 
+	N = 5000
+	Finv(x) = -log(1-x)
+	rand(N) .|> Finv |> histogram
+	rand(Exponential(1),N) |> histogram!
+end
 
 # ╔═╡ d7823cc8-231f-41b4-8a33-175cd42cb2b5
 md"""
@@ -468,15 +466,14 @@ md"""
 # ╔═╡ 1f99cbe2-e472-4916-80bc-ca290ca17f8b
 let 
 	Random.seed!(43052)
-	X = rand(Normal(0,1),5000)
-	Y = rand(Normal(0,1),5000)
+	X = randn(5000)
+	Y = randn(5000)
 	xi,yi = X[i],Y[i]
-	R² = (@. X^2 + Y^2)
-	p1 = scatter(X,Y,alpha=0.1,label= "(X,Y), X~정규, Y~정규")
-	plot!([0,xi],[0,yi],linewidth=5,label="R² = X² + Y²")
-	title!("R² = $(xi^2+yi^2)")
-	p2 = histogram(R², alpha=0.5, label="왼쪽그림의 반지름")
-	rand(Exponential(2),5000) |> x-> histogram!(x,alpha=0.5,label="평균2인 지수분포")
+	p1 = scatter(X,Y,alpha=0.1)
+	scatter!([0,xi],[0,yi])
+	plot!([0,xi],[0,yi],linewidth=3)
+	p2 = (@. X^2+Y^2) |> histogram
+	rand(Exponential(2),5000) |> histogram!
 	plot(p1,p2)
 end
 
@@ -492,12 +489,12 @@ md"""
 
 # ╔═╡ c565e07f-7bfb-4dfa-9b90-90171d6b5591
 let 
-	N = 10000
-	R = sqrt.(rand(Exponential(2),N))
-	Θ = rand(N)* 2π
-	X = (@. R*sin(Θ))
-	Y = (@. R*cos(Θ))
+	N = 5000 
+	R = .√(rand(Exponential(2),N))
+	Θ = rand(N) * 2π
+	X = (@. R*cos(Θ))
 	histogram(X)
+	histogram!(randn(N))
 end 
 
 # ╔═╡ d31dbd9c-77c6-4c18-802a-c0967ed71cab
@@ -522,13 +519,12 @@ md"""
 
 # ╔═╡ b944f877-0984-425b-b35c-09f1d71ffb05
 let 
-	N = 10000
+	N = 5000 
 	U1 = rand(N)
 	U2 = rand(N)
-	X = @. √(-2log(1-U1))*cos(2π*U2)
-	p1 = histogram(X) 
-	p2 = histogram(randn(N))
-	plot(p1,p2,layout=(2,1),xlim=(-5,5))
+	X = (@. √(-2log(1-U1))*cos(2π*U2))
+	Y = (@. √(-2log(1-U1))*sin(2π*U2))
+	histogram(X)
 end 
 
 # ╔═╡ 6e41df13-d03c-4def-a5b1-2166c945a626
@@ -561,7 +557,8 @@ md"""
 
 # ╔═╡ de13ff8f-98ec-450c-a609-79b9683afd03
 let 
-	rand(Exponential(1),10000) .|> (x -> 1-exp(-x)) |> histogram
+	F(x) = 1-exp(-x)
+	rand(Exponential(1),10000) .|> F |> histogram
 end
 
 # ╔═╡ cd1a64c8-51f7-423e-8fa2-d67351771482
@@ -1802,7 +1799,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─dbf8cdd6-7815-49f8-9dd6-5987000792ce
 # ╟─b7a1c25e-1aeb-4a57-80b5-a9ea4c5c0530
-# ╠═20697867-c74a-4485-bb97-c6a31060669a
+# ╟─20697867-c74a-4485-bb97-c6a31060669a
 # ╟─64e29d20-aaf5-4fa0-ad03-b283dac52dce
 # ╠═521890de-ab23-11ec-0c2f-2dcaee6dc1bc
 # ╠═4e838664-c6ea-4421-99e6-c585fd21cb12
