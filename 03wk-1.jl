@@ -376,16 +376,10 @@ sum(rand(Exponential(1),1000) .> 1)/1000
 
 # ╔═╡ 6de8f87f-7f99-480a-b5f6-30f0a152f5a1
 let
-	N = 500000
+	N = 5000
 	X = rand(Exponential(1),N) 
-	lhs = sum(X .> t) / N
-	rhs = sum(X .> t+s) / sum(X .> s)
-	md"""
-	-  $t=$ $t 
-	-  $s=$ $s
-	-  $P(X>t)=$ $(lhs)
-	-  $P(X>t+s|X>s)=$ $(rhs)
-	"""
+	println("P(X>t) = $(sum(X .> t) / N)")
+	println("P(X>t+s|X>s) = $(sum(X .> t+s) / sum(X .> s))")
 end
 
 # ╔═╡ 67edeecf-a93a-488d-844b-450866d9b43f
@@ -400,9 +394,9 @@ md"""
 let 
 	N = 5000
 	X = rand(Exponential(1),N)
-	@show sum(X.>1)/N
-	@show sum(X.>2)/sum(X.>1)
-	@show sum(X.>3)/sum(X.>2)
+	println("P(X>1) = $(sum(X.>1)/N)")
+	println("P(X>2|X>1) = $(sum(X.>2)/sum(X.>1))")
+	println("P(X>3|X>2) = $(sum(X.>3)/sum(X.>2))")
 end
 
 # ╔═╡ 72edfa85-7ce4-49ea-a11a-49d714536106
