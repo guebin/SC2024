@@ -280,6 +280,11 @@ p1 = plot(-5:0.1:5, -5:0.1:5, pdf, st=[:surface],legend=false);
 # ╔═╡ 1d7cd0ef-f5ce-4c16-98ff-eee960b1a1fa
 p2 = plot(-5:0.1:5, -5:0.1:5, pdf, st=[:contour],legend=false);
 
+# ╔═╡ 35d7a40b-0fdf-47e8-9788-6cbe723787da
+md"""
+*Fig -- 이변량 정규분포의 pdf*
+"""
+
 # ╔═╡ e0c2c56b-37ce-4389-9d1b-28ceae124e56
 plot(p1,p2)
 
@@ -1554,6 +1559,7 @@ version = "1.4.1+1"
 # ╠═5c63f745-e6a0-4aa7-9583-283afb76ef09
 # ╠═1d7cd0ef-f5ce-4c16-98ff-eee960b1a1fa
 # ╟─d18f6b25-b1ab-428f-b27a-3e947eedfb53
+# ╟─35d7a40b-0fdf-47e8-9788-6cbe723787da
 # ╠═e0c2c56b-37ce-4389-9d1b-28ceae124e56
 # ╟─d927f4a2-0986-4e9e-81b4-e0fb10097946
 # ╟─8ce4000d-f4b0-4cd5-9c85-2812834f1f56
