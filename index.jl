@@ -31,7 +31,8 @@ md"""
 md"""
 -- 수리통계학
 - [02wk-1](https://guebin.github.io/SC2024/02wk-1.html): 베르누이분포, 이항분포, 포아송분포
-- [03wk-1](https://guebin.github.io/SC2024/03wk-1.html): 지수분포, inverse cdf, 박스뮬러변환
+- [03wk-1](https://guebin.github.io/SC2024/03wk-1.html): 지수분포, 박스뮬러변환
+- [03wk-2](https://guebin.github.io/SC2024/03wk-2.html): 어느 사격수의 이야기
 """
 
 # ╔═╡ 22307a85-f60c-4888-b4ef-afb1d09d0253
