@@ -65,7 +65,7 @@ md"""
 """
 
 # ╔═╡ 6868263e-deb2-4642-8aa7-f2ba5c99b5e2
-bang = @bind i Slider(2:99, show_value=true)
+bang = @bind i Slider(2:99, show_value=true, default=54)
 
 # ╔═╡ 098b4ff7-f54d-4916-8d6d-944e4fee8138
 md"""
@@ -76,11 +76,10 @@ md"""
 begin
 	Random.seed!(1234)
 	N = 100
-	μ1 = 1.2 
-	μ2 = 3.4 
+	μ1, μ2 = 1.2, 3.4 
 	X = rand(Normal(μ1,1),N)
 	Y = rand(Normal(μ2,1),N)
-	p1 = scatter(X,Y,xlim=(-14,14),ylim=(-9,9),color="white",alpha=0.2)
+	front1 = scatter(X,Y,xlim=(-14,14),ylim=(-9,9),color="white",alpha=0.2)
 	scatter!([μ1],[μ2],color="red",markershape=:cross,markersize=10,alpha=0.5)
 	scatter!([X[i]],[Y[i]],color="blue",alpha=0.5) 
 end 
@@ -91,7 +90,10 @@ md"""
 """
 
 # ╔═╡ 788bcb74-a554-446a-9812-73f93c301e06
-radius = @bind r Slider(0.01:0.01:4,show_value=true,default=2.42)
+begin
+	radius = @bind r Slider(0.01:0.01:4,show_value=true,default=2.42)
+	bang,radius
+end
 
 # ╔═╡ 697827f2-ae9f-40b4-8c0f-ceca189fe4df
 md"""
@@ -99,14 +101,16 @@ md"""
 """
 
 # ╔═╡ 85126a91-396d-4d80-9729-bbd5a5a86c27
-begin
-	plot(p1)
-	θ=0:0.01:2π
-	plot!((@. r*cos(θ) + μ1) , (@. r*sin(θ) + μ2) , color="red")
-	inner = [(X[i]-μ1)^2+(Y[i]-μ2)^2 ≤ r^2 for i in 1:N]
-	prob= sum(inner)/N
-	println(md"반지름을 $(r)로 선택하면 약 $(prob) 정도의 점들이 원 안에 있다.")
-	scatter!(X[inner],Y[inner],alpha=0.1,color="red")
+let
+	plot(front1)
+	θ = 0:0.01:2π
+	x = @. r*cos(θ) + μ1
+	y = @. r*sin(θ) + μ2
+	plot!(x,y, color="red")
+	idx = @. (X-μ1)^2 + (Y-μ2)^2 < r^2
+	prob = sum(idx)/N
+	println("반지름을 $(r)로 선택하면 약 $(prob) 정도의 점들이 원 안에 있다.")
+	scatter!(X[idx],Y[idx],alpha=0.1,color="red")
 end 
 
 # ╔═╡ 1d47fbb6-4346-46ae-b0a4-6b5935f20457
@@ -133,7 +137,7 @@ md"""
 # ╔═╡ e5216df8-f19d-4752-9c5b-4f9e2ee21be0
 begin
 	@show i 
-	scatter([X[i]],[Y[i]],xlim=(-14,14),ylim=(-9,9),color="blue")
+	back1 = scatter([X[i]],[Y[i]],xlim=(-14,14),ylim=(-9,9),color="blue",alpha=0.5)
 end 
 
 # ╔═╡ d5580980-b069-48ec-bcfd-11c4b04c5fac
@@ -145,7 +149,7 @@ md"""
 paper = @bind side Radio(["앞면","뒷면"])
 
 # ╔═╡ 029a1a61-af8d-459a-ab47-3b30282130d0
-bang
+bang, paper
 
 # ╔═╡ cc1dcee5-da06-4163-94e7-6e9d4cde274f
 md"""
@@ -155,10 +159,9 @@ md"""
 # ╔═╡ e834d8df-e958-4f2c-87b0-625f4e5208bb
 begin
 	if side == "앞면" 
-		front = plot(p1)
+		plot(front1)
 	else 
-		Xi,Yi = X[i],Y[i]
-		back = scatter([Xi],[Yi],xlim=(-14,14),ylim=(-9,9),color="blue",alpha=0.5)
+		plot(back1)
 	end 
 end
 
@@ -181,15 +184,22 @@ md"""
 """
 
 # ╔═╡ c6987177-b969-4895-bfe0-2f6ee37844af
-begin
-	if side == "앞면" 
-		front
-	else 
-		plot(back)
-		plot!((@. r*cos(θ) + Xi), (@. r*sin(θ) + Yi),color="red",linestyle=:dash)
-		plot!([μ1],[μ2],color="red",markershape=:cross,markersize=10,alpha=0.5)
-	end 
-end
+let
+	θ = 0.01:0.01:2π
+	if side == "앞면"
+		plot(front1)
+		x = @. r*cos(θ) + μ1
+		y = @. r*sin(θ) + μ2
+		plot!(x,y,color="red")
+		inner_index = @. (X-μ1)^2 + (Y-μ2)^2 < r^2
+		scatter!(X[inner_index],Y[inner_index],color="red",alpha=0.1)
+	else
+		plot(back1)
+		x = @. r*cos(θ) + X[i]
+		y = @. r*sin(θ) + Y[i]
+		plot!(x,y,color="red",linestyle=:dash)
+	end
+end 
 
 # ╔═╡ c5797d9c-4904-451e-a0ab-e88b5f7048f7
 md"""
@@ -222,10 +232,10 @@ md"""
 # ╔═╡ aedddd64-d6a5-4dad-981d-cfb341e0cbe5
 begin
 	if side == "앞면" 
-		front2 = plot(front)
+		front2 = plot(front1)
 		scatter!([X[i-1],X[i+1]], [Y[i-1],Y[i+1]],color="blue",alpha=0.5)
 	else 
-		back2 = plot(back)
+		back2 = plot(back1)
 		scatter!([X[i-1],X[i+1]], [Y[i-1],Y[i+1]],color="blue",alpha=0.5)
 	end 
 end
@@ -252,17 +262,22 @@ md"""
 """
 
 # ╔═╡ 89410995-1808-43c2-80d6-72e7478b7361
-begin
+let
+	θ = 0.01:0.01:2π
 	X̄ = X[(i-1):(i+1)] |> mean
 	Ȳ = Y[(i-1):(i+1)] |> mean
 	if side == "앞면"
 		plot(front2)
 		scatter!([X̄],[Ȳ],color="blue",marker=:cross,markersize=7)
-		plot!((@. r*cos(θ) + μ1), (@. r*sin(θ) + μ2),color="red",linestyle=:dash)
+		x = @. r*cos(θ) + μ1
+		y = @. r*sin(θ) + μ2
+		plot!(x,y,color="red",linestyle=:dash)
 	else 
 		plot(back2)
 		scatter!([X̄],[Ȳ],color="blue",marker=:cross,markersize=7)
-		plot!((@. r*cos(θ) + X̄), (@. r*sin(θ) + Ȳ),color="red",linestyle=:dash)
+		x = @. r*cos(θ) + X̄
+		y = @. r*sin(θ) + Ȳ
+		plot!(x,y,color="red",linestyle=:dash)
 	end 
 end
 
@@ -273,16 +288,15 @@ md"""
 
 # ╔═╡ e27370e7-d16d-406f-ac76-884fbc15281c
 let 
-	rand(X,3), rand(Y,3) # X에서 3개의 샘플, Y에서 3개의 샘플
-	mean(rand(X,3)), mean(rand(Y,3)) # Xbar, Ybar
-	mean(rand(X,3))-μ1, mean(rand(Y,3))-μ2 # 중심을 0,0 으로 생각
-	R = [sqrt((mean(rand(X,3))-μ1)^2+(mean(rand(Y,3))-μ2)^2) for i in 1:10000] 
-	quantile(R,0.95)
+	X̄ = [rand(X,3) |> mean for i in 1:5000]
+	Ȳ = [rand(Y,3) |> mean for i in 1:5000]
+	R = @. sqrt((X̄-μ1)^2 + (Ȳ-μ2)^2)
+	quantile(R, 0.95)
 end 
 
 # ╔═╡ c2635994-77c7-40d8-83da-c7fa82f4aced
 md"""
-반지름은 1.41 정도가 적절한 것 같음.
+반지름은 1.42 정도가 적절한 것 같음.
 """
 
 # ╔═╡ 4182f7ac-b4ed-4097-a88c-c079370f3a15
@@ -292,10 +306,10 @@ md"""
 
 # ╔═╡ 21c211d1-9442-492f-8ee2-e31e72d485f4
 md"""
--- 노가다의 산물
+-- 이전에 찾아놓은 적절한 반지름
 
 - 1회사격: $r = 2.53$
-- 2회사격: $r = 1.41$
+- 2회사격: $r = 1.42$
 """
 
 # ╔═╡ a849aa2d-0c37-41e6-970c-f84562a0a456
@@ -363,8 +377,8 @@ let
 	N = 1000000
 	# (X̄,Ȳ) ~ N(0,1/3)
 	# (√3X̄,√3Ȳ) ~ N(0,1)
-	# 3X̄^2 + 3Ȳ^2 ~ Exp(2)
-	# X̄^2 + Ȳ^2 ~ Exp(2/3)
+	# 3X̄²+3Ȳ² ~ Exp(2)
+	# X̄²+Ȳ² ~ Exp(2/3)
 	R = rand(Exponential(2/3),N) .|> sqrt
 	quantile(R,0.95)
 end 
