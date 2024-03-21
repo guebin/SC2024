@@ -72,16 +72,16 @@ md"""
 *Fig -- 상상실험: 어느 사격수의 이야기*
 """
 
-# ╔═╡ 91b1af9c-c376-4963-814e-c6aa8cd6947f
+# ╔═╡ 19413b7a-0997-43e2-bf6a-846de60a79a6
 begin
 	Random.seed!(1234)
-	N = 100
-	μ1,μ2 = 1.2, 3.4 
-	X = rand(Normal(μ1,1),N)
-	Y = rand(Normal(μ2,1),N)
-	p1 = scatter(X,Y,xlims=(-14,14),ylims=(-9,9), color="white",alpha=0.2)
+	μ1 = 1.2 
+	μ2 = 3.4 
+	X = rand(Normal(μ1, 1),100)
+	Y = rand(Normal(μ2, 1),100)
+	front = scatter(X,Y,xlims=(-14,14),ylims=(-9,9),color="white",alpha=0.2)
+	scatter!([μ1],[μ2],color="red",markershape=:cross,markersize=10,alpha=0.5)
 	scatter!([X[i]],[Y[i]],color="blue",alpha=0.5)
-	scatter!([μ1],[μ2],color="red",markershape=:cross,markersize=5)
 end
 
 # ╔═╡ 0d4a0a5d-3d05-4dee-823d-990b5d03aa82
@@ -93,7 +93,7 @@ md"""
 begin
 	radius = @bind r Slider(0.01:0.01:4,show_value=true,default=2.42)
 	bang,radius
-end
+end 
 
 # ╔═╡ 697827f2-ae9f-40b4-8c0f-ceca189fe4df
 md"""
@@ -102,13 +102,14 @@ md"""
 
 # ╔═╡ 85126a91-396d-4d80-9729-bbd5a5a86c27
 let
-	plot(p1)
 	θ = 0.01:0.01:2π
 	x = @. r*cos(θ) + μ1
 	y = @. r*sin(θ) + μ2
+	plot(front)
+	idx = @. (X-μ1)^2 + (Y-μ2)^2 < r^2
+	println("원의 반지름이 $r 이면 그 원안에 $(idx |> mean) 의 점들이 있다.")
 	plot!(x,y,color="red")
-	inner_index = @. (X-μ1)^2 + (Y-μ2)^2 < r^2
-	scatter!(X[inner_index],Y[inner_index],color="red",alpha=0.1)
+	scatter!(X[idx],Y[idx],color="red",alpha=0.2)
 end
 
 # ╔═╡ 1d47fbb6-4346-46ae-b0a4-6b5935f20457
@@ -118,12 +119,10 @@ md"""
 
 # ╔═╡ 5bd901fe-b5fa-41a5-954c-a1fa9e532b54
 # quantile 을 이용하여 찾는 방법
-
-# ╔═╡ c7473fe1-325e-4770-982c-2b8f2ac20fe1
 let 
 	R = @. sqrt((X-μ1)^2 + (Y-μ2)^2)
-	quantile(R,0.95)
-end
+	quantile(R,0.95) 
+end 
 
 # ╔═╡ e11d2167-f5ea-4527-bd00-2b6e2ecd7afe
 md"""
@@ -136,7 +135,11 @@ md"""
 """
 
 # ╔═╡ 87cfc911-9b44-45f9-9b1f-7e25ac56d2f8
-p2 = scatter([X[i]],[Y[i]],xlims=(-14,14),ylims=(-9,9), color="blue",alpha=0.5)
+#
+begin
+	back = scatter([X[i]],[Y[i]],color="blue",alpha=0.5, xlims=(-14,14),ylims=(-9,9))
+	plot(front,back)
+end 
 
 # ╔═╡ d5580980-b069-48ec-bcfd-11c4b04c5fac
 md"""
@@ -155,13 +158,14 @@ md"""
 """
 
 # ╔═╡ e834d8df-e958-4f2c-87b0-625f4e5208bb
+#
 let
 	if side == "앞면"
-		plot(p1)
-	else
-		plot(p2)
+		plot(front)
+	else 
+		plot(back)
 	end
-end 
+end
 
 # ╔═╡ bee24bdf-0bbc-40f8-8fc6-25c2e7c99cc7
 md"""
@@ -182,22 +186,22 @@ md"""
 """
 
 # ╔═╡ c6987177-b969-4895-bfe0-2f6ee37844af
+#
 let
-	θ = 0.01:0.01:2π
 	if side == "앞면"
-		plot(p1)
+		plot(front)
+		θ = 0.01:0.01:2π
 		x = @. r*cos(θ) + μ1
 		y = @. r*sin(θ) + μ2
 		plot!(x,y,color="red")
-		inner_index = @. (X-μ1)^2 + (Y-μ2)^2 < r^2
-		scatter!(X[inner_index],Y[inner_index],color="red",alpha=0.1)
-	else
-		plot(p2)
+	else 
+		plot(back)
+		θ = 0.01:0.01:2π
 		x = @. r*cos(θ) + X[i]
-		y = @. r*sin(θ) + Y[i]
+		y = @. r*sin(θ) + Y[i]	
 		plot!(x,y,color="red",linestyle=:dash)
 	end
-end 
+end#
 
 # ╔═╡ c5797d9c-4904-451e-a0ab-e88b5f7048f7
 md"""
@@ -228,9 +232,18 @@ md"""
 """
 
 # ╔═╡ aedddd64-d6a5-4dad-981d-cfb341e0cbe5
-begin 
-	front2 = plot(p1)
-	scatter!([X[i-1],X[i+1]],[Y[i-1],Y[i+1]],color="blue",alpha=0.5)	
+# 
+begin
+	if side == "앞면"
+		front2 = plot(front)
+		scatter!([X[i-1]],[Y[i-1]],color="blue",alpha=0.5)
+		scatter!([X[i+1]],[Y[i+1]],color="blue",alpha=0.5)
+	else 
+		back2 = plot(back)
+		scatter!([X[i-1]],[Y[i-1]],color="blue",alpha=0.5)
+		scatter!([X[i+1]],[Y[i+1]],color="blue",alpha=0.5)		
+	end 
+
 end
 
 # ╔═╡ 5eed8ca7-a69d-4713-a6f5-964c52ef8ef8
@@ -257,25 +270,24 @@ md"""
 # ╔═╡ 89410995-1808-43c2-80d6-72e7478b7361
 #
 let
-	X̄ = (X[i-1]+X[i]+X[i+1])/3
-	Ȳ = (Y[i-1]+Y[i]+Y[i+1])/3
-	θ = 0.01:0.01:2π
-	
+	X̄ = 1/3*(X[i-1]+X[i]+X[i+1])
+	Ȳ = 1/3*(Y[i-1]+Y[i]+Y[i+1])
 	if side == "앞면"
 		plot(front2)
-		scatter!([X̄],[Ȳ],color="blue",alpha=1,markershape=:cross,markersize=6)
+		scatter!([X̄],[Ȳ],color="blue",markershape=:cross,markersize=5)
+		θ = 0.01:0.01:2π
 		x = @. r*cos(θ) + μ1
-		y = @. r*sin(θ) + μ2		
+		y = @. r*sin(θ) + μ2
 		plot!(x,y,color="red")
-	else
-		plot(p2)
-		scatter!([X[i-1]],[Y[i-1]],color="blue",alpha=0.5)
-		scatter!([X[i+1]],[Y[i+1]],color="blue",alpha=0.5)
-		scatter!([X̄],[Ȳ],color="blue",alpha=1,markershape=:cross,markersize=6)
+		
+	else 
+		plot(back2)
+		scatter!([X̄],[Ȳ],color="blue",markershape=:cross,markersize=5)
+		θ = 0.01:0.01:2π
 		x = @. r*cos(θ) + X̄
-		y = @. r*sin(θ) + Ȳ
+		y = @. r*sin(θ) + Ȳ
 		plot!(x,y,color="red")
-	end
+	end 
 end
 
 # ╔═╡ dfab5290-16a9-4c75-948c-fe417cacc67c
@@ -284,16 +296,20 @@ md"""
 """
 
 # ╔═╡ e27370e7-d16d-406f-ac76-884fbc15281c
-let 
-	X̄ = [rand(X,3) |> mean for i in 1:5000]
-	Ȳ = [rand(Y,3) |> mean for i in 1:5000]
-	quantile((@. sqrt((X̄-μ1)^2 + (Ȳ-μ2)^2)), 0.95)
-end 
+# 
 
 # ╔═╡ c2635994-77c7-40d8-83da-c7fa82f4aced
 md"""
 반지름은 1.42 정도가 적절한 것 같음.
 """
+
+# ╔═╡ 4e18fb49-c98a-4865-bf06-fa8d38da387c
+let 
+	X̄ = [rand(X,3) |> mean for i in 1:1000]
+	Ȳ = [rand(Y,3) |> mean for i in 1:1000]
+	R = @. sqrt((X̄-μ1)^2 + (Ȳ-μ2)^2)
+	quantile(R,0.95)
+end 
 
 # ╔═╡ 4182f7ac-b4ed-4097-a88c-c079370f3a15
 md"""
@@ -328,7 +344,7 @@ let
 	N = 1000000
 	X = rand(Normal(0,1),N)
 	Y = rand(Normal(0,1),N)
-	R = @. sqrt(X^2 + Y^2)
+	R = @. sqrt(X^2 +Y^2)
 	quantile(R,0.95)
 end 
 
@@ -338,11 +354,11 @@ md"""
 """
 
 # ╔═╡ da19175d-d206-4ffc-bbca-147d0c7b0ad0
-let
+let 
 	N = 1000000
 	X̄ = [rand(Normal(0,1),3) |> mean for i in 1:N]
 	Ȳ = [rand(Normal(0,1),3) |> mean for i in 1:N]
-	R = @. sqrt(X̄^2 + Ȳ^2)
+	R = @. sqrt(X̄^2 +Ȳ^2)
 	quantile(R,0.95)
 end 
 
@@ -357,10 +373,9 @@ md"""
 """
 
 # ╔═╡ c2f87c6b-aa21-4475-8718-ab6401a2ceb1
-#
 let 
 	N = 1000000
-	R = rand(Exponential(2), N) .|> sqrt
+	R = rand(Exponential(2),N) .|> sqrt
 	quantile(R,0.95)
 end 
 
@@ -370,17 +385,14 @@ md"""
 """
 
 # ╔═╡ 0958f5a6-2f08-40d1-9e51-d6a7a68d14c8
-#
 let 
 	N = 1000000
 	# (X̄,Ȳ) ~ N(0,1/3)
 	# (√3X̄,√3Ȳ) ~ N(0,1)
-	# 3X̄²+3Ȳ² ~ Exp(2)
 	# X̄²+Ȳ² ~ Exp(2/3)
-	R = rand(Exponential(2/3), N) .|> sqrt
+	R = rand(Exponential(2/3),N) .|> sqrt
 	quantile(R,0.95)
 end 
-
 
 # ╔═╡ f2021684-57e9-471a-83d8-17366d7c9f45
 md"""
@@ -393,11 +405,10 @@ md"""
 """
 
 # ╔═╡ ebac0ad4-48e6-4b3f-afeb-314fe3bb73d0
-#
 let 
 	a = quantile(Exponential(2),0.95)
-	println("Pr(R²<$a) = 0.95")
-	println("Pr(R<$(√a)) = 0.95")
+	println("Pr(R²< $a)=0.95")
+	println("Pr(R< $(√a))=0.95")
 end 
 
 # ╔═╡ 0e5663a6-f5c7-419a-a640-3c867c9516b4
@@ -406,11 +417,10 @@ md"""
 """
 
 # ╔═╡ e0a82e3a-3706-4c32-bd59-4f785cd0fbf9
-#
 let 
 	a = quantile(Exponential(2/3),0.95)
-	println("Pr(R²<$a) = 0.95")
-	println("Pr(R<$(√a)) = 0.95")
+	println("Pr(R²< $a)=0.95")
+	println("Pr(R< $(√a))=0.95")
 end 
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1631,14 +1641,13 @@ version = "1.4.1+1"
 # ╟─52221e87-cf6a-4d85-a154-31db0f8ffe2f
 # ╠═6868263e-deb2-4642-8aa7-f2ba5c99b5e2
 # ╟─098b4ff7-f54d-4916-8d6d-944e4fee8138
-# ╠═91b1af9c-c376-4963-814e-c6aa8cd6947f
+# ╠═19413b7a-0997-43e2-bf6a-846de60a79a6
 # ╟─0d4a0a5d-3d05-4dee-823d-990b5d03aa82
 # ╠═788bcb74-a554-446a-9812-73f93c301e06
 # ╟─697827f2-ae9f-40b4-8c0f-ceca189fe4df
 # ╠═85126a91-396d-4d80-9729-bbd5a5a86c27
 # ╟─1d47fbb6-4346-46ae-b0a4-6b5935f20457
 # ╠═5bd901fe-b5fa-41a5-954c-a1fa9e532b54
-# ╠═c7473fe1-325e-4770-982c-2b8f2ac20fe1
 # ╟─e11d2167-f5ea-4527-bd00-2b6e2ecd7afe
 # ╟─0919377a-3856-4bfe-bdc4-70cc545189ff
 # ╠═87cfc911-9b44-45f9-9b1f-7e25ac56d2f8
@@ -1667,6 +1676,7 @@ version = "1.4.1+1"
 # ╟─dfab5290-16a9-4c75-948c-fe417cacc67c
 # ╠═e27370e7-d16d-406f-ac76-884fbc15281c
 # ╟─c2635994-77c7-40d8-83da-c7fa82f4aced
+# ╠═4e18fb49-c98a-4865-bf06-fa8d38da387c
 # ╟─4182f7ac-b4ed-4097-a88c-c079370f3a15
 # ╟─21c211d1-9442-492f-8ee2-e31e72d485f4
 # ╟─a849aa2d-0c37-41e6-970c-f84562a0a456

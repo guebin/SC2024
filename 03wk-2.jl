@@ -28,15 +28,15 @@ md"""
 """
 
 # ╔═╡ 568cd729-19a6-4ced-b3a1-1934a5286ef1
-# html"""
-# <div style="display: flex; justify-content: center;">
-# <div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-# <iframe src=
-# "
-# https://www.youtube.com/embed/playlist?list=PLQqh36zP38-yvqFgfnd2pNImOOAffRkr2&si=bSQfPjJWpWiw6xRA
-# "
-# width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-# """
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://www.youtube.com/embed/playlist?list=PLQqh36zP38-y6vGmnvGMBv7e8f_oh9v1T&si=N9h6R-KT9G0GosNn
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
 
 # ╔═╡ 44eab8ed-57cc-4455-a07d-2336a8ce0769
 md"""
@@ -157,7 +157,7 @@ md"""
 """
 
 # ╔═╡ e834d8df-e958-4f2c-87b0-625f4e5208bb
-begin
+let
 	if side == "앞면" 
 		plot(front1)
 	else 
@@ -1620,7 +1620,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─082470a1-dc0f-4c49-8fc1-6ece916e691b
 # ╟─930a88d5-7598-4a1c-a9cc-ee7a81d41454
-# ╠═568cd729-19a6-4ced-b3a1-1934a5286ef1
+# ╟─568cd729-19a6-4ced-b3a1-1934a5286ef1
 # ╟─44eab8ed-57cc-4455-a07d-2336a8ce0769
 # ╠═73d9d46c-e70d-11ee-01d2-677d6138c02b
 # ╠═a276ddf6-9cfe-4890-a9f6-84492dbd337c
