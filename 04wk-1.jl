@@ -91,7 +91,7 @@ md"""
 """
 
 # ╔═╡ f93fc080-109c-4bfb-a411-d7fc15910c63
-
+randn(100)
 
 # ╔═╡ 11bb305e-3bca-4ae1-a002-d6b6097b378a
 md"""
@@ -99,7 +99,7 @@ md"""
 """
 
 # ╔═╡ f828ada9-f9e2-4e88-ba58-49b976ad5385
-
+rand(Normal(0,1),100)
 
 # ╔═╡ fc147261-7e7e-4939-b9fd-6e858282a159
 md"""
@@ -111,8 +111,9 @@ let
 	N = 10000
 	U = rand(N)
 	Θ = rand(N)*2π
-	R = (@. -log(1-U)*2) .|> sqrt
-	(@. R*sin(Θ)) |> histogram
+	R = @. √(-2log(1-U))
+	(@. R*cos(Θ)) |> histogram
+	randn(N) |> histogram!
 end 
 
 # ╔═╡ 61adb36f-e9d5-4532-ba07-363a4256925c
@@ -133,9 +134,9 @@ md"""
 
 # ╔═╡ ba87417f-19b1-4026-b287-81d07a8278c3
 let 
-	N = 10000 
-	n = 25 
-	[rand(Normal(7,5),n) |> mean for i in 1:N] |> histogram
+	N = 10000
+	n = 25
+	[rand(Normal(7,5), n) |> mean for i in 1:N] |> histogram
 	rand(Normal(7,5/√n),N) |> histogram!
 end 
 
@@ -146,32 +147,35 @@ md"""
 
 # ╔═╡ 950c0326-b5a0-4663-9473-1b3166313033
 md"""
-(풀이1)
+(풀이1) -- $\bar{X} \sim N(\mu,??)$ 정도만 알고 있을때..
 """
 
 # ╔═╡ dc2bce38-84af-4f1e-8f1e-95f0d7bb6196
-let
-	x̄ = 67.53 
-	N = 1000000 # 총100발 
+let 
+	# X̄ ~ N(μ,??)
+	# X̄-μ ~ N(0,??)
+	# 적당히 Y1,...,Y25 ~ N(0,10²) --> Ȳ 를 여러개 만든뒤에 대략적인 분산과 quauntile을 파악
+	N = 100000
 	σ = 10
 	n = 25
-	X̄ = [rand(Normal(0,σ),n)  |> mean for i in 1:N]
+	X̄ = [rand(Normal(0,σ),n) |> mean for i in 1:N]
 	c = quantile(X̄,0.975)
-	l,u = (x̄-c, x̄+c)
+	x̄ = 67.53
+	(x̄-c,x̄+c) 
 end 
 
 # ╔═╡ f1c6ce7f-b1f6-4b4a-a651-361013472515
 md"""
-(풀이2)
+(풀이2) -- $\bar{X} \sim N(\mu,\frac{\sigma^2}{n})$ 을 알 때.. 
 """
 
 # ╔═╡ 4a4f28fb-e931-46e8-91d3-8a9c97d01036
 let
-	x̄ = 67.53 
-	σ = 10
 	n = 25
-	c = quantile(Normal(0,σ/√n),0.975)
-	l,u = (x̄-c, x̄+c)
+	σ = 10 
+	c =  quantile(Normal(0,σ/√n),0.975)
+	x̄ = 67.53
+	(x̄-c,x̄+c) 	
 end 
 
 # ╔═╡ ceaf0765-7cf3-4496-8c93-ff912560ece8
@@ -192,7 +196,7 @@ md"""
 
 # ╔═╡ 647b13f5-b774-4c09-a2e2-3fd51649e7c9
 md"""
-## 4. 카이제곱분포 
+## 4. 카이제곱분포: $X \sim \chi^2(k)$
 """
 
 # ╔═╡ 2da28ddc-e957-4be5-97cd-a1f262c97beb
@@ -224,7 +228,13 @@ md"""
 !!! info "카이제곱분포의 대의적 정의"
 	표준정규분포를 제곱하여 합치면 카이제곱분포를 얻을 수 있다. 즉 아래가 성립한다. 
 
-	``X_1,X_2,\dots,X_k \overset{iid}{\sim} N(0,1) \quad \Rightarrow \quad X_1^2+\dots+X_k^2 \sim \chi^2(k)``
+	- ``X_1,X_2,\dots,X_k \overset{iid}{\sim} N(0,1) \Rightarrow X_1^2+\dots+X_k^2 \sim \chi^2(k)``
+
+	또한 자유도가 $k$인 카이제곱분포는 논리전개의 편의에 따라 $k$개의 표준정규분포의 합으로 쪼갤수도 있다. 이를 엄밀한 수학언어로 표현하면 아래와 같다. 
+
+	- ``\Big(X \sim \chi^2(k)\Big) \Rightarrow`` ``\Big(``there exists $X_1,\dots,X_k$ such that (1) `` X_1\dots,X_k \overset{iid}{\sim} N(0,1)`` and (2) $X_1^2+\dots+X_k^2 \overset{d}{=} X$ ``\Big)``
+
+	말이 좀 어려우니까 두번째 state는 한글로 이해하도록 하자.
 """
 
 
@@ -233,11 +243,8 @@ md"""
 -- 난수생성코드 (줄리아문법)
 """
 
-# ╔═╡ 630df2c6-02d5-44d5-b8ab-322d119ccba9
-let 
-	N = 1000
-	rand(Chisq(1),N)
-end
+# ╔═╡ b3b687dc-5848-4c72-84b3-b1a56a72ae4b
+rand(Chisq(4),1000)
 
 # ╔═╡ feb7377f-3069-4e08-a226-5ee4209ffc49
 md"""
@@ -248,10 +255,10 @@ md"""
 md"k = $(@bind k Slider(1:100, show_value=true, default=2))"
 
 # ╔═╡ 9b8ffcb8-e220-4168-9aaa-8c6116bf0750
-let 
+let
 	N = 10000
 	rand(Chisq(k),N) |> histogram
-end 
+end
 
 # ╔═╡ 5c8b45cf-3170-4653-9649-596fb5e39e25
 md"""
@@ -269,15 +276,15 @@ md"""
 """
 
 # ╔═╡ 37bc9363-021c-40c8-84bc-db734c77a00f
-rand(Chisq(4),1000)
+rand(Chisq(4),100)
 
 # ╔═╡ 5986d85a-514b-42e8-a2b1-64701c386b13
 md"""
 (방법2) -- 정규분포를 이용
 """
 
-# ╔═╡ 69603882-e35c-4937-b039-9425c1ab085a
-let 
+# ╔═╡ a4ea26e9-e769-40e7-bc34-90a6b50198b2
+let
 	N = 10000
 	[rand(Normal(0,1),4) .^2 |> sum for i in 1:N] |> histogram
 	rand(Chisq(4),N) |> histogram!
@@ -293,7 +300,7 @@ let
 	N = 10000
 	[rand(Exponential(2),2) |> sum for i in 1:N] |> histogram
 	rand(Chisq(4),N) |> histogram!
-end
+end 
 
 # ╔═╡ 0405d7ab-7903-4a7e-bf2c-90935c47259b
 md"""
@@ -303,20 +310,41 @@ md"""
 # ╔═╡ 26bb2d03-8915-49a6-a7a9-794bcd32ceff
 md"""
 !!! info "카이제곱분포의 합"
-	카이제곱분포의 합은 카이제곱분포가 된다.
+	카이제곱분포의 합은 카이제곱분포가 된다. 
+	- ``X \sim \chi^2(k),~ Y \sim \chi^2(l),~ X \bot Y \Rightarrow X+Y \sim \chi^2(k+l)``
+
+	(증명) -- 당연한 것이지만 한번쯤 엄밀하게 써보자..
+
+	카이제곱분포의 대의적정의에 따라 $X \sim \chi^2(k)$ 이라면, 아래를 만족하는 $X_1,\dots,X_{k} \overset{iid}{\sim} N(0,1)$이 반드시 존재한다. 
+	- ``X_1^2+X_2^2+\dots+X_k^2 \overset{d}{=} X``
+	또한 $Y \sim \chi^2(k_2)$ 라는 조건으로부터 아래를 만족하는 $Y_1,Y_2,\dots,Y_l \overset{iid}{\sim} N(0,1)$ 이 반드시 존재한다. 
+	- ``Y_1^2+Y_2^2+\dots+Y_l^2 \overset{d}{=} Y``
+	따라서 아래가 성립한다. 
+
+	$$X+Y \overset{d}{=} X_1^2+\dots+X_k^2+Y_1^2+\dots+Y_l^2 \sim \chi^2(k+l)$$
+
+	증명끝...
 """
 
-# ╔═╡ 6d95abea-5a47-4bd7-b608-8036c29d7f78
-let
+# ╔═╡ 8efa92df-e74a-4503-976a-ce1864ac1e58
+let 
 	N = 10000
 	rand(Chisq(5),N) |> histogram
-	rand(Chisq(2),N) .+ rand(Chisq(3),N) |> histogram!
-	rand(Chisq(2),N) .+ rand(Chisq(2),N) .+ rand(Chisq(1),N) |> histogram!
-end
+	rand(Chisq(2),N) + rand(Chisq(3),N) |> histogram!
+	rand(Chisq(2),N) + rand(Chisq(1),N) + rand(Chisq(2),N) |> histogram!
+end 
+
+# ╔═╡ 6d95abea-5a47-4bd7-b608-8036c29d7f78
+md"""
+### E. 표본분산의 분포
+"""
+
+# ╔═╡ 43cb6aba-563a-4868-9146-5d3d672c4f60
+# 생략
 
 # ╔═╡ 565e0a90-a46b-450f-b925-ce770baf73ee
 md"""
-## 5. 감마분포
+## 5. 감마분포 $X \sim \Gamma(\alpha,\beta)$ or $X \sim \Gamma(k,\theta)$ 
 """
 
 # ╔═╡ 76e207ac-c57f-4107-9985-bb8c75a082fd
@@ -345,15 +373,30 @@ md"""
 
 # ╔═╡ 64aa7a90-47c8-4ea1-86f8-f82c832265ff
 md"""
-!!! info "감마분포의 대의적정의"
+!!! info "감마분포의 대의적정의 (단, 여기에서는 편의상 k는 자연수로 가정)"
 	평균이 $\theta$인 지수분포를 $k$개 합치면 $\Gamma(k,\theta)$를 만들 수 있다. 즉 
-	``X_1,X_2,\dots,X_k \overset{iid}{\sim} Exp(\theta) \quad \Rightarrow \quad X_1+\dots+X_k \sim \Gamma(k,\theta)``
+	- ``X_1,X_2,\dots,X_k \overset{iid}{\sim} Exp(\theta) \Rightarrow X_1+\dots+X_k \sim \Gamma(k,\theta)``
+	이 성립한다. 또한 $X \sim \Gamma(k,\theta)$인 확률변수는 편의에 따라서 평균이 $\theta$인 지수분포의 합으로 쪼갤 수 있다. 이를 엄밀한 수학언어로 표현하면 아래와 같다. 
+	- ``\Big(X \sim \Gamma(k,\theta)\Big) \Rightarrow`` ``\Big(``there exists $X_1,\dots,X_k$ such that (1) `` X_1\dots,X_k \overset{iid}{\sim} Exp(\theta)`` and (2) $X_1+\dots+X_k\overset{d}{=} X$ ``\Big)``
+즉 아래가 성립한다.
 """
 
 # ╔═╡ 98a5f25b-bab9-4f94-be87-9b2bfcf0b02b
 md"""
 ### B. 모수 $\to$ 히스토그램
 """
+
+# ╔═╡ e048526a-61be-483e-9c7b-cc095ad18ec8
+md"α = $(@bind α Slider(0.1:0.1:50, show_value=true, default=1.00))"
+
+# ╔═╡ 7cfd5741-5e1d-4722-95ee-f5de2ad22806
+md"β = $(@bind β Slider(0.1:0.1:50, show_value=true, default=2.00))"
+
+# ╔═╡ a15c6438-895f-42bb-be3f-6829aba2fbb1
+let
+	N = 10000
+	rand(Gamma(α,β),N) |> histogram
+end 
 
 # ╔═╡ 1590ec0b-0ef2-475b-a063-0c87ceeb7346
 md"""
@@ -371,7 +414,7 @@ md"""
 """
 
 # ╔═╡ bc4dd2df-140c-4fdd-be8b-046f5d28b0bc
-rand(Gamma(3,2),100) 
+rand(Gamma(3,2),10000)
 
 # ╔═╡ 7ce71cc1-6c0e-4c8a-b8df-709e146988ae
 md"""
@@ -381,10 +424,9 @@ md"""
 # ╔═╡ 016535d5-2115-412f-b10b-afec34056b0a
 let 
 	N = 10000
-	rand(Gamma(3,2),N)  |> histogram
-	[rand(Exponential(2),3) |> sum for i in 1:N] |> histogram!
-	[rand(Exponential(1),3) .* 2 |> sum for i in 1:N] |> histogram! 
-end 
+	[rand(Exponential(2), 3) |> sum for i in 1:N] |> histogram
+	rand(Gamma(3,2),N) |> histogram!
+end
 
 # ╔═╡ 199f17e4-e824-4bad-b977-2f1bd0a2a915
 md"""
@@ -392,11 +434,10 @@ md"""
 """
 
 # ╔═╡ 0d4ce233-8a11-48d0-ac24-e21dcd1c6c74
-let
+let 
 	N = 10000
-	rand(Gamma(3,2),N) |> histogram
-	[rand(Chisq(2),3) |> sum for i in 1:N] |> histogram!
-	[rand(Chisq(6)) |> sum for i in 1:N] |> histogram!
+	rand(Chisq(6),N) |> histogram
+	rand(Gamma(3,2),N) |> histogram!
 end
 
 # ╔═╡ 922a9510-d9e9-4d46-86b0-d3d690fd66af
@@ -407,10 +448,9 @@ md"""
 # ╔═╡ 545cbc09-a261-4a03-92b8-20daa67a37d5
 let 
 	N = 10000
-	rand(Gamma(3,2),N)  |> histogram
-	[[rand(Normal(0,1),2) .^2 |> sum for i in 1:3] |> sum for i in 1:N] |> histogram!
-	[rand(Normal(0,1),6) .^2 |> sum for i in 1:N] |> histogram!
-end 
+	[randn(6).^2 |> sum for i in 1:N] |> histogram
+	rand(Gamma(3,2),N) |> histogram!
+end
 
 # ╔═╡ bc695b2d-430a-430c-be27-fd8d3416dd53
 md"""
@@ -420,8 +460,8 @@ md"""
 # ╔═╡ 4bd1f69f-9f1b-40c1-a8ed-bf210856d002
 md"""
 !!! info "감마분포의 합"
-	감마분포의 합은 다시 감마분포가 된다. (당연한 것 아닌가?)
-	``X \sim \Gamma(k_1,\theta), Y \sim \Gamma(k_2,\theta), X \bot Y \quad \Rightarrow \quad X+Y \sim \Gamma(k_1+k_2,\theta)``
+	감마분포의 합은 다시 감마분포가 된다. (당연한 것 아닌가? 이항분포/포아송/카이제곱도 그랬지?)
+	- ``X \sim \Gamma(k_1,\theta), Y \sim \Gamma(k_2,\theta), X \bot Y \Rightarrow X+Y \sim \Gamma(k_1+k_2,\theta)``
 """
 
 # ╔═╡ 5bd29989-6d2e-4d6d-9b71-751e20a0d635
@@ -430,10 +470,11 @@ md"""
 """
 
 # ╔═╡ e4301373-5364-411d-a416-83e00e8aeb50
-let
+let 
 	N = 10000
-	rand(Gamma(25,6),N) |> histogram
-	@. rand(Gamma(6,6),N)+rand(Gamma(25-6,6),N) |> histogram!
+	rand(Gamma(3,2),N) + rand(Gamma(7,2),N) |> histogram
+	rand(Gamma(10,2),N) |> histogram!
+	rand(Gamma(6,2),N) + rand(Gamma(3,2),N) + rand(Gamma(1,2),N)|> histogram!
 end 
 
 # ╔═╡ 15fd3aaa-12ae-4b84-ac6f-d712fae4322c
@@ -442,11 +483,10 @@ md"""
 """
 
 # ╔═╡ d61bd343-5b76-403a-88bb-912ce9cba8de
-let
+let 
 	N = 10000
-	rand(Gamma(1,2),N) |> histogram
-	@. rand(Gamma(1/2,2),N)+rand(Gamma(1/2,2),N) |> histogram!
-	@. rand(Gamma(1/3,2),N)+rand(Gamma(2/3,2),N) |> histogram!
+	rand(Gamma(1/2,2),N) + rand(Gamma(1/2,2),N) |> histogram
+	rand(Gamma(1,2),N) |> histogram!
 end 
 
 # ╔═╡ 8cf78026-6337-4220-b7cf-00ada2b11f3b
@@ -459,14 +499,22 @@ md"""
 !!! info "감마분포의 척도모수"
 	감마분포는 척도모수를 가진다. 즉 감마분포의 곱은 다시 감마분포를 따른다. 
 
-	`` X \sim \Gamma(k,\theta) \Rightarrow aX \sim \Gamma(k,a\theta)``
+	- `` X \sim \Gamma(k,\theta) \Rightarrow aX \sim \Gamma(k,a\theta)``
+
+	(증명) -- 당연해보이지만 그래도 써보자..
+
+	증명의 편의를 위해서 ``k``가 자연수라고 가정하자. (그렇지만 ``k``가 일반적인 양수일 경우에도 위의 정리는 성립함) $X \sim \Gamma(k,\theta)$ 이므로 아래를 만족하는 $X_1,\dots,X_k \overset{iid}{\sim} Exp(\theta)$ 가 반드시 존재한다. 
+	- ``X_1+\dots+X_k \overset{d}{=} X``
+	그런데 $aX \overset{d}{=} aX_1+\dots+aX_k$ 이고 $aX_1,\dots,aX_k \overset{iid}{\sim} Exp(a\theta)$ 이므로 $aX \sim \Gamma(k,a\theta)$ 이다. 
+	
 """
 
-# ╔═╡ 730ab252-d9ce-450d-9b08-a9eda1fad459
-let
-	histogram(rand(Gamma(50,6),10000))
-	histogram!(rand(Gamma(50,2)*3,10000))
-end
+# ╔═╡ cb031584-dd92-45b5-b430-a5b4e3b0bd31
+let 
+	N = 10000
+	rand(Gamma(3,6),N) |> histogram
+	rand(Gamma(3,2),N) *3 |> histogram!
+end 
 
 # ╔═╡ 55b8e7ec-566f-4cab-ac6e-9c869a0a1a77
 md"""
@@ -487,13 +535,6 @@ md"""
 	에 대한 궁금증을 해소해주기 때문이다. 감마분포는 그런면에서 고마운 분포라 할 수 있다.
 """
 
-# ╔═╡ 48622d47-5ab6-4860-8894-dd980637ec9d
-let
-	N = 10000
-	rand(Chisq(1),N) |> histogram
-	rand(Gamma(1/2,2),N) |> histogram! # 평균이 2인 지수분포를 반개 합친것..?
-end 
-
 # ╔═╡ e7181a1a-680e-4c2d-9eae-e99ba97da28b
 md"""
 ## 6. 2022 중간고사 중 일부문제 풀이
@@ -501,7 +542,9 @@ md"""
 
 # ╔═╡ 55af7bad-23ac-4d05-9114-56f48a67d7e3
 md"""
-### 3번문제
+### 3번문제 
+
+ref: <https://guebin.github.io/SC2022/0428.html>
 """
 
 # ╔═╡ 33e9901c-2f43-4f1b-b23b-a95d6ee3be01
@@ -512,8 +555,7 @@ md"""
 # ╔═╡ eea2582d-8058-421d-b7e7-b145d206c3c1
 let 
 	N = 10000
-	#[[(rand(Gamma(1/2,4),2) |> sum) / 2 for i in 1:28] |> sum for i in 1:N] |> histogram
-	[rand(Gamma(1/2,4),56) / 2 |> sum for i in 1:N] |> histogram
+	[rand(Gamma(1/2,4),56) * 1/2 |> sum for i in 1:N] |> histogram
 	rand(Chisq(56),N) |> histogram!
 end 
 
@@ -525,7 +567,7 @@ md"""
 # ╔═╡ 26281a56-4bf6-4f78-8ec1-5ed0440215f1
 let 
 	N = 10000
-	[(rand(Gamma(1/2,4),2) |> sum) / 8 for i in 1:N] |> histogram
+	[rand(Gamma(1/2,4),2)*1/8 |> sum for i in 1:N] |> histogram
 	rand(Exponential(1/2),N) |> histogram!
 end 
 
@@ -537,7 +579,7 @@ md"""
 # ╔═╡ 72752f17-9e25-4df0-a921-9f0f3efd4a75
 let 
 	N = 10000
-	[rand(Exponential(2),10) .* 2 |> sum for i in 1:N] |> histogram
+	[rand(Exponential(2),10)*2 |> sum for i in 1:N] |> histogram
 	rand(Gamma(10,4),N) |> histogram!
 end 
 
@@ -549,7 +591,7 @@ md"""
 # ╔═╡ e8db9189-d5d8-45ce-bcd0-2db851c1416d
 let 
 	N = 10000
-	[(rand(Chisq(1),2) |> sum) * 5 for i in 1:N] |> histogram
+	[(rand(Chisq(1),2) |> sum)*5 for i in 1:N] |> histogram
 	rand(Exponential(10),N) |> histogram!
 end 
 
@@ -561,7 +603,7 @@ md"""
 # ╔═╡ e22eff12-8eb7-4606-9fc5-d8af9773e798
 let 
 	N = 10000
-	[sum(-2 .* log.(1 .- rand(10))) for i in 1:N] |> histogram
+	[-2log.(1 .- rand(10)) |> sum for i in 1:N] |> histogram
 	rand(Gamma(10,2),N) |> histogram!
 end 
 
@@ -576,8 +618,8 @@ let
 	U = rand(N)
 	Θ = rand(N)*2π
 	R = @. √(-2log(1-U))
-	(@. R * sin(Θ)) |> histogram
-	rand(Normal(0,1),N) |> histogram!
+	(@. R*cos(Θ)) |> histogram
+	randn(N) |> histogram!
 end 
 
 # ╔═╡ 215fcb56-19bf-4e1f-a503-6cdf1a447566
@@ -586,11 +628,21 @@ md"""
 """
 
 # ╔═╡ e93bdce9-a351-4100-8905-114421ff04b8
-let
+let 
 	N = 10000
-	[(rand(Normal(0,1),2).^2 |> sum)/2 for i in 1:N] |> histogram
+	[(randn(2) .^2 |> sum)/2 for i in 1:N] |> histogram
 	rand(Exponential(1),N) |> histogram!
 end 
+
+# ╔═╡ 4702a0a5-9365-47ab-a581-06a56857a0b1
+md"""
+## 7. HW
+"""
+
+# ╔═╡ 4c7cf725-f82b-44a0-a15a-270ea39e12b9
+md"""
+``\bar{X}``는 분산이 ``10^2``, 평균이 $\mu$인 분포에서 추출한 크기가 ``25``인 확률표본의 평균이다. 관찰된 표본의 평균이 $\bar{x}=67.53$일때 $\mu$에 대한 87%신뢰구간을 구하여라.
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1837,27 +1889,32 @@ version = "1.4.1+1"
 # ╟─2a237161-ed30-4864-81e1-aa42b4b2f6b0
 # ╟─193d9769-7367-4ec8-9a0d-3c77bf7dcf03
 # ╟─29a7b3f6-cb89-4cc0-9d53-a77f97bff8a7
-# ╠═630df2c6-02d5-44d5-b8ab-322d119ccba9
+# ╠═b3b687dc-5848-4c72-84b3-b1a56a72ae4b
 # ╟─feb7377f-3069-4e08-a226-5ee4209ffc49
-# ╠═54971fab-6e21-495c-8611-664d5fc81cc4
+# ╟─54971fab-6e21-495c-8611-664d5fc81cc4
 # ╠═9b8ffcb8-e220-4168-9aaa-8c6116bf0750
 # ╟─5c8b45cf-3170-4653-9649-596fb5e39e25
 # ╟─ee77298b-8b3c-4517-8544-e936f3842808
 # ╟─7d72963a-8575-48ec-9254-7346c331de40
 # ╠═37bc9363-021c-40c8-84bc-db734c77a00f
 # ╟─5986d85a-514b-42e8-a2b1-64701c386b13
-# ╠═69603882-e35c-4937-b039-9425c1ab085a
+# ╠═a4ea26e9-e769-40e7-bc34-90a6b50198b2
 # ╟─d230f772-9f19-4e39-ad8e-2b4529143dbb
 # ╠═25344b2f-af1b-4f24-96ca-6e420f2109ea
 # ╟─0405d7ab-7903-4a7e-bf2c-90935c47259b
 # ╟─26bb2d03-8915-49a6-a7a9-794bcd32ceff
-# ╠═6d95abea-5a47-4bd7-b608-8036c29d7f78
+# ╠═8efa92df-e74a-4503-976a-ce1864ac1e58
+# ╟─6d95abea-5a47-4bd7-b608-8036c29d7f78
+# ╠═43cb6aba-563a-4868-9146-5d3d672c4f60
 # ╟─565e0a90-a46b-450f-b925-ce770baf73ee
 # ╟─76e207ac-c57f-4107-9985-bb8c75a082fd
 # ╟─8bfb5465-ecef-4395-a63b-afc769fd94d9
 # ╟─b54719fe-21fc-4240-b6db-a612bb6775db
 # ╟─64aa7a90-47c8-4ea1-86f8-f82c832265ff
 # ╟─98a5f25b-bab9-4f94-be87-9b2bfcf0b02b
+# ╟─e048526a-61be-483e-9c7b-cc095ad18ec8
+# ╟─7cfd5741-5e1d-4722-95ee-f5de2ad22806
+# ╠═a15c6438-895f-42bb-be3f-6829aba2fbb1
 # ╟─1590ec0b-0ef2-475b-a063-0c87ceeb7346
 # ╟─b0378fc8-54fd-48ba-b8ab-e314d01a847f
 # ╟─9c443f23-7522-4905-9960-98948a2a8cb7
@@ -1876,10 +1933,9 @@ version = "1.4.1+1"
 # ╠═d61bd343-5b76-403a-88bb-912ce9cba8de
 # ╟─8cf78026-6337-4220-b7cf-00ada2b11f3b
 # ╟─e7b95bc5-97f1-4b55-8fe6-756b8cb94da3
-# ╠═730ab252-d9ce-450d-9b08-a9eda1fad459
+# ╠═cb031584-dd92-45b5-b430-a5b4e3b0bd31
 # ╟─55b8e7ec-566f-4cab-ac6e-9c869a0a1a77
 # ╟─1a7eef93-5df9-4c2c-9260-9175d2594ab1
-# ╠═48622d47-5ab6-4860-8894-dd980637ec9d
 # ╟─e7181a1a-680e-4c2d-9eae-e99ba97da28b
 # ╟─55af7bad-23ac-4d05-9114-56f48a67d7e3
 # ╟─33e9901c-2f43-4f1b-b23b-a95d6ee3be01
@@ -1896,5 +1952,7 @@ version = "1.4.1+1"
 # ╠═e34d230f-d9b2-4c1c-a834-6876a657763a
 # ╟─215fcb56-19bf-4e1f-a503-6cdf1a447566
 # ╠═e93bdce9-a351-4100-8905-114421ff04b8
+# ╟─4702a0a5-9365-47ab-a581-06a56857a0b1
+# ╟─4c7cf725-f82b-44a0-a15a-270ea39e12b9
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
