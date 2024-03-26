@@ -424,11 +424,29 @@ md"""
 	``X \sim \Gamma(k_1,\theta), Y \sim \Gamma(k_2,\theta), X \bot Y \quad \Rightarrow \quad X+Y \sim \Gamma(k_1+k_2,\theta)``
 """
 
+# ╔═╡ 5bd29989-6d2e-4d6d-9b71-751e20a0d635
+md"""
+-- 예시1: $k_1, k_2$가 자연수일때
+"""
+
 # ╔═╡ e4301373-5364-411d-a416-83e00e8aeb50
 let
 	N = 10000
 	rand(Gamma(25,6),N) |> histogram
 	@. rand(Gamma(6,6),N)+rand(Gamma(25-6,6),N) |> histogram!
+end 
+
+# ╔═╡ 15fd3aaa-12ae-4b84-ac6f-d712fae4322c
+md"""
+-- 예시2: $k_1,k_2$는 사실 자연수가 아닐수도 있음.
+"""
+
+# ╔═╡ d61bd343-5b76-403a-88bb-912ce9cba8de
+let
+	N = 10000
+	rand(Gamma(1,2),N) |> histogram
+	@. rand(Gamma(1/2,2),N)+rand(Gamma(1/2,2),N) |> histogram!
+	@. rand(Gamma(1/3,2),N)+rand(Gamma(2/3,2),N) |> histogram!
 end 
 
 # ╔═╡ 8cf78026-6337-4220-b7cf-00ada2b11f3b
@@ -463,13 +481,17 @@ md"""
 	- ``\chi^2(4) \overset{d}{=} Exp(2) \bigoplus Exp(2) \overset{d}{=} \Gamma(2,2)``
 	- ``\chi^2(6) \overset{d}{=} Exp(2)  \bigoplus Exp(2)  \bigoplus Exp(2) \overset{d}{=} \Gamma(3,2)``
 	- ``\chi^2(k) \overset{d}{=} ... \overset{d}{=} \Gamma(\frac{k}{2},2)``
+	위에서 $k=1$일 경우를 해석하면 $\Gamma(\frac{1}{2},2)$은 자유도가 1인 카이제곱분포와 그 분포가 같게 되는데 이 사실을 기억하는 것이 매우 중요하다. (틀린 말이지만 지수분포를 반개쯤 더한것이라 해석하면 편리하다) 감마분포는 굉장히 테크니컬한 분포라고 생각하는데 
+	1. 카이제곱분포에서 자유도 $k$가 자연수라 아니라면 어떻게 될까? 
+	2. 사격수의 이야기에서 "평균이 2인 지수분포를 반개쯤만 생각" 하면 그 분포가 어떻게 될까? 
+	에 대한 궁금증을 해소해주기 때문이다. 감마분포는 그런면에서 고마운 분포라 할 수 있다.
 """
 
 # ╔═╡ 48622d47-5ab6-4860-8894-dd980637ec9d
 let
 	N = 10000
 	rand(Chisq(1),N) |> histogram
-	rand(Gamma(1/2,2),N) |> histogram!
+	rand(Gamma(1/2,2),N) |> histogram! # 평균이 2인 지수분포를 반개 합친것..?
 end 
 
 # ╔═╡ e7181a1a-680e-4c2d-9eae-e99ba97da28b
@@ -1848,7 +1870,10 @@ version = "1.4.1+1"
 # ╠═545cbc09-a261-4a03-92b8-20daa67a37d5
 # ╟─bc695b2d-430a-430c-be27-fd8d3416dd53
 # ╟─4bd1f69f-9f1b-40c1-a8ed-bf210856d002
+# ╟─5bd29989-6d2e-4d6d-9b71-751e20a0d635
 # ╠═e4301373-5364-411d-a416-83e00e8aeb50
+# ╟─15fd3aaa-12ae-4b84-ac6f-d712fae4322c
+# ╠═d61bd343-5b76-403a-88bb-912ce9cba8de
 # ╟─8cf78026-6337-4220-b7cf-00ada2b11f3b
 # ╟─e7b95bc5-97f1-4b55-8fe6-756b8cb94da3
 # ╠═730ab252-d9ce-450d-9b08-a9eda1fad459
