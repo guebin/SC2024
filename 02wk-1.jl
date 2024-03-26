@@ -183,8 +183,10 @@ md"""
 -- 대의적정의 ($\star$)
 
 !!! note "이항분포의 대의적 정의"
-	베르누이 분포를 합치면 이항분포가 되며, 이항분포는 베르누이 분포의 합으로 쪼갤 수 있다. 
-	 $X \sim B(n,p) \Leftrightarrow X \overset{d}{=} Z_1+Z_2+ \dots +Z_n$, where $Z_i \overset{iid}{\sim} Bernoulli(p)$
+	베르누이 분포를 합치면 이항분포가 된다. 
+	- ``X_1,X_2,\dots,X_n \overset{iid}{\sim} Bernoulli(p) \Rightarrow X_1+X_2+\dots+X_n  \sim B(n,p)``
+	또한 모수가 $(n,p)$인 이항분포는 논리전개의 편의에 따라 $n$개의 베르누이분포의 합으로 쪼갤수도 있다. 이를 엄밀한 수학언어로 표현하면 아래와 같다. 
+	- ``\Big(X \sim B(n,p)\Big) \Rightarrow`` ``\Big(``there exists $X_1,\dots,X_n$ such that (1) `` X_1\dots,X_n \overset{iid}{\sim} Bernoulli(p)`` and (2) $X_1+\dots+X_n \overset{d}{=} X$ ``\Big)``
 """
 
 # ╔═╡ d74a7832-9481-44fc-9e93-7c4e6dda5664
@@ -295,6 +297,18 @@ let
 	n = 10 
 	plot(p-> n*p*(1-p),0,1)
 end 
+
+# ╔═╡ d1c50d2c-06f9-49d8-9970-3cc85b61d9a6
+md"""
+### E. 이항분포의 특징
+"""
+
+# ╔═╡ 5314f864-f268-4072-b1a5-1899d8f7e3ea
+md"""
+!!! info "이항분포의 합"
+	이항분포의 합은 다시 이항분포가 된다. 
+	- ``X \sim B(n,p), Y\sim B(m,p),~ X \perp Y \Rightarrow X + Y \sim B(n+m,p)``
+"""
 
 # ╔═╡ 6c429ac2-2cca-45a5-a3dc-e09f94275732
 md"""
@@ -484,7 +498,7 @@ md"""
 md"""
 !!! note "이론: 포아송분포의 합"
 	포아송분포의 합은 다시 포아송분포가 된다. 
-	$X \sim Poi(\lambda_1), Y\sim Poi(\lambda_2),~ X \perp Y \Rightarrow X + Y \sim Poi(\lambda_1 + \lambda_2)$ 
+	- ``X \sim Poi(\lambda_1), Y\sim Poi(\lambda_2),~ X \perp Y \Rightarrow X + Y \sim Poi(\lambda_1 + \lambda_2)``
 """
 
 # ╔═╡ a6f03cd0-4eae-4521-a7d3-cd1a1ba61f4d
@@ -1783,6 +1797,8 @@ version = "1.4.1+1"
 # ╟─7a474be8-a3f0-4b7f-94ab-90eda88bfefc
 # ╟─d24f2b08-8997-4cc5-8f87-4a5cbd8290f2
 # ╠═7e1e6e3f-f13a-414d-9b12-b1a610f61444
+# ╟─d1c50d2c-06f9-49d8-9970-3cc85b61d9a6
+# ╟─5314f864-f268-4072-b1a5-1899d8f7e3ea
 # ╟─6c429ac2-2cca-45a5-a3dc-e09f94275732
 # ╟─883ceb79-7e3d-496a-b76c-78d0e586c1d9
 # ╟─fb89feac-7ee3-424c-8367-8f4ef577b12c

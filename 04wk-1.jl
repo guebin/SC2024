@@ -27,6 +27,17 @@ md"""
 ## 1. 강의영상
 """
 
+# ╔═╡ 21b6b5d7-b1e5-4dc9-a3fa-d3aaf38b4a91
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://youtube.com/embed/playlist?list=PLQqh36zP38-zrAQzbU1ByBEPQlDNUHiVl&si=ADCmq4tceYc6GAAn
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
+
 # ╔═╡ 9827f4b4-0b61-4ccb-a46e-05267e049413
 md"""
 ## 2. Imports
@@ -230,7 +241,7 @@ md"""
 
 	- ``X_1,X_2,\dots,X_k \overset{iid}{\sim} N(0,1) \Rightarrow X_1^2+\dots+X_k^2 \sim \chi^2(k)``
 
-	또한 자유도가 $k$인 카이제곱분포는 논리전개의 편의에 따라 $k$개의 표준정규분포의 합으로 쪼갤수도 있다. 이를 엄밀한 수학언어로 표현하면 아래와 같다. 
+	또한 자유도가 $k$인 카이제곱분포는 논리전개의 편의에 따라 $k$개의 표준정규분포의 제곱합으로 쪼갤수도 있다. 이를 엄밀한 수학언어로 표현하면 아래와 같다. 
 
 	- ``\Big(X \sim \chi^2(k)\Big) \Rightarrow`` ``\Big(``there exists $X_1,\dots,X_k$ such that (1) `` X_1\dots,X_k \overset{iid}{\sim} N(0,1)`` and (2) $X_1^2+\dots+X_k^2 \overset{d}{=} X$ ``\Big)``
 
@@ -309,7 +320,7 @@ md"""
 
 # ╔═╡ 26bb2d03-8915-49a6-a7a9-794bcd32ceff
 md"""
-!!! info "카이제곱분포의 합"
+!!! info "이론: 카이제곱분포의 합"
 	카이제곱분포의 합은 카이제곱분포가 된다. 
 	- ``X \sim \chi^2(k),~ Y \sim \chi^2(l),~ X \bot Y \Rightarrow X+Y \sim \chi^2(k+l)``
 
@@ -459,7 +470,7 @@ md"""
 
 # ╔═╡ 4bd1f69f-9f1b-40c1-a8ed-bf210856d002
 md"""
-!!! info "감마분포의 합"
+!!! info "이론: 감마분포의 합"
 	감마분포의 합은 다시 감마분포가 된다. (당연한 것 아닌가? 이항분포/포아송/카이제곱도 그랬지?)
 	- ``X \sim \Gamma(k_1,\theta), Y \sim \Gamma(k_2,\theta), X \bot Y \Rightarrow X+Y \sim \Gamma(k_1+k_2,\theta)``
 """
@@ -496,7 +507,7 @@ md"""
 
 # ╔═╡ e7b95bc5-97f1-4b55-8fe6-756b8cb94da3
 md"""
-!!! info "감마분포의 척도모수"
+!!! info "이론: 감마분포의 척도모수"
 	감마분포는 척도모수를 가진다. 즉 감마분포의 곱은 다시 감마분포를 따른다. 
 
 	- `` X \sim \Gamma(k,\theta) \Rightarrow aX \sim \Gamma(k,a\theta)``
@@ -542,7 +553,7 @@ md"""
 
 # ╔═╡ 55af7bad-23ac-4d05-9114-56f48a67d7e3
 md"""
-### 3번문제 
+### A. 3번문제 
 
 ref: <https://guebin.github.io/SC2022/0428.html>
 """
@@ -1851,6 +1862,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─dfe9d35a-5783-42a6-8bef-acbf9eb8b09f
 # ╟─712be31a-2167-4e0c-9813-055781e2dca8
+# ╟─21b6b5d7-b1e5-4dc9-a3fa-d3aaf38b4a91
 # ╟─9827f4b4-0b61-4ccb-a46e-05267e049413
 # ╠═335babdd-65bd-4fda-95d0-4c8165fd7adc
 # ╠═684a4b15-8434-4666-877c-30315b9a0258
