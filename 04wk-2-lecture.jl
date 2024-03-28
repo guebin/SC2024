@@ -28,15 +28,15 @@ md"""
 """
 
 # ╔═╡ 21b6b5d7-b1e5-4dc9-a3fa-d3aaf38b4a91
-html"""
-<div style="display: flex; justify-content: center;">
-<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-<iframe src=
-"
-https://youtube.com/embed/playlist?list=PLQqh36zP38-xilf5_iHSJ75zM0QSzp3Z9&si=8izCs2oL1Wfmek0I
-"
-width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-"""
+# html"""
+# <div style="display: flex; justify-content: center;">
+# <div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+# <iframe src=
+# "
+# https://youtube.com/embed/playlist?list=PLQqh36zP38-zrAQzbU1ByBEPQlDNUHiVl&si=ADCmq4tceYc6GAAn
+# "
+# width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+# """
 
 # ╔═╡ 9827f4b4-0b61-4ccb-a46e-05267e049413
 md"""
@@ -65,7 +65,7 @@ md"""
 """
 
 # ╔═╡ c99e8f69-279b-41cc-84ec-e3e9d2646116
-N = 14000605 # 평행세걔의 수
+N = 14000605 # 평행세계의 수
 
 # ╔═╡ 6b936fc9-221a-4683-9e6e-87151a22b5a3
 md"""
@@ -120,17 +120,8 @@ md"""
 	결심: 타임스톤을 가지고 14,000,605개의 평행세계를 모두 탐색하자. 그리고 참치 1박스를 사서 무게를 재자. 
 """
 
-# ╔═╡ 6da0d046-30c5-437d-8576-2bc1fe9cf32e
-let 
-	n = 30
-	X̄ = [rand(Normal(45,1),n) |> mean for i in 1:N]
-	x̄ = 44.50 
-	(X̄ .< x̄) |> mean
-end 
-
 # ╔═╡ 9d47b547-d4ec-4e4a-b0ba-5d22186e94b2
-# 0.003?? 
-# 세상이 날 버리지 않고서야 저 확률안에 내가 들어갈수가 있나?
+([rand(Normal(45,1),30) |> mean for i in 1:N] .≤ 44.50) |> mean
 
 # ╔═╡ 6e80b233-3090-456c-97f2-52a63408aa9a
 md"""
@@ -226,7 +217,7 @@ md"""
 
 # ╔═╡ 7236b7a9-7a30-4564-8e3b-d1977805789c
 md"""
--- 발을 뺴네.. 
+-- 발을 빼네.. 
 """
 
 # ╔═╡ 18a1b316-555b-4451-8bff-a68b63b9ac39
@@ -291,12 +282,6 @@ $$f(x)=\theta \exp(-x\theta)I(x>0)$$
 샘플을 사용하여 적절한 검정통계량을 설정하고 ``\theta``에 대한 95% 신뢰구간을 구하라.
 """
 
-# ╔═╡ 293dcaa7-f487-4e32-9db9-f1a83a67548c
-@bind n Slider(10:50, show_value=true, default = 20)
-
-# ╔═╡ eb1f4169-ea6f-4bc5-abda-a135123596c9
-@bind θ Slider(0.1:0.1:50, show_value=true, default = 5)
-
 # ╔═╡ 6a3b9861-cdca-44ed-87e6-98eb59e3c5d3
 md"""
 (풀이) 
@@ -321,31 +306,28 @@ $$P(L \leq \theta \leq U) = 0.95$$
 를 구하면 된다. 
 """
 
-# ╔═╡ d135a41c-3680-4eeb-8888-97488321d252
-let 
-	c1 = quantile(Chisq(2n),0.025)
-	c2 = quantile(Chisq(2n),0.975)
-	@show c1, c2
-	#L = c1/(2n*X̄)
-	#U = c2/(2n*X̄)
-end 
-
 # ╔═╡ ed041a86-e72d-436c-b558-3934d40f604a
 md"""
 (확인) -- 시뮬레이션으로 확인
 """
 
-# ╔═╡ 59d5144a-d826-4d93-ba85-d37d826510a5
+# ╔═╡ 293dcaa7-f487-4e32-9db9-f1a83a67548c
+@bind n Slider(10:50, show_value=true, default = 20)
+
+# ╔═╡ eb1f4169-ea6f-4bc5-abda-a135123596c9
+@bind θ₀ Slider(0.1:0.1:50, show_value=true, default = 5)
+
+# ╔═╡ e854a374-4514-4da9-8ec8-b047e3338b8a
 let 
-	X̄ = [rand(Exponential(1/θ),n) |> mean for i in 1:N]
-	histogram(2n*θ*X̄)
+	X̄ = [rand(Exponential(1/θ₀),n) |> mean for i in 1:N]
+	(@. X̄*2n*θ₀) |> histogram
 	rand(Chisq(2n),N) |> histogram!
-	#---#
+	#---# 
 	c1 = quantile(Chisq(2n),0.025)
 	c2 = quantile(Chisq(2n),0.975)
 	L = @. c1/(2n*X̄)
 	U = @. c2/(2n*X̄)
-	(@. L ≤ θ ≤ U) |> mean
+	(@. L≤ θ₀ ≤U) |> mean
 end 
 
 # ╔═╡ a563b622-2af4-4eb6-9906-f3ab552ebc5e
@@ -377,14 +359,16 @@ md"""
 ### B. 가설검정
 """
 
-# ╔═╡ 87b108b0-5438-4d75-ba12-53ec221ccd91
+# ╔═╡ 28448a22-d450-450a-9d9a-6162c86c1ba1
 ([rand(Bernoulli(0.5),5) |> sum for i in 1:N] .≥ 5) |> mean
 
-# ╔═╡ 4a9c7615-9e97-4353-9e52-a03ea9db88d3
+# ╔═╡ 87b108b0-5438-4d75-ba12-53ec221ccd91
 1/32
 
-# ╔═╡ 50be5bb0-e8d3-42a6-ad36-e6d75443f4f5
-# p-value 유의하시네여..
+# ╔═╡ 43a23c56-d243-4e37-9c92-6b52312acaf5
+md"""
+-- 그런데 저 진짜 그런거 아니에요...
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1593,7 +1577,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─dfe9d35a-5783-42a6-8bef-acbf9eb8b09f
 # ╟─712be31a-2167-4e0c-9813-055781e2dca8
-# ╟─21b6b5d7-b1e5-4dc9-a3fa-d3aaf38b4a91
+# ╠═21b6b5d7-b1e5-4dc9-a3fa-d3aaf38b4a91
 # ╟─9827f4b4-0b61-4ccb-a46e-05267e049413
 # ╠═335babdd-65bd-4fda-95d0-4c8165fd7adc
 # ╠═684a4b15-8434-4666-877c-30315b9a0258
@@ -1609,7 +1593,6 @@ version = "1.4.1+1"
 # ╟─b69981c2-8b35-48db-9fed-2adcaaaf025d
 # ╟─f69ae0d7-8b4b-4a4e-aa3c-888ae0afc338
 # ╟─d230f672-06e8-4ff7-8dcc-68a82d14f842
-# ╠═6da0d046-30c5-437d-8576-2bc1fe9cf32e
 # ╠═9d47b547-d4ec-4e4a-b0ba-5d22186e94b2
 # ╟─6e80b233-3090-456c-97f2-52a63408aa9a
 # ╟─7c52cd96-99ed-4a83-aa21-5b328da13d9d
@@ -1632,21 +1615,20 @@ version = "1.4.1+1"
 # ╟─9c4b1a11-c89d-42cb-96a5-7d12343414c0
 # ╟─98e15a72-5d4b-43a7-8ade-4283679e3fce
 # ╟─18aca041-f761-44f5-a76d-07f6c5e73d81
-# ╠═293dcaa7-f487-4e32-9db9-f1a83a67548c
-# ╠═eb1f4169-ea6f-4bc5-abda-a135123596c9
 # ╟─6a3b9861-cdca-44ed-87e6-98eb59e3c5d3
 # ╠═63e9161e-555b-494f-8b18-9c7b523c44a4
 # ╟─c96634e1-771e-4fb3-b050-1a45f6b92425
-# ╠═d135a41c-3680-4eeb-8888-97488321d252
 # ╟─ed041a86-e72d-436c-b558-3934d40f604a
-# ╠═59d5144a-d826-4d93-ba85-d37d826510a5
+# ╠═293dcaa7-f487-4e32-9db9-f1a83a67548c
+# ╠═eb1f4169-ea6f-4bc5-abda-a135123596c9
+# ╠═e854a374-4514-4da9-8ec8-b047e3338b8a
 # ╟─a563b622-2af4-4eb6-9906-f3ab552ebc5e
 # ╟─f847486f-26a2-4894-adde-b2bf63327af3
 # ╟─e6f7213b-06a3-4914-9ab4-8042f79b441b
 # ╟─2867848d-09bb-4eca-89f8-a17343bad360
 # ╟─a998d4e1-da30-41fb-a995-b2af660a7741
+# ╠═28448a22-d450-450a-9d9a-6162c86c1ba1
 # ╠═87b108b0-5438-4d75-ba12-53ec221ccd91
-# ╠═4a9c7615-9e97-4353-9e52-a03ea9db88d3
-# ╠═50be5bb0-e8d3-42a6-ad36-e6d75443f4f5
+# ╟─43a23c56-d243-4e37-9c92-6b52312acaf5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
