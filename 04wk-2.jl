@@ -4,6 +4,16 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ 335babdd-65bd-4fda-95d0-4c8165fd7adc
 using PlutoUI, Plots,Distributions
 
@@ -225,6 +235,11 @@ md"""
 ## 5. 가설검정의 형식논리 정리
 """
 
+# ╔═╡ 6cf94b74-0cc3-4fb1-9d20-8ad29fe6acff
+md"""
+### A. 가설검정의 기승전결
+"""
+
 # ╔═╡ 6f8103a1-4896-4ef4-96f6-16710d3dcf98
 md"""
 -- 검정을 진행하는 방법은 아래와 같다. 
@@ -242,8 +257,87 @@ md"""
 
 # ╔═╡ 9c4b1a11-c89d-42cb-96a5-7d12343414c0
 md"""
--- 다양한 분포를 공부하는 이유? 검정통계량의 이론적 분포를 잡아내기 위해서! + α
+-- 다양한 분포를 공부하는 이유? 
+
+- 유리한 검정통계량을 선택하고, 그 검정통계량의 이론적 분포를 잡아내기 위해서! 
+- 사실 다른 이유도 많아요 (손실함수를 이해한다든가??)
 """
+
+# ╔═╡ 98e15a72-5d4b-43a7-8ade-4283679e3fce
+md"""
+### B. 지수분포의 평균검정 (학생질문)
+"""
+
+# ╔═╡ 18aca041-f761-44f5-a76d-07f6c5e73d81
+md"""
+확률변수 $X_1,X_2,\dots,X_n$ 을 아래의 pdf에서 추출한 `iid` 랜덤샘플이라고 하자. 
+
+$$f(x)=\theta \exp(-x\theta)I(x>0)$$
+
+이러한 샘플을 이용하여 아래의 가설을 검정하고자 한다. 
+
+- ``H_0: \theta = \theta_0`` 
+- ``H_1: \theta \neq \theta_0`` 
+
+샘플을 사용하여 적절한 검정통계량을 설정하고 ``\theta``에 대한 95% 신뢰구간을 구하라.
+"""
+
+# ╔═╡ 293dcaa7-f487-4e32-9db9-f1a83a67548c
+@bind n Slider(10:50, show_value=true, default = 20)
+
+# ╔═╡ eb1f4169-ea6f-4bc5-abda-a135123596c9
+@bind θ Slider(0.1:0.1:50, show_value=true, default = 5)
+
+# ╔═╡ 6a3b9861-cdca-44ed-87e6-98eb59e3c5d3
+md"""
+(풀이) 
+"""
+
+# ╔═╡ 63e9161e-555b-494f-8b18-9c7b523c44a4
+# X1 ~ 평균이 1/θ인 지수분포
+# θX1 ~ 평균이 1인 지수분포 
+# 2θX1 ~ 평균이 2인 지수분포 = 자유도가 2인 카이제곱분포 
+# 2θX1+...+2θXn ~ 평균이 2인 지수분포를 n개 더함 = 자유도가 2n인 카이제곱분포
+
+# ╔═╡ c96634e1-771e-4fb3-b050-1a45f6b92425
+md"""
+``2n \theta \bar{X} \sim \chi^2(2n)`` 이므로 
+
+$$P(c_1 \leq 2n\theta \bar{X} \leq c_2) = 0.95$$
+
+를 성립하게 하는 적절한 $c_1$,$c_2$ 를 카이제곱분포에서 구한뒤에 
+
+$$P(L \leq \theta \leq U) = 0.95$$
+
+를 구하면 된다. 
+"""
+
+# ╔═╡ d135a41c-3680-4eeb-8888-97488321d252
+let 
+	c1 = quantile(Chisq(2n),0.025)
+	c2 = quantile(Chisq(2n),0.975)
+	@show c1, c2
+	#L = c1/(2n*X̄)
+	#U = c2/(2n*X̄)
+end 
+
+# ╔═╡ ed041a86-e72d-436c-b558-3934d40f604a
+md"""
+(확인) -- 시뮬레이션으로 확인
+"""
+
+# ╔═╡ 59d5144a-d826-4d93-ba85-d37d826510a5
+let 
+	X̄ = [rand(Exponential(1/θ),n) |> mean for i in 1:N]
+	histogram(2n*θ*X̄)
+	rand(Chisq(2n),N) |> histogram!
+	#---#
+	c1 = quantile(Chisq(2n),0.025)
+	c2 = quantile(Chisq(2n),0.975)
+	L = @. c1/(2n*X̄)
+	U = @. c2/(2n*X̄)
+	(@. L ≤ θ ≤ U) |> mean
+end 
 
 # ╔═╡ a563b622-2af4-4eb6-9906-f3ab552ebc5e
 md"""
@@ -1522,9 +1616,20 @@ version = "1.4.1+1"
 # ╟─18a1b316-555b-4451-8bff-a68b63b9ac39
 # ╟─024abb4b-89c6-42d0-9699-df7acbcb31c1
 # ╟─07502835-bcf1-4657-9a0b-ad3883e96a76
+# ╟─6cf94b74-0cc3-4fb1-9d20-8ad29fe6acff
 # ╟─6f8103a1-4896-4ef4-96f6-16710d3dcf98
 # ╟─498ff65c-a11f-4c75-8306-266067c68ba9
 # ╟─9c4b1a11-c89d-42cb-96a5-7d12343414c0
+# ╟─98e15a72-5d4b-43a7-8ade-4283679e3fce
+# ╟─18aca041-f761-44f5-a76d-07f6c5e73d81
+# ╠═293dcaa7-f487-4e32-9db9-f1a83a67548c
+# ╠═eb1f4169-ea6f-4bc5-abda-a135123596c9
+# ╟─6a3b9861-cdca-44ed-87e6-98eb59e3c5d3
+# ╠═63e9161e-555b-494f-8b18-9c7b523c44a4
+# ╟─c96634e1-771e-4fb3-b050-1a45f6b92425
+# ╠═d135a41c-3680-4eeb-8888-97488321d252
+# ╟─ed041a86-e72d-436c-b558-3934d40f604a
+# ╠═59d5144a-d826-4d93-ba85-d37d826510a5
 # ╟─a563b622-2af4-4eb6-9906-f3ab552ebc5e
 # ╟─f847486f-26a2-4894-adde-b2bf63327af3
 # ╟─e6f7213b-06a3-4914-9ab4-8042f79b441b
