@@ -34,6 +34,7 @@ md"""
 - [03wk-1](https://guebin.github.io/SC2024/03wk-1.html): 지수분포, 박스뮬러변환
 - [03wk-2](https://guebin.github.io/SC2024/03wk-2.html): 어느 사격수의 이야기
 - [04wk-1](https://guebin.github.io/SC2024/04wk-1.html): 정규분포, 카이제곱분포, 감마분포
+- [04wk-2](https://guebin.github.io/SC2024/04wk-2.html): 평행우주, 가설검정
 """
 
 # ╔═╡ 22307a85-f60c-4888-b4ef-afb1d09d0253
