@@ -72,11 +72,11 @@ md"""
 -- 예제2: $f(x)=\sin(x)$ 일때 $f'(0)$를 구하여라. 
 """
 
-# ╔═╡ 23e101e7-f084-4b76-92dc-16f3279ebccb
+# ╔═╡ 87e59c93-b1f5-4d3b-9ed9-4dffc4240544
 let 
 	f(x)=sin(x)
-	slope(f,0)
-end
+	slope(f,0) # #f'(0) (함수,값) -> 값
+end 
 
 # ╔═╡ f7dce87b-96c7-4ba0-be1e-749f9660fe92
 md"""
@@ -96,7 +96,7 @@ md"""
 -- 예비학습(피보나치수열): 아래와 같은 수열을 만드는 함수 $a(n)$을 구현하라. 
 
 - ``a_1 = a_2 = 1``
-- ``a_n = a_{n-1}+a_{n-2} \quad for n=3,4,5,\dots``
+- ``a_n = a_{n-1}+a_{n-2} \quad \text{ for } n=3,4,5,\dots``
 """
 
 # ╔═╡ fa6c250e-4117-4a27-ac5a-d6bbee4015e6
@@ -140,18 +140,18 @@ end
 
 # ╔═╡ 9c290538-06c7-4cf1-bc34-4b2a5f1c070a
 md"""
--- 예제3: $f(x)=\frac{e^x}{1+e^x}$ 를 m=1,2,3 에서 미분하고 플랏하라.
+-- 예제3: $f(x)=\frac{e^x}{1+e^x}$ 를 m번 미분하고 플랏하라. (m=0,1,2,3)
 """
 
-# ╔═╡ a32b550a-40c3-436e-87a9-029c3b342967
-let 
-	f(x) = exp(x) / (1+exp(x))
-	p1 = plot(f)
-	p2 = plot(∂(f))
-	p3 = plot(∂(f,2)) #plot(∂(∂(f)))
-	p4 = plot(∂(f,3)) 
+# ╔═╡ b7c44f2b-1d78-4523-a14f-8477443943cf
+let
+	f(x)=exp(x)/(1+exp(x))
+	p1= plot(f)
+	p2= plot(∂(f))
+	p3= plot(∂(f,2))
+	p4= plot(∂(f,3))
 	plot(p1,p2,p3,p4)
-end 
+end
 
 # ╔═╡ d6ec5b05-e0c3-4b5c-ae49-ab064022300a
 md"""
@@ -185,21 +185,21 @@ md"a=$(@bind a Slider(-4:0.5:4,show_value=true, default=0))"
 md"m=$(@bind m Slider(0:8,show_value=true, default=2))"
 
 # ╔═╡ d6522fca-052b-47b4-bcd1-59cfdf662de2
-f(x) = exp(x) / (1+exp(x))
+f(x) = exp(x)/(1+exp(x))
 
-# ╔═╡ 018a07ab-98a1-480d-8b49-926bb89992fe
-function f_approx(x)
-	coef = a .|> [∂(f,k) for k in 0:m] # [f(a),f'(a),f''(a),....]
-	basis = [(x-a)^k/factorial(k) for k in 0:m]
-	return sum(@. coef * basis)
-end
+# ╔═╡ bab28b86-8e42-4409-ac33-cdc09213a20e
+# function f_approx(x)
+# 	coef = a .|> [∂(f,k) for k in 0:m] # [f(a),f'(a),f''(a),....]
+# 	basis = [(x-a)^k/factorial(k) for k in 0:m]
+# 	return sum(@. coef * basis)
+# end
 
-# ╔═╡ 6b63040b-5201-4c1b-96cf-764ee951d81a
-begin
-	plot(f,ylim=(0,1),linestyle=:dash)
-	plot!(f_approx)
-	scatter!([a],[f(a)])
-end
+# ╔═╡ 5b7e5645-cfc0-4269-acf3-3607f5b3649f
+# let 
+# 	plot(f,ylim=(0,1))
+# 	plot!(f_approx,linestyle=:dash)
+# 	scatter!([a],[f(a)])
+# end
 
 # ╔═╡ a0764038-9f07-42d9-9683-6b3e4577a4ea
 md"""
@@ -230,13 +230,13 @@ md"""
 -- 그렇다면 이건?: ``X \sim N(0,0.1^2) \Rightarrow \sin(X) \sim ????``
 """
 
-# ╔═╡ 863ea789-8b4c-4fa1-bb81-42096e2d7f8e
+# ╔═╡ 4255680d-eafb-43e1-bb79-fc4362e3381f
 let 
 	N = 10000
 	X = rand(Normal(0,0.1),N)
 	histogram(sin.(X))
-	histogram!(X)	
-end 
+	histogram!(X)
+end
 
 # ╔═╡ 6d99e046-b5b5-4e6c-b879-c6b9aef8924b
 md"""
@@ -263,44 +263,85 @@ md"""
 -- 예제1: ``X \sim N(3,0.1^2) \Rightarrow \sqrt{X} \sim ????``
 """
 
-# ╔═╡ 62b93911-0f80-4e76-9fa1-b66b9de4e1ed
+# ╔═╡ 40b47dd0-63e5-4790-a730-139eda26f59d
 let 
+	N = 10000
 	g(x) = √x
+	X = rand(Normal(3,0.1),N)
 	plot(g)
-	X = rand(Normal(3,0.1),10000)
+	@show slope(g,3) # 0.2886751 정도의 기울기
 	Y = @. g(X)
-	println("slope at x=3: $(slope(g,3))")
 	scatter!(X,Y)
 end 
 
-# ╔═╡ 8fb5ea91-80a9-451f-99af-337d90c8d79e
+# ╔═╡ b5d9e64d-9b67-4f67-974e-94fcb36eb415
 let 
-	X = rand(Normal(3,0.1),10000)
-	histogram(@. √X)
-	histogram!(rand(Normal(√3,0.1*0.2886751),10000))
+	N = 10000
+	g(x) = √x
+	X = rand(Normal(3,0.1),N)
+	Y = @. g(X)
+	histogram(Y)
+	histogram!(rand(Normal(√3,0.1*0.2886751),N))
 end 
+
+# ╔═╡ 62b93911-0f80-4e76-9fa1-b66b9de4e1ed
+# let 
+# 	g(x) = √x
+# 	plot(g)
+# 	X = rand(Normal(3,0.1),10000)
+# 	Y = @. g(X)
+# 	println("slope at x=3: $(slope(g,3))")
+# 	scatter!(X,Y)
+# end 
+
+# ╔═╡ 8fb5ea91-80a9-451f-99af-337d90c8d79e
+# let 
+# 	X = rand(Normal(3,0.1),10000)
+# 	histogram(@. √X)
+# 	histogram!(rand(Normal(√3,0.1*0.2886751),10000))
+# end 
 
 # ╔═╡ c5b43bb9-875e-4c25-9fed-c7063780d12c
 md"""
 -- 예제2: ``X \sim N(2,0.1^2) \Rightarrow \frac{1}{X} \sim ????``
 """
 
-# ╔═╡ 76f54ec0-a8c9-4b6d-acbf-2c3682c4067c
+# ╔═╡ 5abae068-54cd-4eae-a669-3b2165f2eedd
 let 
-	g(x) = 1/x
+	g(x)=1/x 
 	plot(g,xlim=(1,3))
 	X = rand(Normal(2,0.1),10000)
 	Y = @. g(X)
-	println("slope at x=2: $(slope(g,2))")
+	println("기울기 = $(slope(g,2))")
 	scatter!(X,Y)
+	
 end 
 
-# ╔═╡ fdf40453-b48f-4d73-89b8-b3ec4baef097
+# ╔═╡ c92dd566-4337-4ba0-a626-cc29dd8af7bf
 let 
+	g(x)=1/x 
 	X = rand(Normal(2,0.1),10000)
-	histogram(@. 1/X)
-	histogram!(rand(Normal(1/2,0.1*0.25),10000))
+	Y = @. g(X)
+	histogram(Y)
+	histogram!(rand(Normal(0.5, 0.1*(0.25)),10000))
 end 
+
+# ╔═╡ 76f54ec0-a8c9-4b6d-acbf-2c3682c4067c
+# let 
+# 	g(x) = 1/x
+# 	plot(g,xlim=(1,3))
+# 	X = rand(Normal(2,0.1),10000)
+# 	Y = @. g(X)
+# 	println("slope at x=2: $(slope(g,2))")
+# 	scatter!(X,Y)
+# end 
+
+# ╔═╡ fdf40453-b48f-4d73-89b8-b3ec4baef097
+# let 
+# 	X = rand(Normal(2,0.1),10000)
+# 	histogram(@. 1/X)
+# 	histogram!(rand(Normal(1/2,0.1*0.25),10000))
+# end 
 
 # ╔═╡ bb4b1c3b-e43b-4aba-9ea6-a9b884d7d50a
 md"""
@@ -317,46 +358,85 @@ md"""
 -- 예제3: ``X \sim N(0.5,0.1^2) \Rightarrow \frac{1}{X} \sim ????``
 """
 
-# ╔═╡ 40640bd6-6021-4124-ac13-c22210365450
+# ╔═╡ 106d6e03-5a1c-4cf4-a20d-b2224609564e
 let 
-	g(x) = 1/x
+	g(x)=1/x 
 	plot(g,xlim=(0.05,3))
 	X = rand(Normal(0.5,0.1),10000)
 	Y = @. g(X)
-	println("slope at x=2: $(slope(g,0.5))")
+	println("기울기 = $(slope(g,0.5))")
 	scatter!(X,Y)
 end 
 
-# ╔═╡ d8868854-37dd-4f93-b5c1-5f46651dfa88
+# ╔═╡ 0ec806e5-414c-4fb6-8cdc-16c82147a802
 let 
-	println("우리의무기1 망했음")
+	g(x)=1/x 
 	X = rand(Normal(0.5,0.1),10000)
-	histogram(@. 1/X)
+	Y = @. g(X)
+	histogram(Y)
 	histogram!(rand(Normal(2,0.1*4),10000))
 end 
+
+# ╔═╡ 40640bd6-6021-4124-ac13-c22210365450
+# let 
+# 	g(x) = 1/x
+# 	plot(g,xlim=(0.05,3))
+# 	X = rand(Normal(0.5,0.1),10000)
+# 	Y = @. g(X)
+# 	println("slope at x=2: $(slope(g,0.5))")
+# 	scatter!(X,Y)
+# end 
+
+# ╔═╡ d8868854-37dd-4f93-b5c1-5f46651dfa88
+# let 
+# 	println("우리의무기1 망했음")
+# 	X = rand(Normal(0.5,0.1),10000)
+# 	histogram(@. 1/X)
+# 	histogram!(rand(Normal(2,0.1*4),10000))
+# end 
 
 # ╔═╡ cf848839-208f-4bd7-ade3-ad89ddf98e49
 md"""
 -- 예제4: ``X \sim N(0.5,0.01^2) \Rightarrow \frac{1}{X} \sim ????``
 """
 
-# ╔═╡ 53007f58-6ad4-4585-9948-dbbc39b3af2e
+# ╔═╡ 626d5b98-3366-4d9b-9be7-912f96084992
 let 
-	g(x) = 1/x
+	g(x)=1/x 
 	plot(g,xlim=(0.05,3))
 	X = rand(Normal(0.5,0.01),10000)
 	Y = @. g(X)
-	println("slope at x=2: $(slope(g,0.5))")
+	println("기울기 = $(slope(g,0.5))")
 	scatter!(X,Y)
 end 
 
-# ╔═╡ a7d3936e-95f8-40ae-b1c4-51d4623bc157
+# ╔═╡ c6fbbe4d-0c5d-4ed1-8799-77e641dd2139
 let 
-	println("이건 성공!")
+	g(x)=1/x 
+	plot(g,xlim=(0.05,3))
 	X = rand(Normal(0.5,0.01),10000)
-	histogram(@. 1/X)
+	Y = @. g(X)
+	histogram(Y)
 	histogram!(rand(Normal(2,0.01*4),10000))
 end 
+
+# ╔═╡ 53007f58-6ad4-4585-9948-dbbc39b3af2e
+# let 
+# 	g(x) = 1/x
+# 	plot(g,xlim=(0.05,3))
+# 	X = rand(Normal(0.5,0.01),10000)
+# 	Y = @. g(X)
+# 	println("slope at x=2: $(slope(g,0.5))")
+# 	scatter!(X,Y)
+# end 
+
+# ╔═╡ a7d3936e-95f8-40ae-b1c4-51d4623bc157
+# let 
+# 	println("이건 성공!")
+# 	X = rand(Normal(0.5,0.01),10000)
+# 	histogram(@. 1/X)
+# 	histogram!(rand(Normal(2,0.01*4),10000))
+# end 
 
 # ╔═╡ e9216ddb-a074-43db-ac00-1cab3a1d9e88
 md"""
@@ -384,6 +464,18 @@ $$\hat{p}=\bar{Z}$$
 md"""
 (풀이) -- CLT로 풀면됩니다
 """
+
+# ╔═╡ 6ed03358-e00f-454c-9d0c-6ef0715a1005
+# let
+# 	N = 10000
+# 	Z̄ = [rand(Bernoulli(p),n) |> mean for i in 1:N]
+# 	histogram(Z̄)
+	
+# 	#CLT# 
+# 	μ = p 
+# 	σ = √(p*(1-p)/n)
+# 	histogram!(rand(Normal(μ,σ),N))
+# end 
 
 # ╔═╡ 40c50ce6-e557-4560-bfc8-90cdab400d18
 md"""
@@ -433,19 +525,31 @@ md"""
 
 $$\hat{p}(1-\hat{p})=\bar{Z}(1-\bar{Z})$$
 
-로 추정한다고 하자. 이때  $\hat{p}(1-\hat{p})$의 점근분포를 활용하여 95% 신뢰구간을 구하라. $p=0.5$일 경우 신뢰구간이 어떻게 되는가? 왜 그런지 이유를 설명하라. 
+로 추정한다고 하자. 이때  $\hat{p}(1-\hat{p})$의 점근분포를 활용하여 95% 신뢰구간을 구하라. $p=0.5$일 경우 무슨일이 생기는가? 왜 그런지 이유를 설명하라. 
 """
 
-# ╔═╡ 6ed03358-e00f-454c-9d0c-6ef0715a1005
-let
-	N = 10000
-	Z̄ = [rand(Bernoulli(p),n) |> mean for i in 1:N]
+# ╔═╡ 27e08b26-8408-466a-a2c3-4643e9040b13
+let 
+	Z̄ = [rand(Bernoulli(p),n) |> mean for i in 1:10000]
 	histogram(Z̄)
-	
-	#CLT# 
-	μ = p 
+	#---# 
+	μ = p
 	σ = √(p*(1-p)/n)
-	histogram!(rand(Normal(μ,σ),N))
+	histogram!(rand(Normal(μ,σ),10000))
+end 
+
+# ╔═╡ 73682095-d087-4986-bff6-69e0ba69ee4b
+let
+	N = 10000 
+	Z̄ = [rand(Bernoulli(p),n) |> mean for i in 1:N]
+	X = Z̄
+	g(x) = x*(1-x)
+	Y = @. g(X)
+	plot(g,0,1)
+	println("기울기=$(slope(g,p))")
+	histogram(Y)
+	adist = Normal(g(p),√(p*(1-p)/n)*0.6)
+	histogram!(rand(adist,N))
 end 
 
 # ╔═╡ 2f194d20-d77e-4581-9150-34b9c5c54d95
@@ -476,32 +580,24 @@ end
 
 # ╔═╡ d2d0bd40-64b0-4d87-a573-34e16c0fecaa
 let 
-	N = 1000
-	X = [rand(Bernoulli(p),n) |> mean for i in 1:N]
+	N = 100000
+	Z̄ = [rand(Bernoulli(p),n) |> mean for i in 1:N]
+	X = Z̄
+	# X ~ N(p,p*(1-p)/n)
 	g(x) = x*(1-x)
 	Y = @. g(X)
-	adist = Normal(g(p), √(p*(1-p)/n) * slope(g,p))
+	μ = g(p)
+	σ = √(p*(1-p)/n) * slope(g,μ)
+	adist = Normal(μ,σ)
 	println("참값: $(p*(1-p))")
 	println("L(시뮬): $(quantile(Y,0.025))")
 	println("U(시뮬): $(quantile(Y,0.975))")
 	println("L(이론): $(quantile(adist,0.025))")
 	println("U(이론): $(quantile(adist,0.975))")
-end 
+end
 
-# ╔═╡ 65c310fd-6b8a-4064-b037-834ec79c63ed
-# ╠═╡ disabled = true
-#=╠═╡
-md"p = $(@bind p Slider(0.1:0.1:0.9,show_value=true,default=0.2))"
-  ╠═╡ =#
+# ╔═╡ 8ffe37c0-781e-42f2-b316-5dc7410b5947
 
-# ╔═╡ fb2a58e4-b6e9-4d74-9ea5-9be23baadf7c
-# ╠═╡ disabled = true
-#=╠═╡
-md"p = $(@bind p Slider(0.1:0.1:0.9,show_value=true,default=0.2))"
-  ╠═╡ =#
-
-# ╔═╡ fcd9f9d0-7597-47a2-8d86-053e6d6b5f18
-md"n = $(@bind n Slider([100,1000,10000,100000],show_value=true,default=10000))"
 
 # ╔═╡ 4dc4491c-f29c-48ec-b49a-6b0f7ce478a4
 # ╠═╡ disabled = true
@@ -516,6 +612,21 @@ md"p = $(@bind p Slider(0.1:0.1:0.9,show_value=true,default=0.2))"
 # ╠═╡ disabled = true
 #=╠═╡
 md"n = $(@bind n Slider([100,1000,10000,100000],show_value=true,default=10000))"
+  ╠═╡ =#
+
+# ╔═╡ fcd9f9d0-7597-47a2-8d86-053e6d6b5f18
+md"n = $(@bind n Slider([100,1000,10000,100000],show_value=true,default=10000))"
+
+# ╔═╡ fb2a58e4-b6e9-4d74-9ea5-9be23baadf7c
+# ╠═╡ disabled = true
+#=╠═╡
+md"p = $(@bind p Slider(0.1:0.1:0.9,show_value=true,default=0.2))"
+  ╠═╡ =#
+
+# ╔═╡ 65c310fd-6b8a-4064-b037-834ec79c63ed
+# ╠═╡ disabled = true
+#=╠═╡
+md"p = $(@bind p Slider(0.1:0.1:0.9,show_value=true,default=0.2))"
   ╠═╡ =#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1128,9 +1239,9 @@ version = "1.4.2"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "60e3045590bd104a16fefb12836c00c0ef8c7f8c"
+git-tree-sha1 = "3da7367955dcc5c54c1ba4d402ccdc09a1a3e046"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.0.13+0"
+version = "3.0.13+1"
 
 [[deps.OpenSpecFun_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
@@ -1412,9 +1523,9 @@ deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[deps.TranscodingStreams]]
-git-tree-sha1 = "14389d51751169994b2e1317d5c72f7dc4f21045"
+git-tree-sha1 = "71509f04d045ec714c4748c785a59045c3736349"
 uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
-version = "0.10.6"
+version = "0.10.7"
 weakdeps = ["Random", "Test"]
 
     [deps.TranscodingStreams.extensions]
@@ -1488,9 +1599,9 @@ version = "1.31.0+0"
 
 [[deps.XML2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Zlib_jll"]
-git-tree-sha1 = "07e470dabc5a6a4254ffebc29a1b3fc01464e105"
+git-tree-sha1 = "532e22cf7be8462035d092ff21fada7527e2c488"
 uuid = "02c8fc9c-b97f-50b9-bbe4-9be30ff0a78a"
-version = "2.12.5+0"
+version = "2.12.6+0"
 
 [[deps.XSLT_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libgcrypt_jll", "Libgpg_error_jll", "Libiconv_jll", "Pkg", "XML2_jll", "Zlib_jll"]
@@ -1500,9 +1611,9 @@ version = "1.1.34+0"
 
 [[deps.XZ_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "31c421e5516a6248dfb22c194519e37effbf1f30"
+git-tree-sha1 = "ac88fb95ae6447c8dda6a5503f3bafd496ae8632"
 uuid = "ffd25f8a-64ca-5728-b0f7-c24cf3aae800"
-version = "5.6.1+0"
+version = "5.4.6+0"
 
 [[deps.Xorg_libICE_jll]]
 deps = ["Libdl", "Pkg"]
@@ -1655,9 +1766,9 @@ version = "1.2.13+0"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "49ce682769cd5de6c72dcf1b94ed7790cd08974c"
+git-tree-sha1 = "e678132f07ddb5bfa46857f0d7620fb9be675d3b"
 uuid = "3161d3a3-bdf6-5164-811a-617609db77b4"
-version = "1.5.5+0"
+version = "1.5.6+0"
 
 [[deps.eudev_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "gperf_jll"]
@@ -1768,12 +1879,12 @@ version = "1.4.1+1"
 # ╠═e8bda7ce-710f-4e6f-8d9f-e179edc56216
 # ╟─7019b0ff-2915-486e-bb3a-8cb5a8f6266d
 # ╟─44baf401-12d7-4210-b042-c6ab7bbdf0bb
-# ╟─892a447a-2344-40e1-a933-2e0d660fbfd7
+# ╠═892a447a-2344-40e1-a933-2e0d660fbfd7
 # ╠═baef631b-e8f2-47b0-9af8-ca73bdcd11c7
 # ╟─95b1a3db-84fb-4499-940c-53174de4a657
 # ╠═7cb851ed-500c-47b6-b6e0-e7576e66ce9d
 # ╟─7d5d17f6-d43d-4e27-9bf7-5f342743cc9e
-# ╠═23e101e7-f084-4b76-92dc-16f3279ebccb
+# ╠═87e59c93-b1f5-4d3b-9ed9-4dffc4240544
 # ╟─f7dce87b-96c7-4ba0-be1e-749f9660fe92
 # ╟─b457f3ef-c884-454d-9efa-8f49dfa79656
 # ╠═76a8bbfd-5e0c-4eb5-9b18-100e2db5d462
@@ -1784,7 +1895,7 @@ version = "1.4.1+1"
 # ╟─175f8783-d685-455c-829f-55f11223ac59
 # ╠═e25f4022-f704-49a4-9f3c-69982d7fc7ee
 # ╟─9c290538-06c7-4cf1-bc34-4b2a5f1c070a
-# ╠═a32b550a-40c3-436e-87a9-029c3b342967
+# ╠═b7c44f2b-1d78-4523-a14f-8477443943cf
 # ╟─d6ec5b05-e0c3-4b5c-ae49-ab064022300a
 # ╟─b26fe580-407f-44d3-bae4-bf958136f76b
 # ╟─b6319e02-3150-48f2-a101-e0ad8955b69d
@@ -1792,28 +1903,36 @@ version = "1.4.1+1"
 # ╠═7c9334a1-228f-4ebc-bd2e-c678419cd5e5
 # ╠═627f6efc-a9d1-49f1-970e-cd9b4d1249d6
 # ╠═d6522fca-052b-47b4-bcd1-59cfdf662de2
-# ╠═018a07ab-98a1-480d-8b49-926bb89992fe
-# ╠═6b63040b-5201-4c1b-96cf-764ee951d81a
+# ╠═bab28b86-8e42-4409-ac33-cdc09213a20e
+# ╠═5b7e5645-cfc0-4269-acf3-3607f5b3649f
 # ╟─a0764038-9f07-42d9-9683-6b3e4577a4ea
 # ╟─1ecd6d78-724b-46ab-807d-ceb1b4c65e05
 # ╟─9fc7ca1b-6bc8-4bae-a4a9-0dbc35ab1b6b
 # ╠═29813f4a-1670-4f1d-a774-1b670375d662
 # ╟─013b56b5-9d86-4443-aa97-6e2532943137
-# ╠═863ea789-8b4c-4fa1-bb81-42096e2d7f8e
+# ╠═4255680d-eafb-43e1-bb79-fc4362e3381f
 # ╟─6d99e046-b5b5-4e6c-b879-c6b9aef8924b
 # ╠═cf27f4b8-9c60-43cd-a641-5a72f14d8711
 # ╟─a0bdfcf9-7b2b-460b-a16e-f7ce017dbfe9
 # ╟─e1debc97-d545-40aa-9725-16b5399048ff
+# ╠═40b47dd0-63e5-4790-a730-139eda26f59d
+# ╠═b5d9e64d-9b67-4f67-974e-94fcb36eb415
 # ╠═62b93911-0f80-4e76-9fa1-b66b9de4e1ed
 # ╠═8fb5ea91-80a9-451f-99af-337d90c8d79e
 # ╟─c5b43bb9-875e-4c25-9fed-c7063780d12c
+# ╠═5abae068-54cd-4eae-a669-3b2165f2eedd
+# ╠═c92dd566-4337-4ba0-a626-cc29dd8af7bf
 # ╠═76f54ec0-a8c9-4b6d-acbf-2c3682c4067c
 # ╠═fdf40453-b48f-4d73-89b8-b3ec4baef097
 # ╟─bb4b1c3b-e43b-4aba-9ea6-a9b884d7d50a
 # ╟─a6f804cd-0853-47cb-8a6b-90e087ad28ae
+# ╠═106d6e03-5a1c-4cf4-a20d-b2224609564e
+# ╠═0ec806e5-414c-4fb6-8cdc-16c82147a802
 # ╠═40640bd6-6021-4124-ac13-c22210365450
 # ╠═d8868854-37dd-4f93-b5c1-5f46651dfa88
 # ╟─cf848839-208f-4bd7-ade3-ad89ddf98e49
+# ╠═626d5b98-3366-4d9b-9be7-912f96084992
+# ╠═c6fbbe4d-0c5d-4ed1-8799-77e641dd2139
 # ╠═53007f58-6ad4-4585-9948-dbbc39b3af2e
 # ╠═a7d3936e-95f8-40ae-b1c4-51d4623bc157
 # ╟─e9216ddb-a074-43db-ac00-1cab3a1d9e88
@@ -1822,12 +1941,14 @@ version = "1.4.1+1"
 # ╠═fb2a58e4-b6e9-4d74-9ea5-9be23baadf7c
 # ╠═3d94c099-8df3-4994-b806-24faec44a045
 # ╟─acc34574-d928-442b-952c-b3d38835c682
+# ╠═27e08b26-8408-466a-a2c3-4643e9040b13
 # ╠═6ed03358-e00f-454c-9d0c-6ef0715a1005
 # ╟─40c50ce6-e557-4560-bfc8-90cdab400d18
 # ╟─ed20d9e5-522f-4e58-a4d0-05a85ce4d1cf
 # ╠═65c310fd-6b8a-4064-b037-834ec79c63ed
 # ╠═4dc4491c-f29c-48ec-b49a-6b0f7ce478a4
 # ╟─a17ded84-4c27-46ea-a832-69c2c4b1fbed
+# ╠═73682095-d087-4986-bff6-69e0ba69ee4b
 # ╠═2f194d20-d77e-4581-9150-34b9c5c54d95
 # ╠═14ba5909-f522-405c-833e-9d457bf4bcc7
 # ╟─08e41df6-7a3a-434b-a9d0-e5f1ca7f5d45
@@ -1835,5 +1956,6 @@ version = "1.4.1+1"
 # ╠═e31fda1d-d099-48d9-a4cc-5861c6beada2
 # ╠═fcd9f9d0-7597-47a2-8d86-053e6d6b5f18
 # ╠═d2d0bd40-64b0-4d87-a573-34e16c0fecaa
+# ╠═8ffe37c0-781e-42f2-b316-5dc7410b5947
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
