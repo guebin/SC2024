@@ -36,6 +36,7 @@ md"""
 - [04wk-1](https://guebin.github.io/SC2024/04wk-1.html): 정규분포, 카이제곱분포, 감마분포
 - [04wk-2](https://guebin.github.io/SC2024/04wk-2.html): 평행우주, 가설검정
 - [05wk-1](https://guebin.github.io/SC2024/05wk-1.html): 테일러정리, 델타메소드
+- [06wk-2](https://guebin.github.io/SC2024/06wk-2.html): 중간고사
 """
 
 
