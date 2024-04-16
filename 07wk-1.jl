@@ -28,15 +28,15 @@ md"""
 """
 
 # ╔═╡ 232cfb5c-5921-4759-9632-14d43ff4658b
-# html"""
-# <div style="display: flex; justify-content: center;">
-# <div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-# <iframe src=
-# "
-# https://www.youtube.com/embed/playlist?list=PLQqh36zP38-ws_x7AbZmxj94b7HS6yLSk
-# "
-# width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-# """
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://youtube.com/embed/playlist?list=PLQqh36zP38-w9FQSmInVDk7KkTgK3pPlu&si=bVqOstjkG0MQ1W3B
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
 
 # ╔═╡ 2cbc5887-e09b-411c-bc8f-458831d97f63
 md"""
@@ -73,9 +73,9 @@ md"""
 
 # ╔═╡ 69c67f4b-1ea2-4993-b1b8-76b7aae2bafd
 let 
-	B1 = [1,2,3] # (3,1)
-	B2 = [4,5,6] # (3,1)
-	B = [B1 B2] # (3,2)
+	B1 = [1,2,3]
+	B2 = [2,3,4]
+	B = [B1 B2]
 	B
 end 
 
@@ -86,12 +86,12 @@ md"""
 
 # ╔═╡ 8d12814e-3b25-4768-850c-1bdd9e637e69
 let 
-	A = [1 2 3; 1 2 4; 1 2 5]
 	B1 = [1,2,3] # (3,1)
-	B2 = [4,5,6] # (3,1)
-	B = [B1 B2] # (3,2)	
+	B2 = [2,3,4] # (3,1)
+	B = [B1 B2]	 # (3,2)
+	A = [1 2 3; 1 3 4; 1 2 5]
 	#A*B
-	[A*B1 A*B2]
+	A * [B1 B2], [A*B1 A*B2]
 end 
 
 # ╔═╡ 5b80f068-1dcb-4c88-bbc8-288d136b395d
@@ -119,10 +119,10 @@ md"""
 
 # ╔═╡ 0ed02da5-b261-4bbc-9549-47f057447d5f
 begin
-	X1=randn(100)
-	X2=randn(100) .+ 1
-	X = [X1 X2]
-end
+	X1 = randn(100) # (100,1)
+	X2 = randn(100) .+ 1 # (100,1)
+	X = [X1 X2] # (100,2)
+end 
 
 # ╔═╡ e4d88470-25cd-4484-ac32-71a25f03bd87
 md"""
@@ -130,19 +130,22 @@ md"""
 """
 
 # ╔═╡ c66e954a-5d68-4c96-9deb-edd79123eca3
-j=ones(100)
+j = ones(100) # (100,1)
 
 # ╔═╡ 853b2e64-a587-47c2-8f40-93a41960f65f
-[j'X1 j'X2]
+j'X1, sum(X1)
 
 # ╔═╡ 8e714a19-9a5f-4749-9b72-b8ddb5f634b6
-j'* [X1 X2]
+j'X2, sum(X2)
 
 # ╔═╡ 3918f155-e04c-4bc8-8b34-48ac7f5bb55c
-j' * X
+[j'X1 j'X2]
 
 # ╔═╡ 6fa02ff7-9d04-46a4-a513-058c9122287a
-sum(X1), sum(X2)
+j'*[X1 X2]
+
+# ╔═╡ b476c8a9-8c7a-4afe-a6f2-8c7847419258
+j'X 
 
 # ╔═╡ 48535f3f-c687-4594-b696-e8b467341e13
 md"""
@@ -150,13 +153,19 @@ md"""
 """
 
 # ╔═╡ 13ae7102-dcbf-4c71-849f-d587db8f47c9
-[(j/100)'X1 (j/100)'X2]
+(1/100)j'X1, mean(X1)
+
+# ╔═╡ 2373b3a9-45fa-46ae-acb6-3abfdb48fc51
+(1/100)j'X2, mean(X2)
 
 # ╔═╡ 4f06f762-ccdc-499d-a178-ebcf74d517a8
-(j/100)' * [X1 X2]
+[(1/100)j'X1 (1/100)j'X2]
+
+# ╔═╡ c7b3d727-b767-4665-bf4b-a39af3503a07
+(1/100)j'*[X1 X2]
 
 # ╔═╡ ab581c91-69e2-4567-8b7e-ce1acec1bd9d
-(j/100)' * X
+(1/100)j'X
 
 # ╔═╡ 39b4efd3-88f1-45d1-aee1-93d0173fbd86
 md"""
@@ -164,16 +173,15 @@ md"""
 """
 
 # ╔═╡ d90ca812-c4c7-420b-bacc-40f9543f95c6
-let
-	X1= Array(0.01:0.01:1)
+let 
 	ϵ = randn(100)
-	Y= 2X1 .+ 4 + ϵ
-	scatter(X1,Y)
-	X = [j X1] 
-	H = X* inv(X'X) * X' 
-	#scatter!(H*X1,H*Y)
-	scatter!(X1,H*Y)
-end
+	y = 2X1 .+ 3 + ϵ
+	scatter(X1,y,label="(X1,y)")
+	X = [j X1]
+	H = X*inv(X'X)X' # 변환을 의미하는 행렬, 사영행렬
+	scatter!(H*X1, H*y, label="(HX1,Hy)")
+	scatter!(X1, H*y, label="(X1,Hy)")	
+end 
 
 # ╔═╡ c54b98f7-9216-4cce-baad-824651d819d9
 md"""
@@ -183,9 +191,8 @@ md"""
 # ╔═╡ 1554febf-f082-45ca-9c63-b5c1f55c2e35
 let 
 	X = [j X1 X2]
-	H = X*inv(X'X)*X'
-	[H*X X] 
-	H*j ≈ j, H*X1 ≈ X1, H*X2 ≈ X2
+	H = X*inv(X'X)X'
+	[H*X X]
 end 
 
 # ╔═╡ dddbd96c-835a-45f6-9b8c-ff459f48f6a9
@@ -271,15 +278,19 @@ md"""
 channelview(France)
 
 # ╔═╡ 8461aa39-cafa-4519-85bc-aee63e1b97a0
-channelview(France)[1,:,:] # R 
-#channelview(France)[2,:,:] # G
-#channelview(France)[3,:,:] # B
+channelview(France)[1,:,:] # 빨강
+
+# ╔═╡ 89c0c820-a471-4f2c-b94c-52a49bdc78e7
+channelview(France)[2,:,:] # 녹색
+
+# ╔═╡ 753d3cc6-64d3-4f7b-a6dd-f365b17c6b17
+channelview(France)[3,:,:] # 파랑
 
 # ╔═╡ 5b6a71c2-bd9c-4bcc-9b93-ef869d425c47
-channelview([Greece[1,1]]) # 뒤에 N0f8(8비트부동소수점픽셀이래요)은 자료형이므로 무시
+channelview([Greece[1,1]])  # N0f8 무시
 
 # ╔═╡ 2e6c6f2f-5764-4662-aafe-cdf343972c57
-Greece[1,1], RGB(0.051,0.369,0.686)
+RGB(0.051,0.369,0.686), Greece[1,1]
 
 # ╔═╡ 6eaba1ab-be8b-44b0-aaf7-8daea9366296
 md"""
@@ -287,10 +298,10 @@ md"""
 """
 
 # ╔═╡ d5b3df4c-63d0-4f31-82e4-0899516d01fd
-reshape(rand(3*4*4),(3,4,4))
+colorview(RGB,reshape([0.051,0.369,0.686],3,1,1))
 
 # ╔═╡ 7153503e-ebb0-46a0-9fe8-fd4a62f9082f
-colorview(RGB,reshape(rand(3*4*4),(3,4,4)))
+colorview(RGB,reshape(rand(3*4*4),3,4,4))
 
 # ╔═╡ 9f709b45-b0c9-436e-af73-5434000ff569
 md"""
@@ -303,22 +314,23 @@ md"""
 """
 
 # ╔═╡ 929fc2e7-4391-4d70-a3a4-aaad797b4efe
-M = reshape(fill(1/9,9),3,3) # 변환을 의미하는 행렬
+M = reshape(ones(9)/9,3,3)
 
 # ╔═╡ 72362c9a-51ec-402c-beb5-bdf3c8beb8b0
 let 
-	X0 = reshape(zeros(50),10,5)
-	X1 = reshape(ones(50),10,5)
-	X = [X0 X1] 
-	imfilter(X,M) 
-	# conv 점별곱 -> 합 -> 이동후반복
-end
+	X0 = zeros(10,5)
+	X1 = ones(10,5)*3
+	X = [X0 X1]
+	X[3,3] = 27
+	X,imfilter(X,M)
+	#컨볼루션 = 원소별곱 -> 합-> 이동해서반복
+end 
 
 # ╔═╡ fd62e802-c70b-479d-a057-0b5104b5a3b4
-France,imfilter(France,M)
+France, imfilter(France,M)
 
 # ╔═╡ 5300feeb-ad99-4de2-8585-636f672b1484
-Greece,imfilter(Greece,M)
+Greece, imfilter(Greece,M)
 
 # ╔═╡ 4c906c57-9bb6-4cc3-8fb0-7719cbfed631
 md"""
@@ -326,14 +338,16 @@ md"""
 """
 
 # ╔═╡ 115a9087-8eb7-4bd5-a0fe-5b0e3eb8ebc3
-G = Kernel.gaussian(1) # 변환을 의미하는 행렬
+G = Kernel.gaussian(1)
 
 # ╔═╡ 17954171-39bf-49f7-8979-d0ab71871002
 let 
-	X0 = reshape(zeros(50),10,5)
-	X1 = reshape(ones(50),10,5)
-	X = [X0 X1] 
-	imfilter(X,G)
+	X0 = zeros(10,5)
+	X1 = ones(10,5)*3
+	X = [X0 X1]
+	X[3,3] = 27
+	X,imfilter(X,G)
+	#컨볼루션 = 원소별곱 -> 합-> 이동해서반복
 end 
 
 # ╔═╡ 14648835-5bdb-4ef9-b4d2-2af09d7471df
@@ -351,7 +365,7 @@ md"""
 # 가우시안 분포 = 정규분포
 
 # ╔═╡ e956d83c-ed0e-4f15-930e-d4a34d163ae1
-surface(Kernel.gaussian(3))
+surface(Kernel.gaussian(10))
 
 # ╔═╡ c77f4aac-4799-44c2-bda9-7557c95ca143
 md"""
@@ -404,17 +418,6 @@ hani[1200:1300, 1200:1300]
 # ╔═╡ 94e8c88a-fda1-468c-9d61-65e2a83d81bd
 hani[1200:1205, 1200:1205]
 
-# ╔═╡ 6f607ebc-5ec4-4976-8ea6-10c30e4b05f4
-md"""
--- 하니의 각 원소를 찾아보자.
-"""
-
-# ╔═╡ 354d4798-b145-4133-81e9-eabc3a286cbf
-hani[1,1] # 하니[1,1]은 회색픽셀
-
-# ╔═╡ 7fe2d58f-6991-4ad3-8df3-c79e1120edee
-hani[2500,2000] # 하니의 [2500,2000]은 하얀색?
-
 # ╔═╡ 1f97e330-13fa-48f1-b2aa-9cb3a164d9bc
 md"""
 ### C. 루트하니
@@ -422,9 +425,8 @@ md"""
 
 # ╔═╡ b12fe04c-1bfd-4a0d-872f-79595e808d32
 let 
-	p1 = hani |> (x -> x')
-	p2 = hani |> channelview .|>  (x -> √x) |> colorview(RGB) |> (x->x')
-	[p1 p2]
+	root_hani = channelview(hani) .|> (x->√x) |> colorview(RGB)
+	[hani'  root_hani']
 end 
 
 # ╔═╡ b19f2f36-5f7a-4d71-855d-6c130f6e74c1
@@ -439,11 +441,10 @@ md"""
 """
 
 # ╔═╡ 4f6bc142-590b-4e84-b492-fff84b645095
-let
-	p1= hani |> (x-> x')
-	p2= hani |> channelview .|> (x -> 0.9*(x>0.7) + x*(x≤0.7)) |> colorview(RGB) |> (x-> x')
-	[p1 p2]
-end
+let 
+	shining_hani = channelview(hani) .|> (x-> √x*(x>0.75) + x*(x≤0.75)) |> colorview(RGB)
+	[hani' shining_hani']
+end 
 
 # ╔═╡ 23c77fb0-770d-4bcd-be19-423afe89ac7c
 md"""
@@ -456,14 +457,10 @@ md"""
 """
 
 # ╔═╡ 9dced544-7f75-4da9-a1d7-87f37dfed359
-imfilter(hani,Kernel.gaussian(20)) |> (x->x')
-
-# ╔═╡ 5596d9ab-9930-41c8-889b-87f3b36c9fed
-let
-	p1 = hani |> (x->x')
-	p2 = imfilter(hani,Kernel.gaussian(20)) |> (x->x')
-	[p1 p2]
-end 
+let 
+	smoothed_hani = imfilter(hani,Kernel.gaussian(30))
+	[hani' smoothed_hani']
+end
 
 # ╔═╡ 203493aa-2f0a-4c46-9d4d-8f9063d906e8
 md"""
@@ -478,29 +475,15 @@ md"""
 - 이미지$\times 2$ - 스무딩한부분 = 스무딩한부분 + 또렷한 부분$\times 2$ = 이미지 + 또렷한부분 
 """
 
-# ╔═╡ 6bdb5261-80b6-40cd-99cc-01ba8f59da87
-hani .* 2 - imfilter(hani,Kernel.gaussian(20)) |> (x-> x')
-
-# ╔═╡ bf9b9d1b-1058-41de-ab8f-24084f9aecfc
-md"""
-- 잘 모르겠다.. 샤프해진것 같기도 하고?
-"""
-
-# ╔═╡ 769b3149-a702-472f-b24d-7a175f892917
-md"""
--- 비교해보자.
-"""
-
 # ╔═╡ 43b55707-b168-4684-b84a-2a671f30fd82
-md"σ = $(@bind σ Slider(1:50, show_value=true,default=20))"
+md"σ = $(@bind σ Slider(1:50, show_value=true,default=30))"
 
 # ╔═╡ 0394029f-3f5c-453e-8416-40a696e96ecf
 let 
-	p1 = hani |> (x->x')
-	p2 = imfilter(hani,Kernel.gaussian(σ)) |> (x-> x') 
-	p3 = hani .* 2 - imfilter(hani,Kernel.gaussian(σ)) |> (x-> x')
-	[p1 p2 p3]
-end 
+	smoothed_hani = imfilter(hani,Kernel.gaussian(σ))
+	sharp_hani = hani*2 - smoothed_hani
+	[hani' smoothed_hani' sharp_hani']
+end
 
 # ╔═╡ 4581a8c3-c858-4503-8e76-6bcd21c4233d
 md"""
@@ -2320,7 +2303,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─f089183d-e83e-4c41-ac17-e48b44126347
 # ╟─9af868c8-0a3e-4b5b-bae4-7e06f64a7dd6
-# ╠═232cfb5c-5921-4759-9632-14d43ff4658b
+# ╟─232cfb5c-5921-4759-9632-14d43ff4658b
 # ╟─2cbc5887-e09b-411c-bc8f-458831d97f63
 # ╠═718e4953-da21-4136-81dd-b7b3ebf5c038
 # ╠═f6239a53-2e36-4aac-b0a2-5af653f5069f
@@ -2342,9 +2325,12 @@ version = "1.4.1+1"
 # ╠═8e714a19-9a5f-4749-9b72-b8ddb5f634b6
 # ╠═3918f155-e04c-4bc8-8b34-48ac7f5bb55c
 # ╠═6fa02ff7-9d04-46a4-a513-058c9122287a
+# ╠═b476c8a9-8c7a-4afe-a6f2-8c7847419258
 # ╟─48535f3f-c687-4594-b696-e8b467341e13
 # ╠═13ae7102-dcbf-4c71-849f-d587db8f47c9
+# ╠═2373b3a9-45fa-46ae-acb6-3abfdb48fc51
 # ╠═4f06f762-ccdc-499d-a178-ebcf74d517a8
+# ╠═c7b3d727-b767-4665-bf4b-a39af3503a07
 # ╠═ab581c91-69e2-4567-8b7e-ce1acec1bd9d
 # ╟─39b4efd3-88f1-45d1-aee1-93d0173fbd86
 # ╠═d90ca812-c4c7-420b-bacc-40f9543f95c6
@@ -2369,6 +2355,8 @@ version = "1.4.1+1"
 # ╟─0a4d654f-33b5-4b00-a4ce-bc6c1d629ef3
 # ╠═39353f3c-adac-41b4-a769-07f87f289d67
 # ╠═8461aa39-cafa-4519-85bc-aee63e1b97a0
+# ╠═89c0c820-a471-4f2c-b94c-52a49bdc78e7
+# ╠═753d3cc6-64d3-4f7b-a6dd-f365b17c6b17
 # ╠═5b6a71c2-bd9c-4bcc-9b93-ef869d425c47
 # ╠═2e6c6f2f-5764-4662-aafe-cdf343972c57
 # ╟─6eaba1ab-be8b-44b0-aaf7-8daea9366296
@@ -2394,30 +2382,23 @@ version = "1.4.1+1"
 # ╠═588dd6c7-177e-4004-8537-6a3664b905c3
 # ╟─3e4d0301-68fc-449d-8400-0779091a11d4
 # ╟─98b84cc5-fa66-414f-9618-3ee6a1daee01
-# ╠═8b373d4b-a854-473e-8293-92a002baf567
+# ╟─8b373d4b-a854-473e-8293-92a002baf567
 # ╠═a23ec1b9-f687-4bbd-992d-0355f0330110
-# ╠═55a1139f-3d9e-4c7b-8507-61fd0a80ff88
+# ╟─55a1139f-3d9e-4c7b-8507-61fd0a80ff88
 # ╠═e62d41e7-6006-45e7-ba6e-4018e56f4e65
 # ╠═2338452c-64dd-4b35-83be-e0fbba2e090c
 # ╠═69763489-0bb1-4beb-92a7-fa84d3a218d5
 # ╠═94e8c88a-fda1-468c-9d61-65e2a83d81bd
-# ╠═6f607ebc-5ec4-4976-8ea6-10c30e4b05f4
-# ╠═354d4798-b145-4133-81e9-eabc3a286cbf
-# ╠═7fe2d58f-6991-4ad3-8df3-c79e1120edee
 # ╟─1f97e330-13fa-48f1-b2aa-9cb3a164d9bc
 # ╠═b12fe04c-1bfd-4a0d-872f-79595e808d32
-# ╠═b19f2f36-5f7a-4d71-855d-6c130f6e74c1
+# ╟─b19f2f36-5f7a-4d71-855d-6c130f6e74c1
 # ╟─99d83850-0ee4-4a0c-ae90-1870f21c8000
 # ╠═4f6bc142-590b-4e84-b492-fff84b645095
 # ╟─23c77fb0-770d-4bcd-be19-423afe89ac7c
 # ╟─d3c1b12d-6f4c-4d24-bde1-76ab491a36ee
 # ╠═9dced544-7f75-4da9-a1d7-87f37dfed359
-# ╠═5596d9ab-9930-41c8-889b-87f3b36c9fed
 # ╟─203493aa-2f0a-4c46-9d4d-8f9063d906e8
 # ╟─8991ea84-a3d4-427b-bd72-c5d7d64f55df
-# ╠═6bdb5261-80b6-40cd-99cc-01ba8f59da87
-# ╟─bf9b9d1b-1058-41de-ab8f-24084f9aecfc
-# ╠═769b3149-a702-472f-b24d-7a175f892917
 # ╠═43b55707-b168-4684-b84a-2a671f30fd82
 # ╠═0394029f-3f5c-453e-8416-40a696e96ecf
 # ╟─4581a8c3-c858-4503-8e76-6bcd21c4233d
