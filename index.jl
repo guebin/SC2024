@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.40
+# v0.19.41
 
 using Markdown
 using InteractiveUtils
@@ -43,6 +43,7 @@ md"""
 # ╔═╡ 22307a85-f60c-4888-b4ef-afb1d09d0253
 md"""
 -- 선형대수학
+- [07wk-1](https://guebin.github.io/SC2024/07wk-1.html): 행렬을 보는 관점, 여러 하니
 """
 
 

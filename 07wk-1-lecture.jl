@@ -56,13 +56,14 @@ md"""
 
 # ╔═╡ efc41d03-98a0-4de2-af88-c010d8423361
 md"""
-행렬 ${\bf B}_{p \times q}$를 아래와 같이 표한한다고 하자. 
-
-$${\bf B} = \begin{bmatrix} B_1 & B_2 & \dots & B_q \end{bmatrix}$$
-
-여기에서 $B_1,\dots,B_p$는 각각 (p,1)의 차원을 가지는 col-vector 이다. 그러면 행렬 ${\bf A}_{n\times p}$와 행렬 ${\bf B}_{p\times q}$를 곱셉 ${\bf A}{\bf B}$는 아래와 같이 표현가능하다. 
-
-$${\bf A}{\bf B} = \begin{bmatrix}{\bf A}B_1 & {\bf A}B_2 & \dots & {\bf A}B_q\end{bmatrix}$$
+!!! info "행렬의 벡터화 표현"
+	행렬 ${\bf B}_{p \times q}$를 아래와 같이 표한한다고 하자. 
+	
+	$${\bf B} = \begin{bmatrix} B_1 & B_2 & \dots & B_q \end{bmatrix}$$
+	
+	여기에서 $B_1,\dots,B_q$는 각각 (p,1)의 차원을 가지는 col-vector 이다. 그러면 행렬 ${\bf A}_{n\times p}$와 행렬 ${\bf B}_{p\times q}$를 곱셉 ${\bf A}{\bf B}$는 아래와 같이 표현가능하다. 
+	
+	$${\bf A}{\bf B} = \begin{bmatrix}{\bf A}B_1 & {\bf A}B_2 & \dots & {\bf A}B_q\end{bmatrix}$$
 """
 
 # ╔═╡ c4c08183-8ae5-4f3c-9a36-8736b0220123
@@ -98,9 +99,22 @@ md"""
 ## 4. 행렬을 보는 관점
 """
 
+# ╔═╡ b2ae2537-a74d-410a-8bcc-d9f9a5b43b16
+md"""
+-– 통계학과에서 바라보는 행렬
+
+- 경우1: 데이터의 저장수단 -- 데이터프레임, 이미지, ...
+- 경우2: 선형변환 (선형연산)
+"""
+
 # ╔═╡ 687c0486-6551-4cb0-9329-2bcad1c99d2f
 md"""
 ### A. 합과 평균
+"""
+
+# ╔═╡ 2bd3b211-6306-47ff-a83c-f1c5016a5be9
+md"""
+-- 아래의 ${\bf X} = \begin{bmatrix} X_1 & X_2 \end{bmatrix}$ 는 데이터를 의미한다.
 """
 
 # ╔═╡ 0ed02da5-b261-4bbc-9549-47f057447d5f
@@ -2312,15 +2326,17 @@ version = "1.4.1+1"
 # ╠═f6239a53-2e36-4aac-b0a2-5af653f5069f
 # ╠═82ce66ae-e37f-4e8d-a316-620985ff798e
 # ╟─2d953e59-1140-440e-8c54-7f0f8a4476e3
-# ╠═efc41d03-98a0-4de2-af88-c010d8423361
+# ╟─efc41d03-98a0-4de2-af88-c010d8423361
 # ╟─c4c08183-8ae5-4f3c-9a36-8736b0220123
 # ╠═69c67f4b-1ea2-4993-b1b8-76b7aae2bafd
 # ╟─7eb3c886-2262-419d-83d7-25e2eb1e2e59
 # ╠═8d12814e-3b25-4768-850c-1bdd9e637e69
 # ╟─5b80f068-1dcb-4c88-bbc8-288d136b395d
+# ╟─b2ae2537-a74d-410a-8bcc-d9f9a5b43b16
 # ╟─687c0486-6551-4cb0-9329-2bcad1c99d2f
+# ╟─2bd3b211-6306-47ff-a83c-f1c5016a5be9
 # ╠═0ed02da5-b261-4bbc-9549-47f057447d5f
-# ╠═e4d88470-25cd-4484-ac32-71a25f03bd87
+# ╟─e4d88470-25cd-4484-ac32-71a25f03bd87
 # ╠═c66e954a-5d68-4c96-9deb-edd79123eca3
 # ╠═853b2e64-a587-47c2-8f40-93a41960f65f
 # ╠═8e714a19-9a5f-4749-9b72-b8ddb5f634b6
@@ -2332,7 +2348,7 @@ version = "1.4.1+1"
 # ╠═ab581c91-69e2-4567-8b7e-ce1acec1bd9d
 # ╟─39b4efd3-88f1-45d1-aee1-93d0173fbd86
 # ╠═d90ca812-c4c7-420b-bacc-40f9543f95c6
-# ╠═c54b98f7-9216-4cce-baad-824651d819d9
+# ╟─c54b98f7-9216-4cce-baad-824651d819d9
 # ╠═1554febf-f082-45ca-9c63-b5c1f55c2e35
 # ╟─dddbd96c-835a-45f6-9b8c-ff459f48f6a9
 # ╟─28fc34a6-89bc-4337-a8be-e1c78fba9213
@@ -2394,11 +2410,11 @@ version = "1.4.1+1"
 # ╟─99d83850-0ee4-4a0c-ae90-1870f21c8000
 # ╠═4f6bc142-590b-4e84-b492-fff84b645095
 # ╟─23c77fb0-770d-4bcd-be19-423afe89ac7c
-# ╠═d3c1b12d-6f4c-4d24-bde1-76ab491a36ee
+# ╟─d3c1b12d-6f4c-4d24-bde1-76ab491a36ee
 # ╠═9dced544-7f75-4da9-a1d7-87f37dfed359
 # ╠═5596d9ab-9930-41c8-889b-87f3b36c9fed
 # ╟─203493aa-2f0a-4c46-9d4d-8f9063d906e8
-# ╠═8991ea84-a3d4-427b-bd72-c5d7d64f55df
+# ╟─8991ea84-a3d4-427b-bd72-c5d7d64f55df
 # ╠═6bdb5261-80b6-40cd-99cc-01ba8f59da87
 # ╟─bf9b9d1b-1058-41de-ab8f-24084f9aecfc
 # ╠═769b3149-a702-472f-b24d-7a175f892917
