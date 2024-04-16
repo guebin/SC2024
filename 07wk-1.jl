@@ -416,7 +416,7 @@ end
 
 # ╔═╡ 23c77fb0-770d-4bcd-be19-423afe89ac7c
 md"""
-### E. 스무딩 하니 (흐릿한 하니)
+### E. 흐릿한 하니
 """
 
 # ╔═╡ d3c1b12d-6f4c-4d24-bde1-76ab491a36ee
@@ -436,7 +436,7 @@ end
 
 # ╔═╡ 203493aa-2f0a-4c46-9d4d-8f9063d906e8
 md"""
-### F. 샤프한 하니 (또렷한 하니)
+### F. 또렷한 하니
 """
 
 # ╔═╡ 8991ea84-a3d4-427b-bd72-c5d7d64f55df
@@ -461,7 +461,7 @@ md"""
 """
 
 # ╔═╡ 43b55707-b168-4684-b84a-2a671f30fd82
-σ = @bind σ Slider(1:50, show_value=true,default=20)
+md"σ = $(@bind σ Slider(1:50, show_value=true,default=20))"
 
 # ╔═╡ 0394029f-3f5c-453e-8416-40a696e96ecf
 let 
@@ -2377,7 +2377,7 @@ version = "1.4.1+1"
 # ╟─b19f2f36-5f7a-4d71-855d-6c130f6e74c1
 # ╟─99d83850-0ee4-4a0c-ae90-1870f21c8000
 # ╠═4f6bc142-590b-4e84-b492-fff84b645095
-# ╠═23c77fb0-770d-4bcd-be19-423afe89ac7c
+# ╟─23c77fb0-770d-4bcd-be19-423afe89ac7c
 # ╟─d3c1b12d-6f4c-4d24-bde1-76ab491a36ee
 # ╠═9dced544-7f75-4da9-a1d7-87f37dfed359
 # ╠═5596d9ab-9930-41c8-889b-87f3b36c9fed
