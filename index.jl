@@ -39,11 +39,11 @@ md"""
 - [06wk-2](https://guebin.github.io/SC2024/06wk-2.html): 중간고사
 """
 
-
 # ╔═╡ 22307a85-f60c-4888-b4ef-afb1d09d0253
 md"""
 -- 선형대수학
 - [07wk-1](https://guebin.github.io/SC2024/07wk-1.html): 행렬을 보는 관점, 여러 하니
+- [07wk-2](https://guebin.github.io/SC2024/07wk-2.html): 프랑스/그리스 국기와 특이값분해 (SVD)
 """
 
 
