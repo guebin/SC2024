@@ -43,7 +43,7 @@ md"""
 md"""
 -- 선형대수학
 - [07wk-1](https://guebin.github.io/SC2024/07wk-1.html): 행렬을 보는 관점, 여러 하니
-- [07wk-2](https://guebin.github.io/SC2024/07wk-2.html): 프랑스/그리스 국기와 특이값분해 (SVD)
+- [07wk-2](https://guebin.github.io/SC2024/07wk-2.html): 이미지자료와 특이값분해 (SVD)
 """
 
 

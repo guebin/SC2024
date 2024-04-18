@@ -19,7 +19,7 @@ using PlutoUI,Images,Distributions,LinearAlgebra,Plots
 
 # ╔═╡ 00b808dd-8169-4bb2-a6a9-adc95c8f4d3e
 md"""
-# 07wk-2: 프랑스/그리스 국기와 SVD
+# 07wk-2: 이미지자료와 SVD
 """
 
 # ╔═╡ 84dd034e-ab9c-4277-8647-f923e9ec9802
@@ -28,15 +28,15 @@ md"""
 """
 
 # ╔═╡ efb9a7b8-c1f5-4a5b-9391-e954470ce025
-# html"""
-# <div style="display: flex; justify-content: center;">
-# <div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-# <iframe src=
-# "
-# https://www.youtube.com/embed/playlist?list=PLQqh36zP38-xG6YpgCuJnTH_kCz0xwnDd
-# "
-# width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-# """
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://youtube.com/embed/playlist?list=PLQqh36zP38-zXDScS9aZsGtGGpdFkIiRz&si=3pJ4cLC53keP9pSB
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
 
 # ╔═╡ ed2e4659-17d4-46df-8642-5485e61eea07
 md"""
@@ -408,7 +408,7 @@ md"""
 hani = load(download("https://github.com/guebin/SC2022/blob/main/hani.jpeg?raw=true"))'
 
 # ╔═╡ 4269e777-8855-4473-bc20-4eb00f698371
-md"k = $(@bind k Slider(1:1000,show_value=true,default=250))"
+md"k = $(@bind k Slider(1:3024,show_value=true,default=250))"
 
 # ╔═╡ 7ea4f8f6-25ea-4f53-9097-4d55dc04d73e
 let 
@@ -2158,7 +2158,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─00b808dd-8169-4bb2-a6a9-adc95c8f4d3e
 # ╟─84dd034e-ab9c-4277-8647-f923e9ec9802
-# ╠═efb9a7b8-c1f5-4a5b-9391-e954470ce025
+# ╟─efb9a7b8-c1f5-4a5b-9391-e954470ce025
 # ╟─ed2e4659-17d4-46df-8642-5485e61eea07
 # ╠═92ea243c-d01d-11ec-2e47-031c31a5d6e6
 # ╠═4c5796ee-8754-4e54-b6a1-253b6084429f
