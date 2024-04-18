@@ -408,7 +408,7 @@ md"""
 hani = load(download("https://github.com/guebin/SC2022/blob/main/hani.jpeg?raw=true"))'
 
 # ╔═╡ 4269e777-8855-4473-bc20-4eb00f698371
-md"k = $(@bind k Slider(1:3024,show_value=true,default=250))"
+md"k = $(@bind k Slider(1:3024,show_value=true,default=252))"
 
 # ╔═╡ 7ea4f8f6-25ea-4f53-9097-4d55dc04d73e
 let 
