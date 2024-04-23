@@ -44,7 +44,7 @@ md"""
 -- 선형대수학
 - [07wk-1](https://guebin.github.io/SC2024/07wk-1.html): 행렬을 보는 관점, 여러 하니
 - [07wk-2](https://guebin.github.io/SC2024/07wk-2.html): 이미지자료와 특이값분해 (SVD)
-- [08wk-1](https://guebin.github.io/SC2024/07wk-2.html): 주성분분석
+- [08wk-1](https://guebin.github.io/SC2024/08wk-1.html): 주성분분석
 """
 
 
