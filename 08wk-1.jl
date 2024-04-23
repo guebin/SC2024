@@ -18,15 +18,15 @@ md"""
 """
 
 # ╔═╡ 32bd60e5-2872-430a-8053-421b6e454f83
-# html"""
-# <div style="display: flex; justify-content: center;">
-# <div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-# <iframe src=
-# "
-# https://www.youtube.com/embed/playlist?list=PLQqh36zP38-w4vySc_CZBMkKdkXfaxnbV
-# "
-# width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-# """
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://youtube.com/embed/playlist?list=PLQqh36zP38-zRx2DBl6k4gwIqRNdjrRYf&si=tJxKKXnNxHE9bvJ_
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
 	
 
 # ╔═╡ e36c494d-0e97-4010-a57d-fcd60ab93900
@@ -107,7 +107,12 @@ md"""
 
 여기에서 각 매트릭스의 차원은 
 
-- 
+- ``{\bf U}_1``: $(n,q)$
+- ``{\bf U}_2``: $(n,p-q)$
+- ``{\bf D}_1``: $(q,q)$
+- ``{\bf D}_2``: $(p-q,p-q)$
+- ``{\bf V}_1``: $(p,q)$, ``{\bf V}_1^\top = (q,p)``
+- ``{\bf V}_2``: $(p,p-q)$, ``{\bf V}_2^\top = (p-q,p)``
 """
 
 # ╔═╡ ffd6d9f2-e4a5-4f06-a75b-242cb4ee71d1
@@ -137,7 +142,7 @@ md"""
 	- PC2 = second column of ${\bf Z}$. 
 	- ``\dots``
 	- PCp = $p$-th column of ${\bf Z}$. 
-	와 같이 부른다. 또한 ${\bf Z}$ 의 각 원소를 principal component 라고 부른다. 따라서 ${\bf Z}_{n \times p}$ 에는 $np$ 개의 principal component 가 있다. 그리고 ${\bf V}$ 는 rotation matrix 혹은 loading matrix 라고 부른다. 마지막으로 원래의 자료 ${\bf X}$를 그대로 분석하것이 아니라, ${\bf X}$를 ${\bf Z}$로 바꾼뒤에 분석하는 일련의 기법 (즉 ${\bf X}$의 주성분을 분석하는 기법)을 통칭하여 주성분분석이라고 한다. 
+	와 같이 부른다. 또한 ${\bf Z}$ 의 각 원소를 principal component 라고 부른다. 따라서 ${\bf Z}_{n \times p}$ 에는 $np$ 개의 principal component score 가 있다. 그리고 ${\bf V}$ 는 rotation matrix 혹은 loading matrix 라고 부른다. 마지막으로 원래의 자료 ${\bf X}$를 그대로 분석하것이 아니라, ${\bf X}$를 ${\bf Z}$로 바꾼뒤에 분석하는 일련의 기법 (즉 ${\bf X}$의 주성분을 분석하는 기법)을 통칭하여 주성분분석이라고 한다. 
 """
 
 # ╔═╡ dd3262c1-d3fb-4feb-ac5b-187833541b19
@@ -179,12 +184,13 @@ md"""
 
 # ╔═╡ 27548de8-5e9a-407f-b3e4-97b596046dfb
 let 
-	X = Array(iris[:,1:4]) # (n,4)
-	U,d,V = svd(X)
-	U1,d1,V1 = U[:,1:2], d[1:2], V[:,1:2]
-	Z = U1 * Diagonal(d1) # (n,2)
-	[X Z*V1']
-end
+	U,d,V = svd(X) # (150,4)
+	U1,U2 = U[:,1:2],U[:,3:4]
+	D1,D2 = Diagonal(d[1:2]), Diagonal(d[3:4])
+	V1,V2 = V[:,1:2],V[:,3:4]
+	Z = U1*D1 # (150,2)
+	#[X Z*V1']
+end 
 
 # ╔═╡ 92108017-9d7b-4434-be5f-1dd3c3811131
 md"""
@@ -192,18 +198,18 @@ md"""
 """
 
 # ╔═╡ 759ffa71-0217-4baf-8e12-084c7bb004c5
-let 
-	U,d,V = svd(X)
+let
+	U,d,V = svd(X) # (150,4)
 	U1,U2,U3,U4 = eachcol(U)
 	d1,d2,d3,d4 = d
 	V1,V2,V3,V4 = eachcol(V)
 	#Z1,Z2 = U1*d1, U2*d2
 	PC1,PC2 = U1*d1, U2*d2
 	@show unique(y)
-	scatter(PC1[y .== "setosa"], PC2[y .== "setosa"], label="setosa")
-	scatter!(PC1[y .== "versicolor"], PC2[y .== "versicolor"], label="versicolor")
-	scatter!(PC1[y .== "virginica"], PC2[y .== "virginica"], label="virginica")
-end
+	scatter(PC1[y .== "setosa"],PC2[y .== "setosa"],label="setosa")
+	scatter!(PC1[y .== "versicolor"],PC2[y .== "versicolor"],label="versicolor")
+	scatter!(PC1[y .== "virginica"],PC2[y .== "virginica"],label="virginica")
+end 
 
 # ╔═╡ 00367152-c595-4a2e-9666-01d1a136b4f8
 md"""
@@ -211,10 +217,10 @@ md"""
 """
 
 # ╔═╡ 8f931cbf-f2fc-41e2-992a-3061756b558c
-let 
+let
 	U,d,V = svd(X)
-	Z = U * Diagonal(d)
-	[X Z*V']
+	Z = U*Diagonal(d)
+	Z*V'
 end 
 
 # ╔═╡ 502c4e40-520b-4051-92d8-243e97ed7982
@@ -231,11 +237,11 @@ md"""
 # ╔═╡ 14ee9809-e4dd-41bc-ae62-669606e954d0
 let 
 	X1,X2,X3,X4 = eachcol(X)
-	X1 = (X1 .- mean(X1)) / std(X1)
-	X2 = (X2 .- mean(X2)) / std(X2)
-	X3 = (X3 .- mean(X3)) / std(X3)
-	X4 = (X4 .- mean(X4)) / std(X4)
-	[X1 X2 X3 X4] # 이런걸 고려함..
+	X1 = (X1 .- mean(X1))/std(X1)
+	X2 = (X2 .- mean(X2))/std(X2)
+	X3 = (X3 .- mean(X3))/std(X3)
+	X4 = (X4 .- mean(X4))/std(X4)
+	[X1 X2 X3 X4] # 보통 이걸 X라고 생각하고 분석함
 end 
 
 # ╔═╡ 3e64482f-7fc6-4544-ab28-189dc7293830
@@ -248,7 +254,7 @@ md"""
 let 
 	U,d,V = svd(X)
 	Z = U * Diagonal(d)
-	Z[1,:] # 첫 관측치에 대한 PC socres 
+	Z[1,:] # PC scores of first obs 
 end 
 
 # ╔═╡ cbe9a2f9-2874-4635-bac9-3b51d1a50a78
@@ -282,7 +288,7 @@ md"""
 # ╔═╡ 4ef620f5-de71-492c-bf26-e979d9c1ff54
 let 
 	U,d,V = svd(X)
-	Z = U * Diagonal(d)
+	Z = U*Diagonal(d)
 end 
 
 # ╔═╡ 27238d09-b7d9-46ad-b33e-937f1ffe449e
@@ -293,7 +299,7 @@ md"""
 # ╔═╡ a903457f-43a5-49b6-9d28-7eaff4c67ced
 let 
 	U,d,V = svd(X)
-	X*V
+	Z = X*V 
 end 
 
 # ╔═╡ 62a9ea09-ae87-40e7-893b-1a5449100c13
@@ -304,7 +310,7 @@ md"""
 # ╔═╡ 56dc1c61-22d3-4f10-b5df-5869b2cff319
 let 
 	U,d,V = svd(X'X)
-	@show U ≈ V
+	@show V ≈ U
 	X*V
 	#X*U
 end 
@@ -316,14 +322,14 @@ md"""
 
 # ╔═╡ d7ef4f20-a885-4242-bb60-b2fad3d6b511
 let 
-	λ, Ψ = eigen(X'X,sortby = -)
+	λ,Ψ = eigen(X'X, sortby = -)
 	X*Ψ
 end 
 
 # ╔═╡ 0239f3aa-2db4-496c-9920-b9d1704afe8a
 let 
-	λ, Ψ = eigen(X'X, sortby = -)
 	U,d,V = svd(X'X)
+	λ,Ψ = eigen(X'X, sortby = -)
 	@show U ≈ V ≈ Ψ
 	@show d ≈ λ
 end 
@@ -386,7 +392,7 @@ let
 		 0 0 1 
 	     1 0 0]
 	U,d,V = svd(X)
-	U ≈ V 
+	@show U ≈ V 
 end 
 
 # ╔═╡ 2789d231-f61d-469d-9ba8-d65afd99da0e
@@ -400,7 +406,7 @@ let
 	X = [2im 1
 		 1   0]
 	U,d,V = svd(X)
-	U ≈ V 
+	@show U ≈ V
 end 
 
 # ╔═╡ 14b7545c-9c63-449f-9b01-b7df40914694
@@ -414,7 +420,7 @@ let
 	X = [2  0
 		 0 -1]
 	U,d,V = svd(X)
-	U ≈ V
+	@show U ≈ V
 end 
 
 # ╔═╡ d4bff255-c5c8-43c1-9493-2184deaab5ad
@@ -428,7 +434,11 @@ let
 	X = [1 2
 	     2 4]
 	U,d,V = svd(X)
-	U ≈ V
+	@show U ≈ V
+	λ, Ψ = eigen(X, sortby = -)
+	U = V = Ψ # 이렇게 U,V 를 "선택"하자..
+	@show X ≈ U * Diagonal(d) * V' # -- SVD의 정의만족
+	@show X ≈ Ψ * Diagonal(λ) * Ψ' # -- Eigen Decomposition의 정의만족
 end 
 
 # ╔═╡ b4e47ad5-656d-406c-9268-d95c5e59028f
@@ -448,7 +458,13 @@ md"""
 
 # ╔═╡ f57616cd-26c8-4e68-9c4e-91236b10718e
 let
-	cov(X)
+	U,d,V = svd(cov(X))
+	@show U ≈ V
+	λ,Ψ = eigen(cov(X),sortby= - )
+	@show U ≈ V ≈ Ψ
+	U = V = Ψ # 이렇게 U,V 를 "선택"하자..
+	@show cov(X) ≈ U * Diagonal(d) * V' # -- SVD의 정의만족
+	@show cov(X) ≈ Ψ * Diagonal(λ) * Ψ' # -- Eigen Decomposition의 정의만족
 end 
 
 # ╔═╡ 2e2bfeb9-66f5-4d92-8a07-3256b5dcb742
@@ -458,7 +474,13 @@ md"""
 
 # ╔═╡ ab13954d-5c71-4fde-9e33-11016ca8368d
 let
-	cor(X)
+	U,d,V = svd(cor(X))
+	@show U ≈ V
+	λ,Ψ = eigen(cor(X),sortby= - )
+	@show U ≈ V ≈ Ψ
+	U = V = Ψ # 이렇게 U,V 를 "선택"하자..
+	@show cor(X) ≈ U * Diagonal(d) * V' # -- SVD의 정의만족
+	@show cor(X) ≈ Ψ * Diagonal(λ) * Ψ' # -- Eigen Decomposition의 정의만족
 end 
 
 # ╔═╡ b9a1c683-5b09-4217-9294-c79549b69e6e
@@ -468,7 +490,10 @@ md"""
 
 # ╔═╡ 2f17a7f4-68b0-49ee-b744-352720788178
 let
-	X'X
+	U,d,V = svd(X'X)
+	λ,Ψ = eigen(X'X,sortby= - )
+	@show U ≈ V ≈ Ψ # 선택하지 않아도 알아서 잘되네 (운좋음)
+	@show λ ≈ d
 end 
 
 # ╔═╡ 08698ea9-7ca0-41f6-a5be-aaefd0255828
@@ -480,13 +505,20 @@ md"""
 let 
 	H = X*inv(X'X)X'
 	U,d,V = svd(H)
-	@show U ≈ V # ?? 된다면서요..
+	@show U ≈ V # 된다면서요..?
 	U1,U2 = U[:,1:4], U[:,5:150]
+	d1,d2 = d[1:4], d[5:150]
 	V1,V2 = V[:,1:4], V[:,5:150]
-	@show U1 ≈ V1
-	@show H ≈ [U1 U2] * Diagonal(d) * [V1 V2]'
-	@show H ≈ [U1 U2] * Diagonal(d) * [V1 U2]'
+	@show U1 ≈ V1 # 여기까지는 잘 됨. 
+	@show H ≈ U1*Diagonal(d1)*V1' # U2*Diagonal(d2)*V2' 는 버려도 무방
+	@show H ≈ [U1 U2] * Diagonal(d) * [V1 V2]' # 줄리아에서 구해준 V -- SVD 정의만족 
+	@show H ≈ [U1 U2] * Diagonal(d) * [V1 U2]' # 내가 내맘대로 바꿔버린 V -- SVD 정의만족
 end 
+
+# ╔═╡ 3319fff4-3538-4fca-9210-2a0904c62dff
+md"""
+- SVD의 분해결과는 유일하지 않음
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1860,7 +1892,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─1f42323f-5074-41f8-bd6a-1806c123e149
 # ╟─67efeeff-8a5c-476f-ab22-f3ff4208439c
-# ╠═32bd60e5-2872-430a-8053-421b6e454f83
+# ╟─32bd60e5-2872-430a-8053-421b6e454f83
 # ╟─e36c494d-0e97-4010-a57d-fcd60ab93900
 # ╠═3c5aa44e-d594-11ec-21d6-25d65911031d
 # ╠═107c213d-b88e-4138-9a1e-0fba804f6e09
@@ -1927,5 +1959,6 @@ version = "1.4.1+1"
 # ╠═2f17a7f4-68b0-49ee-b744-352720788178
 # ╟─08698ea9-7ca0-41f6-a5be-aaefd0255828
 # ╠═ab34e79e-4c3c-49e3-8186-8576c6e0acff
+# ╟─3319fff4-3538-4fca-9210-2a0904c62dff
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
