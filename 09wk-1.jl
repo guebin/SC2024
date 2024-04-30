@@ -18,23 +18,20 @@ md"""
 """
 
 # ╔═╡ 90db85a9-9864-4e63-98ca-7edb77f1932f
-# html"""
-# <div style="display: flex; justify-content: center;">
-# <div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-# <iframe src=
-# "
-# https://www.youtube.com/embed/playlist?list=PLQqh36zP38-zjEXJRTGfKk4kWO5T4IlYy
-# "
-# width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-# """
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://youtube.com/embed/playlist?list=PLQqh36zP38-yPZZgrJ4qHRKk82p82Hj4&si=UDkPwZ6nl96Vr5-l
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
 
 # ╔═╡ c84fb7f0-e572-46ab-b0a3-7612c1870815
 md"""
 ## 2. Imports
 """
-
-# ╔═╡ 8308a4c4-46b0-4407-aba5-d8b174c2f152
-Plots.plotly()
 
 # ╔═╡ 8b5ce365-94e4-4875-ac48-d7d6f4b7409c
 PlutoUI.TableOfContents()
@@ -1790,10 +1787,9 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─e08c8300-db18-11ec-3f60-19c9638fa2d2
 # ╟─5a141d20-3166-4e3c-96a9-ca5f3395d5f5
-# ╠═90db85a9-9864-4e63-98ca-7edb77f1932f
+# ╟─90db85a9-9864-4e63-98ca-7edb77f1932f
 # ╟─c84fb7f0-e572-46ab-b0a3-7612c1870815
 # ╠═15442a71-00fe-48ed-ae51-def2f2d8876e
-# ╠═8308a4c4-46b0-4407-aba5-d8b174c2f152
 # ╠═8b5ce365-94e4-4875-ac48-d7d6f4b7409c
 # ╟─5092b326-2d86-410c-8297-baafb75eefb6
 # ╟─59561941-4c46-4380-88ab-b9948b2002ef
