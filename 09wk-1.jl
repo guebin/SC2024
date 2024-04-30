@@ -4,22 +4,12 @@
 using Markdown
 using InteractiveUtils
 
-# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
-macro bind(def, element)
-    quote
-        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
-        local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
-        el
-    end
-end
-
 # ╔═╡ 15442a71-00fe-48ed-ae51-def2f2d8876e
 using LinearAlgebra, PlutoUI, Plots,Random,CSV,DataFrames
 
 # ╔═╡ e08c8300-db18-11ec-3f60-19c9638fa2d2
 md"""
-# 09wk-1: 고유값, 고유분해
+# 09wk-1: 대각화가능행렬
 """
 
 # ╔═╡ 5a141d20-3166-4e3c-96a9-ca5f3395d5f5
@@ -49,35 +39,58 @@ Plots.plotly()
 # ╔═╡ 8b5ce365-94e4-4875-ac48-d7d6f4b7409c
 PlutoUI.TableOfContents()
 
-# ╔═╡ 935817f6-39be-480c-a7ee-9aecabfd5a2c
+# ╔═╡ 5092b326-2d86-410c-8297-baafb75eefb6
 md"""
-## 3. 회귀분석과 SVD
+## 3. 귀류법/일반화
 """
 
-# ╔═╡ eac269ae-030d-4401-a4d7-e3b9a437a575
+# ╔═╡ 59561941-4c46-4380-88ab-b9948b2002ef
 md"""
-### A. 07wk-1-4-B 의 예제
+### A. 귀류법
 """
 
-# ╔═╡ b60876a7-ab91-4405-b9be-cb86086f3d09
-temp = CSV.read(download("https://raw.githubusercontent.com/guebin/DV2022/master/posts/temp.csv"), DataFrame)[:,4]
+# ╔═╡ 5d1263cf-b4eb-4aa1-a293-e9f8e82fd4b1
+md"""
+-- 귀류법: 니 논리 대로면… <- 인터넷 댓글에 많음..
 
-# ╔═╡ 93cf8c19-023b-47d8-8931-538ad25d308c
-# let 
-# 	Random.seed!(43052)
-# 	ϵ = randn(100)
-# 	x = rand(100)
-# 	j = ones(100)
-# 	X = [j x]
-# 	y = 4x .+ 1 + ϵ
-# 	H = X*inv(X'X)X' # 변환을 의미하는 행렬, 사영행렬
-# 	scatter(x, y, label="(x,y)")
-# 	scatter!(x, H*y, label="(Hx,Hy)")
-# end
+```
+님 논리대로면..
+- XXX가 문제 없으면 서울 전체가 문제가 없고 (애초에 서울은 문제도 아니라는데 왜 이소리는 하고 계신지 모르겠지만)
+- 수도권 모 대학이 문제가 없으면 전체가 문제가 없겠네요?
+- 지방도 1개 대학이 문제가 없으니 전체가 문제 없겠네요?
+와우! 모든 문제가 해결되었습니다! 출산율 감소로 인한 한국대학의 위기가 해결되었.. 아니 애초에 위기가 없었군요!.
+어휴.. ㅠㅠ
+```
+"""
+
+# ╔═╡ f0a0a0af-c54b-4f30-8a5b-f7874ea05e79
+md"""
+ref: [하이브레인넷](https://m.hibrain.net/braincafe/cafes/38/posts/205/articles/466461?pagekey=466461&listType=TOTAL&pagesize=5&sortType=RDT&limit=30&displayType=TIT&siteid=1&page=1)
+"""
+
+# ╔═╡ c85c331a-8cbc-48e8-be68-be0633d4644c
+md"""
+### B. 일반화
+"""
+
+# ╔═╡ c3d6b5bc-bb3e-443a-ab3e-719a9db7bc95
+md"""
+-- 연필의 정의: 필기도구의 하나. 흑연과 점토의 혼합물을 구워 만든 가느다란 심을 속에 넣고, 겉은 나무로 둘러싸서 만든다. 1565년에 영국에서 처음으로 만들었다.
+"""
+
+# ╔═╡ ee58acd1-b1b5-4c90-a392-565bdf778457
+md"""
+-- 질문: 아래는 연필인가요??
+"""
+
+# ╔═╡ 0bac3ee1-5de5-4966-8157-1e85fc5ee7e1
+md"""
+![](https://guebin.github.io/SP2023/posts/1.%20%EC%B8%A1%EB%8F%84%EB%A1%A0/2023-03-14-2wk-2_files/figure-html/4da5aaa8-0e84-4c7f-a1ae-eae6a2e34076-1-7f6cdfaf-faf5-464e-9ec6-4668e9b1aab1.png)
+"""
 
 # ╔═╡ 9d9020be-5c18-48f6-bf87-d3623f568673
 md"""
-## 4. SVD -- minor topics
+## 4. SVD -- 자투리(minor topics)
 """
 
 # ╔═╡ 05c1b786-159f-4ebd-9748-65c5194133f6
@@ -209,213 +222,186 @@ md"""
 
 # ╔═╡ 006740e0-f12c-4312-b181-30d5e6f82ec3
 md"""
-## Eigenvalue Decomposition
+## 5. 고유값과 고유벡터
 """
 
 # ╔═╡ cba26403-d491-4eae-be95-7a11984c2b0e
 md"""
-### 고유값과 고유벡터의 정의
+### A. 정의
+"""
+
+# ╔═╡ 82dc78d3-4dea-47c4-bf93-a5e162a89916
+md"""
+!!! info "고유값과 고유벡터의 정의"
+	임의의 정사각행렬 ${\bf A}_{n\times n}$에 대하여 어떠한 벡터 ${\psi}_{n\times 1}\neq 0$ 가 적당한한 값 $\lambda$에 대하여 
+
+	${\bf A}{\psi} = \lambda \psi$
+
+	를 만족하면 $\psi$를 $\lambda$의 고유벡터라고 하고 $\lambda$는 $\psi$에 대응하는 고유값이라고 한다. 
+"""
+
+# ╔═╡ 7b3b6699-5666-4262-a648-f62cb20627ad
+md"""
+!!! info "고유값과 고유벡터의 정의"
+	0-벡터는 고유벡터로 인정하지 않는다는 것을 주의할 것!!
+"""
+
+# ╔═╡ 1e655ddb-83bf-4b41-b0d0-e57f957cfc25
+md"""
+### B. 구하는 방법 1
+"""
+
+# ╔═╡ fe4085be-e310-4b92-889d-7e5fd8006bbb
+md"""
+-- 그냥 찾음.. 
+"""
+
+# ╔═╡ af49f4f4-86a2-40dd-970e-df7a0183e5e3
+md"""
+-- 예제1: 단위행렬의 고유값과 고유벡터를 찾아라.
+"""
+
+# ╔═╡ bbae5460-6afd-4d46-99dc-6f8c283e7ffb
+md"""
+-- 예제2: 0행렬의 고유값과 고유벡터를 찾아라.
+"""
+
+# ╔═╡ f8044f4f-9269-4955-ade6-0ec5f6889412
+md"""
+-- 예제3: 대각행렬의 고유값과 고유벡터를 찾아라.
+"""
+
+# ╔═╡ 62015917-017d-457d-a975-2eff5f581b3b
+md"""
+### C. 구하는 방법 2 -- 특성방정식
 """
 
 # ╔═╡ fe5876ba-30f9-470d-bd42-4c188fa580f3
 md"""
-`-` 임의의 정사각행렬 ${\bf A}_{n\times n}$에 대하여 어떠한 벡터 ${\psi}_{n\times 1}\neq 0$ 가 적당한한 값 $\lambda$에 대하여 
+!!! info "고유값/고유벡터를 체계적으로 찾는방법"
+	임의의 정사각행렬 ${\bf A}$의 고유값은 항상 아래를 만족하는 $\lambda$를 풀어서 찾을 수 있다. 
+	
+	$\det({\bf A}-\lambda {\bf I})=0$
 
-$${\bf A}{\psi} = \lambda \psi$$
+	하나의 고유값이 정해지면 그 이후에는 아래의 식을 풀어서 $\psi$를 찾을 수 있다. 
 
-를 만족하면 $\psi$를 $\lambda$의 고유벡터라고 하고 $\lambda$는 $\psi$에 대응하는 고유값이라고 한다. 
-- note: 0-벡터는 고유벡터로 인정하지 않음 $\to$ 고유값을 찾는방법? $\det({\bf A}-\lambda {\bf I})=0$을 만족하는 $\lambda$를 풀면된다. 
+	${\bf A}{\psi} = \lambda \psi$
 """
 
-# ╔═╡ bca97f96-16d9-4c2d-8d6b-6bd5c7400706
+# ╔═╡ bd9fd3d7-0303-4098-afb6-c169e36ed089
 md"""
-(예제1) 첫번째 고유값
+### D. 고유값/고유벡터에 대한 고찰
 """
 
-# ╔═╡ ee444ee9-9a95-4b8f-999d-60d1c16df56f
-let 
-	A = [1 2 ; 2 1]
-	I = [1 0 ; 0 1]
-	λ = -1 
-	det(A-λ*I) 
-end
-
-# ╔═╡ 4a687148-264d-46b4-a1e4-7d3e94288e57
+# ╔═╡ 8aeab63a-6c60-4d4b-9083-b89e96232973
 md"""
--  $\lambda = -1$일때 $\det ({\bf A}-\lambda {\bf I})=0$ 이므로 $\lambda =-1$은 ${\bf A}$의 고유값이다.
+!!! warning "고유값은 항상 존재 + 고유값은 중복될 수 있음 + 고유값이 실수라는 보장없음"
+	임의의 $2\times 2$ 행렬 ${\bf A}$ 를 고려하자. 
+
+	$\det({\bf A}-\lambda {\bf I})=0$
+
+	는 $\lambda$에 대한 이차방정식의 형태일 것이다. 아래의 사실을 쉽게 유추할 수 있다. 
+
+	1. 이차방정식의 근은 항상 존재하므로 ${\bf A}$의 고유값은 항상 존재한다. (그리고 고유값/고유벡터의 정의에 따라서 ${\bf A}$에 대응하는 고유벡터도 항상 존재한다) 
+	2. 이차방정식은 중근을 가질 수 있으므로 ${\bf A}$가 서로다른 두개의 고유값을 가진다는 보장은 없다. 
+	3. 또한 이차방정식은 허근을 가질 수 있으므로 ${\bf A}$의 고유값이 실수라는 보장 역시 없다. 
+
+	이러한 논의는 임의의 $n \times n$ 행렬 ${\bf A}$ 에 대하여도 확장된다. 즉 아래가 성립한다. 
+
+	1. ``{\bf A}``의 고유값과 고유벡터는 항상 존재한다. (대수학의 기본정리) --> 좋은데?
+	2. ``{\bf A}``가 서로 다른 $n$개의 고유값을 가진다는 보장은 없다. --> rank???
+	3. ``{\bf A}``의 고유값이 실수라는 보장은 없다. --> 허수같은건 생각하기 싫은걸??
 """
 
-# ╔═╡ 17bce861-3ef6-4050-bc79-67da0ea689b8
+# ╔═╡ ca93f2b5-0117-48cd-87f0-85f3f9d2ca23
 md"""
-(예제2) 두번째 고유값
+!!! warning "고유벡터의 비 유일성"
+	고유벡터는 언제나 유일하지 않다. 예를들어 $\psi$가 고유벡터의 정의를 만족한다면 $-\psi, \sqrt{2}\psi$ 역시 고유벡터의 정의를 만족한다. 즉 고유벡터의 정의를 만족하면 $\psi$를 하나만 찾으면 정의를 만족하는 ${\boldsymbol \psi}$ 무한개를 찾을 수 있다. --> 싫은걸? 표준화 하고 싶은걸..?
 """
 
-# ╔═╡ 6349ab90-43fd-4a19-87d2-aa2483d3faea
-let 
-	A = [1 2 ; 2 1]
-	I = [1 0 ; 0 1]
-	λ = 3
-	det(A-λ*I) 
-end
-
-# ╔═╡ d7d62756-2dab-4a0f-817a-e1acd83a3b74
+# ╔═╡ 68ec2ffe-cfd7-43ed-b2cc-23ddf0245aa1
 md"""
--  $\lambda = 3$일때 $\det ({\bf A}-\lambda {\bf I})=0$ 이므로 $\lambda =3$은 ${\bf A}$의 고유값이다.
+!!! info "고유값과 고유벡터의 정의 -- 매트릭스 버전"
+	임의의 정사각행렬 ${\bf A}_{n\times n}$에 대한 고유값들을 $\lambda_1,\dots,\lambda_n$ 이라고 하고 그것에 대응하는 고유벡터들을 ${\boldsymbol \psi}_1\dots {\boldsymbol \psi}_n$ 이라고 하자. 그리고 
+	- ``{\boldsymbol \Psi} = \begin{bmatrix} {\boldsymbol \psi}_1 & {\boldsymbol \psi}_2 & \dots& {\boldsymbol \psi}_n \end{bmatrix}``
+	- ``{\boldsymbol \Lambda} = \text{diag}(\lambda_1, \dots,\lambda_n)``
+	와 같은 매트릭스를 정의하자. 그렇다면 아래의 식이 만족한다. 
+
+	${\bf A}{\boldsymbol \Psi} = {\boldsymbol \Psi}{\boldsymbol \Lambda}$
+
+	이러한 표현은 임의의 정사각행렬 ${\bf A}$에 대하여 언제나 가능함을 기억하자. 그리고 앞으로는 편의를 위하여 ``{\boldsymbol \Lambda}``를 고유값 행렬이라고 하고 ${\boldsymbol \Psi}$ 를 고유벡터행렬이라고 부르자.
 """
 
-# ╔═╡ 9bb72ff3-9307-4904-a8b7-e3021b64c343
+# ╔═╡ 9f3e1a8f-95d1-47ca-bf67-9308bb224c10
 md"""
-(예제3) 첫번째 고유값에 대응하는 고유벡터
+### E. 쓸모 없는 내용..
 """
 
-# ╔═╡ df8db08d-bdda-461b-93cf-e183fc460a41
-let 
-	A = [1 2 ; 2 1]
-	ψ = [-1,1]
-	λ = -1 
-	A*ψ == λ*ψ
-end
-
-# ╔═╡ db0b8cb1-2978-4441-9d5c-5e244f31eb0a
+# ╔═╡ 503c9c66-b1a9-4bf3-813a-980635491ce2
 md"""
--  $\psi = \begin{bmatrix} -1 \\ 1 \end{bmatrix}$은 $\lambda=-1$에 대응하는 ${\bf A}$의 고유벡터이다. 
+-- 원래 고유값이 존재하면 그에 대응하는 고유벡터도 당연히 존재한다. (고유값과 고유벡터는 홀로 정의되는게 아님, pair로 정의됨)
 """
 
-# ╔═╡ 8d7119f8-1ef7-4295-a962-d14b1b624689
+# ╔═╡ 3634c326-353f-43c8-8170-2efea684a8cb
 md"""
-(예제4) 첫번째 고유값에 대응하는 또 다른 고유벡터
+-- 그런데 "특성방정식의 근이 존재한다면, 대응하는 고유벡터가 존재한다" 라는게 직관적으로 와닿지 않는 경우가 있음. 이를 위해서 "특성방정식의 근에 대응하는 고유벡터가 항상 존재함"을 증명해보자. 
 """
 
-# ╔═╡ 2a3b32af-8c6e-495b-9cb6-872d3a64dcd5
-let 
-	A = [1 2 ; 2 1]
-	ψ = [-2,2]
-	λ = -1 
-	A*ψ == λ*ψ
-end
-
-# ╔═╡ 064f317c-a22d-4220-a944-7d2979dc3515
+# ╔═╡ 37df0670-5120-4eb6-86bc-31f7d0864fef
 md"""
--  $\psi = \begin{bmatrix} -2 \\ 2 \end{bmatrix}$ 역시 $\lambda=-1$에 대응하는 ${\bf A}$의 고유벡터이다. 
+!!! info "선형독립 -- 벡터버전"
+	벡터 $A_1,A_2,\dots,A_n$를 고려하자. 만약 
+
+	$\psi_1 A_1 + \psi_2A_2 + \dots + \psi_nA_n=0$
+
+	을 만족하는 경우가 $\psi_1 = \psi_2 = \dots = \psi_n=0$ 뿐이라면 $A_1,A_2,\dots,A_n$ 은 선형독립이고, 그렇지 않다면 $A_1,A_2,\dots,A_n$ 은 선형독립이 아니다.
+	
 """
 
-# ╔═╡ d7dba18d-7ee2-41df-b970-d6b92599b22f
+# ╔═╡ b2b8fb13-2427-4f27-9f1e-76321504698b
 md"""
-`-` 예제3,4의 관찰: $\psi$가 ${\bf A}$의 고유벡터이라면 $-\psi, \frac{1}{\sqrt{2}}\psi,\dots$ 모두 ${\bf A}$의 고유벡터이다. 그리고 이때 $\psi, -\psi, \frac{1}{\sqrt{2}}\psi$에 대응하는 고유값은 모두 같다. 
+!!! info "선형독립 -- 매트릭스 버전"
+	벡터 $A_1,A_2,\dots,A_n$을 column으로 가지는 매트릭스 ${\bf A}=[A_1 ~ A_2~ \dots ~ A_n]$ 를 고려하자. 만약 
+	
+	$${\bf A}{\boldsymbol \psi}=0$$ 
+
+	만족하는 ${\boldsymbol \psi}$가 0-벡터 밖에 없을 경우는 ${\bf A}$의 column들이 선형독립이고 (즉 벡터 $A_1,\dots,A_n$은 선형독립이고), 그렇지 않다면 (= 위의식을 만족하는 ${\boldsymbol \psi}$가 0-벡터 이외에 존재하면) ${\bf A}$의 column들은 선형독립이 아니다.
 """
 
-# ╔═╡ b85ea93b-70b9-4ba3-894f-8864626fcca1
+# ╔═╡ d6de6890-5798-4ccf-af44-4af4edf4ba7e
 md"""
-(예제5) 두번째 고유값에 대응하는 고유벡터
+!!! caution "특성방정식의 근에 대응하는 고유벡터"
+	특성방정식의 근 $\lambda$에 대응하는 고유벡터가 반드시 하나는 존재한다. 
+	
+	(proof) 귀류법을 쓰자. 즉 "고정된 $\lambda^*$에 대응하는 고유벡터가 없다"고 가정하자. 편의상 특성방정식을 만족하는 하나의 근 $\lambda^*$를 fix할 때, $\lambda^*$에 대응하는 고유벡터가 없다는 의미는 
+
+	$$({\bf A}-\lambda^*{\bf I}){\boldsymbol \psi} =0$$
+
+	를 만족하는 ${\boldsymbol \psi}$는 오직 ${\boldsymbol \psi}={\bf 0}$ 뿐이라는 것을 의미한다. 즉 $({\bf A}-\lambda^*{\bf I})$ 는 선형독립이라는 의미이다. 그런데 이는 사실이 아니다. 왜냐하면 $\lambda^*$는 
+
+	$$\det({\bf A}-\lambda^*{\bf I})=0$$
+
+	를 만족하고 따라서 행렬 ${\bf A}-\lambda^*{\bf I}$는 역행렬이 없는 행렬이 되고 이렇게 되면 ${\bf A}-\lambda^*{\bf I}$의 column 들은 선형독립이 아니게 된다. (모순)
 """
 
-# ╔═╡ 23b12658-c5af-4b28-a49c-ae6b10815de0
-let 
-	A = [1 2 ; 2 1]
-	ψ = [1,1]
-	λ = 3 
-	A*ψ == λ*ψ
-end
-
-# ╔═╡ 40b14b87-6d3e-47c4-9177-dfeeb116c858
+# ╔═╡ ef80f82f-6acf-4848-92d0-56f554670055
 md"""
--  $\psi = \begin{bmatrix} 1 \\ 1 \end{bmatrix}$ 은 $\lambda=3$에 대응하는 ${\bf A}$의 고유벡터이다.
-"""
-
-# ╔═╡ 3ede1cfb-87d6-40a7-884c-0da963c24d92
-md"""
-### 고유값의 존재 
-"""
-
-# ╔═╡ 003a2f97-46cf-4465-83f9-0ad4c64b8c59
-md"""
-`-` **고유값이 없는 정사각행렬은 없다.**
-
-(왜?) 행를 ${\bf A}_{n\times n}$의 고유값이 없다는 의미는 $\det({\bf A}-\lambda {\bf I})=0$를 만족하는 $\lambda$가 없다는 의미이다. 그런데 임의의 $n$차 다항식의 해는 항상 존재한다 (대수학의 기본정리). 
-"""
-
-# ╔═╡ fdba1f70-d0c2-4765-91fd-452fdfe487b9
-md"""
-`-` 그런데 $n$차 다항식의 해가 중복근일 수도 있으므로 ${\bf A}$가 서로 다른 $n$개의 고유값을 가질 필요는 없다.
-"""
-
-# ╔═╡ 80393f7b-c7d2-4972-9ed6-6d06439760ee
-md"""
-(예제1) 2개의 고유값이 겹치는 예제
-"""
-
-# ╔═╡ 0757d40b-2402-445e-ad4c-2daaec0b1b75
-let 
-	A = [1 0; 0 1]
-	eigvals(A)
-end
-
-# ╔═╡ a9970ddd-eba6-4eb6-9a32-a6bcc154ed68
-md"""
-(예제2) 2개의 고유값이 겹치는 두번째 예제
-"""
-
-# ╔═╡ 719cdcf6-d062-48d3-9371-a6419aa69522
-let 
-	A = [0 0; 0 0]
-	eigvals(A)
-end
-
-# ╔═╡ 7e88ea4a-61ff-4fb6-bf6b-14aed6570cce
-md"""
-### 특성방정식의 근에 대응하는 고유벡터의 존재
-"""
-
-# ╔═╡ fa606cc4-7cf2-457f-889a-3a4bdeaaab31
-md"""
-`-` **특성방정식을 만족하는 근 $\lambda$에 대응하는 고유벡터가 반드시 하나는 존재한다.** 
-"""
-
-# ╔═╡ 85302350-4d8f-4a26-8901-b308fd0b7e20
-md"""
-(왜?) 특성방정식을 만족하는 하나의 근 $\lambda^*$를 fix하자. 고정된 $\lambda^*$에 대응하는 고유벡터가 없다는 의미는 
-
-$$({\bf A}-\lambda^*{\bf I})\psi =0$$
-
-를 만족하는 $\psi$는 오직 $\psi=0$ 뿐이라는 것을 의미한다. 그런데 이는 사실이 아니다. 왜냐하면 $\lambda^*$는 
-
-$$\det({\bf A}-\lambda^*{\bf I})=0$$
-
-를 만족하고 따라서 행렬 ${\bf A}-\lambda^*{\bf I}$는 역행렬이 없는 행렬이 되고 이렇게 되면 ${\bf A}-\lambda^*{\bf I}$의 column 들은 선형독립이 아니게 된다. 따라서 $({\bf A}-\lambda^*{\bf I})\psi=0$을 만족하는 $\psi\neq0$가 있다.
-"""
-
-# ╔═╡ 465232b9-61e3-419e-a38e-e26472fa389d
-md"""
-(보충학습) 벡터 $V_1,V_2,\dots,V_n$이 선형독립이 아니라는 의미는 적당한 $c_1,c_2,\dots,c_n$이 존재하여 
-
-$$c_1 V_1 + c_2V_2 + \dots + c_nV_n=0$$
-
-을 만족한다는 의미이다. (단, 이때 $c_1,\dots c_n$이 모두 0은 아니라고 가정한다.)
-"""
-
-# ╔═╡ 3fbd4bb7-d325-4982-ab0a-def127f91434
-md"""
-- (응용버전) 적당한 매트릭스 ${\bf V}=[V_1~ V_2~ \dots ~ V_n]$에 대하여 ${\bf c} \neq 0$인 벡터 ${\bf c}= (c_1,\dots,c_n)^\top$이 존재하여 $${\bf V}{\bf c}=0$$  만족하면 ${\bf V}$의 column들은 선형독립이 아니라고 볼 수 있다.
+## 6. 대각화가능행렬
 """
 
 # ╔═╡ 2b4c2b61-53b6-4585-9e5e-774a0cb9bc9f
 md"""
-### 고유벡터의 차원
+### A. 고유벡터의 랭크
 """
 
-# ╔═╡ 10a68b69-f319-48ac-acfb-c71964edd2e7
+# ╔═╡ 9d71c79e-f1f5-4253-881e-44e6d89fef8a
 md"""
-`-` "하나의 고유값에 반드시 하나의 고유벡터는 존재한다"라는 말은 사실 무한개의 고유벡터가 존재한다는 것을 의미한다. 왜냐하면 $\psi$가 고유벡터이면 $\sqrt{2}\psi$도 고유벡터이기 때문이다. 
-"""
-
-# ╔═╡ cac169f2-0fd8-4ca9-9932-4ed751f834bf
-md"""
-`-` 아래의 예제들을 관찰하자.
+-- 고유벡터가 유일하지 않다는 것은 이미 알고있는 사실임.
 """
 
 # ╔═╡ 23729642-3a1e-4f22-b05b-356fad1bf54a
 md"""
-(예제1)
+-- 예제1: 소스(?)가 2개인 경우
 """
 
 # ╔═╡ bc325027-c401-410d-be4e-2e99e5077269
@@ -437,7 +423,7 @@ md"""
 
 # ╔═╡ 14c834bd-61ef-45d8-8aa1-cfee057f1e3d
 md"""
-(예제2)
+-- 예제2: 소스(?)가 1개인 경우
 """
 
 # ╔═╡ cbdabff5-c038-4f7a-ac35-545aa7127bd3
@@ -454,46 +440,103 @@ md"""
 
 # ╔═╡ 8657dff6-92e6-45df-853d-d13ee2959138
 md"""
-`-` 예제1,2 모두 무한개의 고유벡터를 가지는 것은 맞지만 차원이 다르다. 예제2의 경우 $\begin{bmatrix} 1 \\ 0\end{bmatrix}$을 basis로 한 벡터들의 조합을 만들 수 있지만 예제1의 경우 $\begin{bmatrix} 1 \\ 0\end{bmatrix}$을 basis로 한 벡터들의 조합을 만들 수 있고 추가적으로 $\begin{bmatrix} 0 \\ 1\end{bmatrix}$를 basis로 한 벡터들의 조합도 만들 수 있기 때문이다. 
+-- 예제1,2 모두 무한개의 고유벡터를 가지는 것은 맞지만 느낌이 다르다. 
+
+-- 예제2의 경우 $\begin{bmatrix} 1 \\ 0\end{bmatrix}$을 소스로 한 벡터들의 조합을 만들 수 있지만 예제1의 경우 $\begin{bmatrix} 1 \\ 0\end{bmatrix}$, $\begin{bmatrix} 0 \\ 1\end{bmatrix}$를 소스로 한 조합을 만들 수 있기 때문이다.
+
+-- 즉 예제1이 가질 수 있는 고유벡터 조합들이 예제2보다 더 풍부하다. 이 풍부한 느낌을 좀 더 수학적으로 표현할 수 있을까? $\to$ 이게 바로 rank의 개념이죠??
 """
 
-# ╔═╡ fa6d45e7-3921-4b86-a757-1c1eddda5438
+# ╔═╡ 9f690cb6-a65f-41c3-a3f1-fb2000d54500
 md"""
-`-` 예제1이 가질 수 있는 고유벡터 조합들이 예제2보다 더 풍부하다. 이 느낌을 좀 더 수학적으로 표현할 수 있을까? $\to$ 예제1의 고유벡터들로 조합할 수 있는 (=고유벡터들의 조합으로 확장할 수 있는, 고유벡터로 span하는) 점들은 2차원 평면을 만들지만 예제2의 고유벡터로 조합할 수 있는 (=고유벡터들의 조합으로 확장할 수 있는, 고유벡터로 span하는) 점들은 1차원 직선을 만든다. 
+### B. Full-rank 고유벡터 행렬
 """
 
-# ╔═╡ f32f1283-1689-4372-b89b-697604efe6fc
+# ╔═╡ 4ab074e8-af46-4db4-9cf3-23a4bfa335a9
 md"""
-(예제3) 예제1,2의 고유벡터로 조합할 수 있는 (=고유벡터들의 조합으로 확장할 수 있는, 고유벡터로 span하는) 점들을 시각화 하라. 예제1의 매트릭스를 임의로 바꿔보면서 관찰해보라. 
+!!! info "대각화가능 (고유벡터행렬의 full-rank matrix 일때)"
+	임의의 정사각행렬 ${\bf A}_{n\times n}$에 대한 아래를 만족하는 고유값행렬과 고유벡터행렬은 항상 존재한다. 
+	
+	${\bf A}{\boldsymbol \Psi} = {\boldsymbol \Psi}{\boldsymbol \Lambda}$
+
+	만약에 ${\boldsymbol \Psi}$가 full-rank-matrix 라면 (= ${\boldsymbol \Psi}^{-1}$ 이 존재한다면) 아래와 같은 표현이 가능하다. 
+
+	${\bf A} = {\boldsymbol \Psi}{\boldsymbol \Lambda}{\boldsymbol \Psi}^{-1}$
+
+	그리고 이때 ${\bf A}$는 **"대각화가능"**행렬이라고 부른다. (수식 ${\bf \Lambda} = {\boldsymbol \Psi}^{-1}{\bf A}{\boldsymbol \Psi}$ 를 관찰해보시면 대각화가능행렬이라는 이름이 생긴 이유를 알 수 있습니다!~) 
 """
 
-# ╔═╡ 71dbec22-42b4-4cbf-9e86-e8952ec127c4
-md"c1 $(@bind c1 Slider(-5:0.1:5,show_value=true))"
+# ╔═╡ c0b4b624-23d4-4d6d-a69f-df6e8a77b69a
+md""" 
+!!! warning "대각화가능행렬 = 고유분해 표현이 존재하는 행렬"
+	아래의 수식
+	
+	${\bf A} = {\boldsymbol \Psi}{\boldsymbol \Lambda}{\boldsymbol \Psi}^{-1}$
+	
+	를 ${\bf A}$의 고유분해 (eigendecomposition) 라고 표현한다. 따라서 아래의 용어들은 문맥상 같은 말이다. 
 
-# ╔═╡ 95674f32-720c-48bc-8d88-f8ed33b270ae
-md"c2 $(@bind c2 Slider(-5:0.1:5,show_value=true))"
+	- ``{\bf A}`` 가 대각화가능하다. 
+	- ``{\bf A}`` 의 고유분해표현이 존재한다. 
+	- ``{\bf A}`` 를 고유분해할 수 있다. 
 
-# ╔═╡ 0a987b69-88dc-4ba2-af1c-c39cb5d85019
-let
-	A = [1 5 
-		 2 2]
-	B = [1 1 
-		 0 1]
-	f = Ψ -> [Ψ[:,i] for i in 1:2]
-	v1, v2= A |> eigvecs |> f
-	u1, u2= B |> eigvecs |> f
-	Bdx, Bdy = [-5,5,-5,5]*v1' + [5,5,-5,-5]*v2' |> f
-	Ax,Ay = c1*v1 + c2*v2
-	Bx,By = c1*u1 + c2*u2
-	scatter(xlim=(-11,11),ylim=(-11,11))
-	scatter!(Bdx,Bdy,markershape=:cross,alpha=0.2,color=:"red")
-	scatter!([Ax],[Ay],markershape=:cross,color=:"red")
-	scatter!([Bx],[By],color=:"blue")
-end 
+	통계학과에서는 고유분해라는 표현을 자주쓰므로 사실 ``{\bf A}``를 "고유분해 가능행렬" 정도의 용어로 정의하고 싶은데 아쉽게도 그러한 표현은 쓰지 않는다. (쓰는거 보면 알려주세요..)
+"""
+
+# ╔═╡ f6bf3f99-485a-459b-94f6-416b7c188f85
+md"""
+### C. 대각화가능 여부 체크하기
+"""
+
+# ╔═╡ 278afdaf-26f1-44d1-9954-a54dc498c257
+md"""
+!!! info "Fact1"
+	서로 다른 $k$개의 고유값에 대응하는 고유벡터행렬은 rank $k$ 이다. 즉 full-rank 이다.  
+"""
+
+# ╔═╡ ab4bed72-dd05-4279-9383-92a51a61d17b
+md"""
+!!! info "Fact2"
+	고유값이 중근을 가진다면 (근이 2개 겹친다면), 대응하는 고유벡터행렬의 rank는 $1$일수도 있고 $2$일수도 있다. 만약에 고유값이 $m$개의 중첩된 근을 가진다면 고유벡터행렬의 rank는 최소 $1$ 최대 $m$이다. 
+"""
+
+# ╔═╡ b93d4e26-a6d7-4a56-8c12-ef57eef6ba3e
+md"""
+!!! info "대각화가능여부를 체크하는 팁? -- 안중요한데 모르면 좀 아쉬울때 있음"
+
+	고유벡터행렬을 구한뒤에 rank를 조사하는 것이 가장 깔끔하지만, 그게 어려울 때도 있다. 
+
+	1. 모든 고유값이 서로 다르다면 대각화가능하다. 
+	2. 중복된 고유값이 있다면, 그 중복된 고유값들에 대응하는 고유벡터행렬이 full-rank 인지만 조사하면 대각화가능하다고 판단할 수 있다. 
+"""
+
+# ╔═╡ a2f29756-d44c-4536-a505-8752fe8e805a
+md"""
+### D. 다음시간 예고편: 넘어야할 산..
+"""
+
+# ╔═╡ 36a7faf7-3d85-47ed-9f40-b88d8364abc8
+md"""
+!!! info "대각화가능 -> ... -> 고유값분해 = 특이값분해"
+	임의의 정사각행렬 ${\bf A}_{n\times n}$가 대각화가능행렬이라고 하자. 즉 아래를 만족하는 고유값행렬과 고유벡터행렬이 존재한다. 
+
+	${\bf A} = {\boldsymbol \Psi}{\boldsymbol \Lambda}{\boldsymbol \Psi}^{-1}$
+
+	여기에서 **우연히** 
+
+	1. ``{\bf \Psi}^\top= {\bf \Psi}^{-1}`` 이 성립하고 (즉 ${\bf \Psi}$ 가 직교행렬이고)
+	2. 모든 고유값이 양수라면
+
+	아래와 같이 표현가능한 직교행렬 ${\boldsymbol \Psi}={\bf U}={\bf V}$ 와 대각행렬 ${\bf D}={\bf \Lambda}$를 항상 정의할 수 있다. 
+
+	${\bf A} = {\boldsymbol \Psi}{\boldsymbol \Lambda}{\boldsymbol \Psi}^\top = {\bf U} {\bf D} {\bf V}^\top$
+
+	즉 이 경우 고유값분해=특이값분해가 된다. 
+	
+"""
 
 # ╔═╡ de97e015-f2d8-453e-9f71-e748eab4159e
 md"""
-## 숙제 
+## 7. 숙제 
 
 정사각행렬 ${\bf A}_{2\times 2}$가 0행렬인 경우에 ${\bf A}$의 고유벡터들이 span하는 공간이 몇차원인가? 
 """
@@ -1705,10 +1748,14 @@ version = "1.4.1+1"
 # ╠═15442a71-00fe-48ed-ae51-def2f2d8876e
 # ╠═8308a4c4-46b0-4407-aba5-d8b174c2f152
 # ╠═8b5ce365-94e4-4875-ac48-d7d6f4b7409c
-# ╟─935817f6-39be-480c-a7ee-9aecabfd5a2c
-# ╟─eac269ae-030d-4401-a4d7-e3b9a437a575
-# ╠═b60876a7-ab91-4405-b9be-cb86086f3d09
-# ╠═93cf8c19-023b-47d8-8931-538ad25d308c
+# ╟─5092b326-2d86-410c-8297-baafb75eefb6
+# ╟─59561941-4c46-4380-88ab-b9948b2002ef
+# ╟─5d1263cf-b4eb-4aa1-a293-e9f8e82fd4b1
+# ╟─f0a0a0af-c54b-4f30-8a5b-f7874ea05e79
+# ╟─c85c331a-8cbc-48e8-be68-be0633d4644c
+# ╟─c3d6b5bc-bb3e-443a-ab3e-719a9db7bc95
+# ╟─ee58acd1-b1b5-4c90-a392-565bdf778457
+# ╟─0bac3ee1-5de5-4966-8157-1e85fc5ee7e1
 # ╟─9d9020be-5c18-48f6-bf87-d3623f568673
 # ╟─05c1b786-159f-4ebd-9748-65c5194133f6
 # ╟─ee1af838-e1ee-4d8d-9dbe-3ec704ea9b43
@@ -1729,38 +1776,28 @@ version = "1.4.1+1"
 # ╟─05ee081c-a361-4d3e-94df-12d9af411779
 # ╟─006740e0-f12c-4312-b181-30d5e6f82ec3
 # ╟─cba26403-d491-4eae-be95-7a11984c2b0e
+# ╟─82dc78d3-4dea-47c4-bf93-a5e162a89916
+# ╟─7b3b6699-5666-4262-a648-f62cb20627ad
+# ╟─1e655ddb-83bf-4b41-b0d0-e57f957cfc25
+# ╟─fe4085be-e310-4b92-889d-7e5fd8006bbb
+# ╟─af49f4f4-86a2-40dd-970e-df7a0183e5e3
+# ╟─bbae5460-6afd-4d46-99dc-6f8c283e7ffb
+# ╟─f8044f4f-9269-4955-ade6-0ec5f6889412
+# ╟─62015917-017d-457d-a975-2eff5f581b3b
 # ╟─fe5876ba-30f9-470d-bd42-4c188fa580f3
-# ╟─bca97f96-16d9-4c2d-8d6b-6bd5c7400706
-# ╠═ee444ee9-9a95-4b8f-999d-60d1c16df56f
-# ╟─4a687148-264d-46b4-a1e4-7d3e94288e57
-# ╟─17bce861-3ef6-4050-bc79-67da0ea689b8
-# ╠═6349ab90-43fd-4a19-87d2-aa2483d3faea
-# ╟─d7d62756-2dab-4a0f-817a-e1acd83a3b74
-# ╟─9bb72ff3-9307-4904-a8b7-e3021b64c343
-# ╠═df8db08d-bdda-461b-93cf-e183fc460a41
-# ╟─db0b8cb1-2978-4441-9d5c-5e244f31eb0a
-# ╟─8d7119f8-1ef7-4295-a962-d14b1b624689
-# ╠═2a3b32af-8c6e-495b-9cb6-872d3a64dcd5
-# ╟─064f317c-a22d-4220-a944-7d2979dc3515
-# ╟─d7dba18d-7ee2-41df-b970-d6b92599b22f
-# ╟─b85ea93b-70b9-4ba3-894f-8864626fcca1
-# ╠═23b12658-c5af-4b28-a49c-ae6b10815de0
-# ╟─40b14b87-6d3e-47c4-9177-dfeeb116c858
-# ╟─3ede1cfb-87d6-40a7-884c-0da963c24d92
-# ╟─003a2f97-46cf-4465-83f9-0ad4c64b8c59
-# ╟─fdba1f70-d0c2-4765-91fd-452fdfe487b9
-# ╟─80393f7b-c7d2-4972-9ed6-6d06439760ee
-# ╠═0757d40b-2402-445e-ad4c-2daaec0b1b75
-# ╟─a9970ddd-eba6-4eb6-9a32-a6bcc154ed68
-# ╠═719cdcf6-d062-48d3-9371-a6419aa69522
-# ╟─7e88ea4a-61ff-4fb6-bf6b-14aed6570cce
-# ╟─fa606cc4-7cf2-457f-889a-3a4bdeaaab31
-# ╟─85302350-4d8f-4a26-8901-b308fd0b7e20
-# ╟─465232b9-61e3-419e-a38e-e26472fa389d
-# ╟─3fbd4bb7-d325-4982-ab0a-def127f91434
+# ╟─bd9fd3d7-0303-4098-afb6-c169e36ed089
+# ╟─8aeab63a-6c60-4d4b-9083-b89e96232973
+# ╟─ca93f2b5-0117-48cd-87f0-85f3f9d2ca23
+# ╟─68ec2ffe-cfd7-43ed-b2cc-23ddf0245aa1
+# ╟─9f3e1a8f-95d1-47ca-bf67-9308bb224c10
+# ╟─503c9c66-b1a9-4bf3-813a-980635491ce2
+# ╟─3634c326-353f-43c8-8170-2efea684a8cb
+# ╟─37df0670-5120-4eb6-86bc-31f7d0864fef
+# ╟─b2b8fb13-2427-4f27-9f1e-76321504698b
+# ╟─d6de6890-5798-4ccf-af44-4af4edf4ba7e
+# ╟─ef80f82f-6acf-4848-92d0-56f554670055
 # ╟─2b4c2b61-53b6-4585-9e5e-774a0cb9bc9f
-# ╟─10a68b69-f319-48ac-acfb-c71964edd2e7
-# ╟─cac169f2-0fd8-4ca9-9932-4ed751f834bf
+# ╟─9d71c79e-f1f5-4253-881e-44e6d89fef8a
 # ╟─23729642-3a1e-4f22-b05b-356fad1bf54a
 # ╠═bc325027-c401-410d-be4e-2e99e5077269
 # ╟─73808ba1-63b7-4157-b606-26814a864f2f
@@ -1769,11 +1806,15 @@ version = "1.4.1+1"
 # ╠═cbdabff5-c038-4f7a-ac35-545aa7127bd3
 # ╟─212b9778-dee0-45a2-a4a8-b75f4fa7a0bb
 # ╟─8657dff6-92e6-45df-853d-d13ee2959138
-# ╟─fa6d45e7-3921-4b86-a757-1c1eddda5438
-# ╟─f32f1283-1689-4372-b89b-697604efe6fc
-# ╠═71dbec22-42b4-4cbf-9e86-e8952ec127c4
-# ╠═95674f32-720c-48bc-8d88-f8ed33b270ae
-# ╠═0a987b69-88dc-4ba2-af1c-c39cb5d85019
+# ╟─9f690cb6-a65f-41c3-a3f1-fb2000d54500
+# ╟─4ab074e8-af46-4db4-9cf3-23a4bfa335a9
+# ╟─c0b4b624-23d4-4d6d-a69f-df6e8a77b69a
+# ╟─f6bf3f99-485a-459b-94f6-416b7c188f85
+# ╟─278afdaf-26f1-44d1-9954-a54dc498c257
+# ╟─ab4bed72-dd05-4279-9383-92a51a61d17b
+# ╟─b93d4e26-a6d7-4a56-8c12-ef57eef6ba3e
+# ╟─a2f29756-d44c-4536-a505-8752fe8e805a
+# ╟─36a7faf7-3d85-47ed-9f40-b88d8364abc8
 # ╟─de97e015-f2d8-453e-9f71-e748eab4159e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
