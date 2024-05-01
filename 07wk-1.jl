@@ -476,7 +476,7 @@ md"""
 """
 
 # ╔═╡ 43b55707-b168-4684-b84a-2a671f30fd82
-σ = @bind σ Slider(1:50, show_value=true,default=30)
+md"σ = $(@bind σ Slider(1:50, show_value=true,default=30))"
 
 # ╔═╡ 0394029f-3f5c-453e-8416-40a696e96ecf
 let 
