@@ -46,6 +46,7 @@ md"""
 - [07wk-2](https://guebin.github.io/SC2024/07wk-2.html): 이미지자료와 특이값분해 (SVD)
 - [08wk-1](https://guebin.github.io/SC2024/08wk-1.html): 주성분분석
 - [09wk-1](https://guebin.github.io/SC2024/09wk-1.html): 대각화가능행렬
+- [09wk-2](https://guebin.github.io/SC2024/09wk-2.html): 실대칭행렬, PD-행렬, SVD의 존재성
 """
 
 

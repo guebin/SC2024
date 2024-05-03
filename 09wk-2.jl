@@ -28,15 +28,15 @@ md"""
 """
 
 # ╔═╡ eb84030e-e9c1-48c7-8f9e-138b7e4adfee
-# html"""
-# <div style="display: flex; justify-content: center;">
-# <div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-# <iframe src=
-# "
-# https://youtube.com/embed/playlist?list=PLQqh36zP38-y-PZZgrJ4qHRKk82p82Hj4&si=YxiCdULCVSmT_lfD
-# "
-# width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-# """
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://youtube.com/embed/playlist?list=PLQqh36zP38-yWPXpE-77ECuOeKaf7U6BC&si=SZZnOiPyZ2U2-upY
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
 
 # ╔═╡ f9ccb632-23d6-4531-8e3f-b076685baeb6
 md"""
