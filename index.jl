@@ -47,6 +47,7 @@ md"""
 - [08wk-1](https://guebin.github.io/SC2024/08wk-1.html): 주성분분석
 - [09wk-1](https://guebin.github.io/SC2024/09wk-1.html): 대각화가능행렬
 - [09wk-2](https://guebin.github.io/SC2024/09wk-2.html): 실대칭행렬, PD-행렬, SVD의 존재성
+- [10wk-2](https://guebin.github.io/SC2024/10wk-2.html): SVD와 회귀분석
 """
 
 
@@ -59,7 +60,7 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.10.3"
 manifest_format = "2.0"
 project_hash = "da39a3ee5e6b4b0d3255bfef95601890afd80709"
 
