@@ -46,8 +46,8 @@ md"""
 ### B. 회귀분석 (${\bf X}^\top{\bf X}$ 역행렬 활용)
 """
 
-# ╔═╡ 68554725-5b90-4882-a0c8-0e0423703e62
-# 
+# ╔═╡ ff762a5f-b81b-4f48-9de4-433ba329158a
+
 
 # ╔═╡ 28a555b1-8239-4e29-b375-d0de4fc4ecf9
 md"""
@@ -82,7 +82,7 @@ md"""
 ```r
 library(tidyverse)
 ic1 = read_csv("https://raw.githubusercontent.com/guebin/SC2024/main/ic1.csv")
-lm(formula = sales ~ temp + type, data = ic1)
+lm(formula = sales ~ temp, data = ic1)
 ```
 *--Results--*
 ```
@@ -110,7 +110,7 @@ import sklearn.linear_model
 url = "https://raw.githubusercontent.com/guebin/SC2024/main/ic1.csv"
 ic1 = pd.read_csv(url)
 #--#
-X = pd.get_dummies(ic1[["temp"]])
+X = ic1[["temp"]]
 y = ic1["sales"]
 predictor = sklearn.linear_model.LinearRegression() 
 predictor.fit(X,y)
@@ -181,7 +181,7 @@ md"""
 ```r
 library(tidyverse)
 ic2 = read_csv("https://raw.githubusercontent.com/guebin/SC2024/main/ic2.csv")
-lm(formula = sales ~ temp, data = ic2)
+lm(formula = sales ~ temp + type, data = ic2)
 ```
 *--Results--*
 ```
@@ -1436,7 +1436,7 @@ version = "1.4.1+1"
 # ╟─fc22899a-8ab7-49d0-aff9-3a7a31562155
 # ╠═bb2f8573-c336-4632-a1b8-ad7b6d94b554
 # ╟─fefc338c-6ca4-4e7c-b23e-d285bd1cb456
-# ╠═68554725-5b90-4882-a0c8-0e0423703e62
+# ╠═ff762a5f-b81b-4f48-9de4-433ba329158a
 # ╟─28a555b1-8239-4e29-b375-d0de4fc4ecf9
 # ╟─a7701177-89c9-45ed-84b7-767f66098811
 # ╠═6b0899d2-ed92-4c71-b56a-5db2b016b6ee

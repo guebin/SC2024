@@ -101,7 +101,7 @@ md"""
 ```r
 library(tidyverse)
 ic1 = read_csv("https://raw.githubusercontent.com/guebin/SC2024/main/ic1.csv")
-lm(formula = sales ~ temp + type, data = ic1)
+lm(formula = sales ~ temp, data = ic1)
 ```
 *--Results--*
 ```
@@ -129,7 +129,7 @@ import sklearn.linear_model
 url = "https://raw.githubusercontent.com/guebin/SC2024/main/ic1.csv"
 ic1 = pd.read_csv(url)
 #--#
-X = pd.get_dummies(ic1[["temp"]])
+X = ic1[["temp"]]
 y = ic1["sales"]
 predictor = sklearn.linear_model.LinearRegression() 
 predictor.fit(X,y)
@@ -215,7 +215,7 @@ md"""
 ```r
 library(tidyverse)
 ic2 = read_csv("https://raw.githubusercontent.com/guebin/SC2024/main/ic2.csv")
-lm(formula = sales ~ temp, data = ic2)
+lm(formula = sales ~ temp + type, data = ic2)
 ```
 *--Results--*
 ```
