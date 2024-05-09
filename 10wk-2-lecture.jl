@@ -69,7 +69,18 @@ md"""
 """
 
 # ╔═╡ 6b0899d2-ed92-4c71-b56a-5db2b016b6ee
-
+let
+	y = ic1.sales
+	x = ic1.temp
+	j = ones(100)
+	X = [j x]
+	U,d,V = svd(X)
+	d1,d2 = d
+	β̂ = V*Diagonal([1/d1,1/d2])*U'*y
+	@show β̂
+	scatter(x,y)
+	scatter!(x,X*β̂)
+end 
 
 # ╔═╡ 4bd99568-27f6-4951-92a0-57c2d0bdf7d1
 md"""
@@ -142,7 +153,8 @@ begin
 	j = ones(200)
 	Choco = [Dict("choco"=>1, "vanilla"=>0)[key] for key in ic2.type]
 	Vanilla = [Dict("choco"=>0, "vanilla"=>1)[key] for key in ic2.type]
-	X = [j ic2.temp Choco Vanilla]
+	x = ic2.temp
+	X = [j x Choco Vanilla]
 	y = ic2.sales
 end
 
@@ -150,8 +162,8 @@ end
 let
 	초코만 = (ic2.type .== "choco")
 	바닐라만 = (ic2.type .== "vanilla")
-	scatter(ic2.temp[초코만],ic2.sales[초코만],label="초코")
-	scatter!(ic2.temp[바닐라만],ic2.sales[바닐라만],label="바닐라")
+	scatter(x[초코만],y[초코만],label="초코")
+	scatter!(x[바닐라만],y[바닐라만],label="바닐라")
 end 
 
 # ╔═╡ 985aa146-9ba5-4399-8e38-44367b88b4b9
@@ -160,7 +172,12 @@ md"""
 """
 
 # ╔═╡ 2a0baf1b-af8a-4fe1-94b0-938918da4780
-
+let
+	# inv(X'X) # 역행렬을 못구해
+	@show rank(X) # rank=3 -> full-rank 아님
+	X1,X2,X3,X4 = eachcol(X)
+	@show (X1-X3) == X4 # 여기서 선형종속관계가 있음! X1,X3으로 X4를 만들수 있음. 
+end 
 
 # ╔═╡ 1fe9a415-739a-43fe-b05b-80eaf3c5ab86
 md"""
@@ -168,7 +185,13 @@ md"""
 """
 
 # ╔═╡ eae661c2-b70f-4fcb-b1a8-89deadc6ae10
-
+begin
+	U,d,V = svd(X)
+	d1,d2,d3,d4 = d
+	β̂ = V*Diagonal([1/d1,1/d2,1/d3,0])*U'*y
+	scatter(ic2.temp,y)
+	scatter!(ic2.temp,X*β̂)
+end 
 
 # ╔═╡ 346c24a0-7eb7-400c-a4be-5a3be69fc28c
 md"""
@@ -200,7 +223,13 @@ md"""
 """
 
 # ╔═╡ 0125138e-cabf-4edf-8d8a-ebef5f9a8216
-
+let 
+	X1,X2,X3,X4 = eachcol(X)
+	Z = [X1 X2 X4]
+	γ̂ = inv(Z'Z)*Z'y
+	scatter(ic2.temp,y)
+	scatter!(ic2.temp,Z*γ̂)
+end 
 
 # ╔═╡ 440c1ef2-c52a-4456-90c8-81187868c034
 md"""
@@ -235,9 +264,6 @@ Intercept:29.899
 md"""
 *--Julia로 재현--*
 """
-
-# ╔═╡ 0a50556f-1c55-4380-b8f9-c734695bad82
-
 
 # ╔═╡ 64636459-f35c-443c-ab88-84150b4accea
 md"""
@@ -1459,8 +1485,7 @@ version = "1.4.1+1"
 # ╠═0125138e-cabf-4edf-8d8a-ebef5f9a8216
 # ╟─440c1ef2-c52a-4456-90c8-81187868c034
 # ╟─80a764f7-7320-434b-a270-d7c34ffbed16
-# ╟─17aee5e2-4326-4436-beb0-96217c23902c
-# ╠═0a50556f-1c55-4380-b8f9-c734695bad82
+# ╠═17aee5e2-4326-4436-beb0-96217c23902c
 # ╟─64636459-f35c-443c-ab88-84150b4accea
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

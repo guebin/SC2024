@@ -50,8 +50,9 @@ md"""
 let 
 	scatter(ic1.temp,ic1.sales)
 	j = ones(100)
-	X = [j ic1.temp]
+	x = ic1.temp
 	y = ic1.sales
+	X = [j x]	
 	β̂ = inv(X'X)X'y
 	@show β̂
 	scatter!(ic1.temp, X*β̂)
@@ -80,8 +81,9 @@ md"""
 let 
 	scatter(ic1.temp,ic1.sales)
 	j = ones(100)
-	X = [j ic1.temp]
+	x = ic1.temp 
 	y = ic1.sales
+	X = [j x]	
 	U,d,V = svd(X)
 	d1,d2 = d
 	#β̂ = inv(X'X)X'y
@@ -161,8 +163,9 @@ begin
 	j = ones(200)
 	Choco = [Dict("choco"=>1, "vanilla"=>0)[key] for key in ic2.type]
 	Vanilla = [Dict("choco"=>0, "vanilla"=>1)[key] for key in ic2.type]
-	X = [j ic2.temp Choco Vanilla]
+	x = ic2.temp
 	y = ic2.sales
+	X = [j x Choco Vanilla]
 	[X y]
 end
 
@@ -170,8 +173,8 @@ end
 let
 	초코만 = (ic2.type .== "choco")
 	바닐라만 = (ic2.type .== "vanilla")
-	scatter(ic2.temp[초코만],ic2.sales[초코만],label="초코")
-	scatter!(ic2.temp[바닐라만],ic2.sales[바닐라만],label="바닐라")
+	scatter(x[초코만],y[초코만],label="초코")
+	scatter!(x[바닐라만],y[바닐라만],label="바닐라")
 end 
 
 # ╔═╡ 985aa146-9ba5-4399-8e38-44367b88b4b9
@@ -181,12 +184,10 @@ md"""
 
 # ╔═╡ 2a0baf1b-af8a-4fe1-94b0-938918da4780
 let
+	# inv(X'X) # 실패..
 	@show rank(X'X) # full-rank 가 아님
-	#--fullrank가 아닌 이유--#
 	X1,X2,X3,X4 = eachcol(X)
 	@show X1 .- X3 == X4 # X4= X1-X3
-	#--역행렬존재X--#
-	inv(X'X) # 실패..
 end 
 
 # ╔═╡ 1fe9a415-739a-43fe-b05b-80eaf3c5ab86
