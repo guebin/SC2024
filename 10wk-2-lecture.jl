@@ -47,15 +47,7 @@ md"""
 """
 
 # ╔═╡ 68554725-5b90-4882-a0c8-0e0423703e62
-let 
-	scatter(ic1.temp,ic1.sales)
-	j = ones(100)
-	X = [j ic1.temp]
-	y = ic1.sales
-	β̂ = inv(X'X)X'y
-	@show β̂
-	scatter!(ic1.temp, X*β̂)
-end 
+# 
 
 # ╔═╡ 28a555b1-8239-4e29-b375-d0de4fc4ecf9
 md"""
@@ -77,18 +69,7 @@ md"""
 """
 
 # ╔═╡ 6b0899d2-ed92-4c71-b56a-5db2b016b6ee
-let 
-	scatter(ic1.temp,ic1.sales)
-	j = ones(100)
-	X = [j ic1.temp]
-	y = ic1.sales
-	U,d,V = svd(X)
-	d1,d2 = d
-	#β̂ = inv(X'X)X'y
-	β̂ = V * Diagonal([1/d1,1/d2]) * U' * y
-	@show β̂
-	scatter!(ic1.temp, X*β̂)
-end 
+
 
 # ╔═╡ 4bd99568-27f6-4951-92a0-57c2d0bdf7d1
 md"""
@@ -163,7 +144,6 @@ begin
 	Vanilla = [Dict("choco"=>0, "vanilla"=>1)[key] for key in ic2.type]
 	X = [j ic2.temp Choco Vanilla]
 	y = ic2.sales
-	[X y]
 end
 
 # ╔═╡ a93520fe-a35c-4136-9cf5-dc3076a60219
@@ -180,14 +160,7 @@ md"""
 """
 
 # ╔═╡ 2a0baf1b-af8a-4fe1-94b0-938918da4780
-let
-	@show rank(X'X) # full-rank 가 아님
-	#--fullrank가 아닌 이유--#
-	X1,X2,X3,X4 = eachcol(X)
-	@show X1 .- X3 == X4 # X4= X1-X3
-	#--역행렬존재X--#
-	inv(X'X) # 실패..
-end 
+
 
 # ╔═╡ 1fe9a415-739a-43fe-b05b-80eaf3c5ab86
 md"""
@@ -195,14 +168,7 @@ md"""
 """
 
 # ╔═╡ eae661c2-b70f-4fcb-b1a8-89deadc6ae10
-let
-	U,d,V = svd(X)
-	d1,d2,d3,d4 = d 
-	β̂ = V * Diagonal([1/d1,1/d2,1/d3,0]) * U' * y
-	@show β̂
-	scatter(ic2.temp,ic2.sales)
-	scatter!(ic2.temp,X*β̂)
-end 
+
 
 # ╔═╡ 346c24a0-7eb7-400c-a4be-5a3be69fc28c
 md"""
@@ -234,14 +200,7 @@ md"""
 """
 
 # ╔═╡ 0125138e-cabf-4edf-8d8a-ebef5f9a8216
-let 
-	X1,X2,X3,X4 = eachcol(X)
-	Z = [X1 X2 X4] 
-	γ̂ = inv(Z'Z)Z'y
-	@show γ̂
-	scatter(ic2.temp,ic2.sales)
-	scatter!(ic2.temp,Z*γ̂)
-end 
+
 
 # ╔═╡ 440c1ef2-c52a-4456-90c8-81187868c034
 md"""
@@ -278,18 +237,7 @@ md"""
 """
 
 # ╔═╡ 0a50556f-1c55-4380-b8f9-c734695bad82
-let
-	X1,X2,X3,X4 = eachcol(X)
-	Z = [X2 .- mean(X2) X3 .- mean(X3) X4 .- mean(X4)]
-	U,d,V = svd(Z)
-	d1,d2,d3 = d
-	γ̂ = V*Diagonal([1/d1,1/d2,0])*U'*y
-	intercept = mean(y-[X2 X3 X4]*γ̂)
-	println("coef= $(γ̂)") 
-	println("intercept= $(intercept)")
-	scatter(ic2.temp,ic2.sales)
-	scatter!(ic2.temp, [X2 X3 X4]*γ̂ .+ intercept)	
-end 
+
 
 # ╔═╡ 64636459-f35c-443c-ab88-84150b4accea
 md"""
