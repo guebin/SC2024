@@ -46,16 +46,16 @@ md"""
 ### B. 회귀분석 (${\bf X}^\top{\bf X}$ 역행렬 활용)
 """
 
-# ╔═╡ 68554725-5b90-4882-a0c8-0e0423703e62
+# ╔═╡ ff762a5f-b81b-4f48-9de4-433ba329158a
 let 
-	scatter(ic1.temp,ic1.sales)
-	j = ones(100)
-	x = ic1.temp
 	y = ic1.sales
-	X = [j x]	
+	x = ic1.temp
+	scatter(x,y)
+	j = ones(100)
+	X = [j x]
 	β̂ = inv(X'X)X'y
-	@show β̂
-	scatter!(ic1.temp, X*β̂)
+	@show β̂ 	
+	scatter!(x,X*β̂)
 end 
 
 # ╔═╡ 28a555b1-8239-4e29-b375-d0de4fc4ecf9
@@ -79,17 +79,17 @@ md"""
 
 # ╔═╡ 6b0899d2-ed92-4c71-b56a-5db2b016b6ee
 let 
-	scatter(ic1.temp,ic1.sales)
-	j = ones(100)
-	x = ic1.temp 
 	y = ic1.sales
-	X = [j x]	
+	x = ic1.temp
+	scatter(x,y)
+	j = ones(100)
+	X = [j x]
+	#β̂ = inv(X'X)X'y
 	U,d,V = svd(X)
 	d1,d2 = d
-	#β̂ = inv(X'X)X'y
-	β̂ = V * Diagonal([1/d1,1/d2]) * U' * y
-	@show β̂
-	scatter!(ic1.temp, X*β̂)
+	β̂ = V*Diagonal([1/d1,1/d2])*U'*y
+	@show β̂ 
+	scatter!(x,X*β̂)
 end 
 
 # ╔═╡ 4bd99568-27f6-4951-92a0-57c2d0bdf7d1
@@ -164,9 +164,8 @@ begin
 	Choco = [Dict("choco"=>1, "vanilla"=>0)[key] for key in ic2.type]
 	Vanilla = [Dict("choco"=>0, "vanilla"=>1)[key] for key in ic2.type]
 	x = ic2.temp
-	y = ic2.sales
 	X = [j x Choco Vanilla]
-	[X y]
+	y = ic2.sales
 end
 
 # ╔═╡ a93520fe-a35c-4136-9cf5-dc3076a60219
@@ -184,10 +183,10 @@ md"""
 
 # ╔═╡ 2a0baf1b-af8a-4fe1-94b0-938918da4780
 let
-	# inv(X'X) # 실패..
+	#inv(X'X) -- 역행렬이없음. 
 	@show rank(X'X) # full-rank 가 아님
 	X1,X2,X3,X4 = eachcol(X)
-	@show X1 .- X3 == X4 # X4= X1-X3
+	X1.-X3 == X4 # X1,X3 을 선형조합해서 X4를 만들었음. 
 end 
 
 # ╔═╡ 1fe9a415-739a-43fe-b05b-80eaf3c5ab86
@@ -196,13 +195,14 @@ md"""
 """
 
 # ╔═╡ eae661c2-b70f-4fcb-b1a8-89deadc6ae10
-let
+let 
 	U,d,V = svd(X)
-	d1,d2,d3,d4 = d 
-	β̂ = V * Diagonal([1/d1,1/d2,1/d3,0]) * U' * y
+	d1,d2,d3,d4 = d
+	β̂ = V*Diagonal([1/d1,1/d2,1/d3,0])*U'*y
 	@show β̂
-	scatter(ic2.temp,ic2.sales)
-	scatter!(ic2.temp,X*β̂)
+	scatter(x,y)
+	scatter!(x,X*β̂)
+	
 end 
 
 # ╔═╡ 346c24a0-7eb7-400c-a4be-5a3be69fc28c
@@ -235,14 +235,14 @@ md"""
 """
 
 # ╔═╡ 0125138e-cabf-4edf-8d8a-ebef5f9a8216
-let 
+let
 	X1,X2,X3,X4 = eachcol(X)
-	Z = [X1 X2 X4] 
+	Z = [X1 X2 X4]
 	γ̂ = inv(Z'Z)Z'y
 	@show γ̂
-	scatter(ic2.temp,ic2.sales)
-	scatter!(ic2.temp,Z*γ̂)
-end 
+	scatter(x,y)
+	scatter!(x,Z*γ̂)
+end
 
 # ╔═╡ 440c1ef2-c52a-4456-90c8-81187868c034
 md"""
@@ -278,18 +278,18 @@ md"""
 *--Julia로 재현--*
 """
 
-# ╔═╡ 0a50556f-1c55-4380-b8f9-c734695bad82
-let
+# ╔═╡ 2f22df78-4fb5-4e59-b010-20934614d88e
+let 
 	X1,X2,X3,X4 = eachcol(X)
 	Z = [X2 .- mean(X2) X3 .- mean(X3) X4 .- mean(X4)]
 	U,d,V = svd(Z)
 	d1,d2,d3 = d
-	γ̂ = V*Diagonal([1/d1,1/d2,0])*U'*y
-	intercept = mean(y-[X2 X3 X4]*γ̂)
-	println("coef= $(γ̂)") 
-	println("intercept= $(intercept)")
-	scatter(ic2.temp,ic2.sales)
-	scatter!(ic2.temp, [X2 X3 X4]*γ̂ .+ intercept)	
+	γ̂ = V * Diagonal([1/d1,1/d2,0]) * U' * y
+	intercept = mean(y .- [X2 X3 X4]*γ̂) 
+	@show γ̂
+	@show intercept
+	scatter(x,y)
+	scatter!(x,[X2 X3 X4]*γ̂ .+ intercept)
 end 
 
 # ╔═╡ 64636459-f35c-443c-ab88-84150b4accea
@@ -1489,7 +1489,7 @@ version = "1.4.1+1"
 # ╟─fc22899a-8ab7-49d0-aff9-3a7a31562155
 # ╠═bb2f8573-c336-4632-a1b8-ad7b6d94b554
 # ╟─fefc338c-6ca4-4e7c-b23e-d285bd1cb456
-# ╠═68554725-5b90-4882-a0c8-0e0423703e62
+# ╠═ff762a5f-b81b-4f48-9de4-433ba329158a
 # ╟─28a555b1-8239-4e29-b375-d0de4fc4ecf9
 # ╟─a7701177-89c9-45ed-84b7-767f66098811
 # ╠═6b0899d2-ed92-4c71-b56a-5db2b016b6ee
@@ -1513,7 +1513,7 @@ version = "1.4.1+1"
 # ╟─440c1ef2-c52a-4456-90c8-81187868c034
 # ╟─80a764f7-7320-434b-a270-d7c34ffbed16
 # ╟─17aee5e2-4326-4436-beb0-96217c23902c
-# ╠═0a50556f-1c55-4380-b8f9-c734695bad82
+# ╠═2f22df78-4fb5-4e59-b010-20934614d88e
 # ╟─64636459-f35c-443c-ab88-84150b4accea
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
