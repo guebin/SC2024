@@ -17,6 +17,17 @@ md"""
 ## 1. 강의영상
 """
 
+# ╔═╡ 5682e68c-c6e3-4d19-8d65-7461dc6c2b09
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://youtube.com/embed/playlist?list=PLQqh36zP38-yJuaErMR7_6ndAPbRjQFXm&si=F8uhevkrlAdHajBR
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
+
 # ╔═╡ 08fb28c3-8673-48ec-85cf-cc997ca765a6
 md"""
 ## 2. Imports
@@ -1481,6 +1492,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─ca180ae1-5c93-4603-9917-3e118d5ee403
 # ╟─c71816f9-a3f3-405c-99b2-c403c1cab50f
+# ╟─5682e68c-c6e3-4d19-8d65-7461dc6c2b09
 # ╟─08fb28c3-8673-48ec-85cf-cc997ca765a6
 # ╠═8cdc0f71-0da0-4b91-85be-55501fe0e5c4
 # ╠═b3fd622d-2207-4971-ac85-2cf9429d072c
