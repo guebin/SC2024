@@ -12,12 +12,22 @@ md"""
 # 11wk-1: 벡터미분
 """
 
+# ╔═╡ 6e5d5eda-1194-420c-81e2-d6ce8756331e
+md"""
+## 1. 강의영상
+"""
+
+# ╔═╡ 06b7582e-07de-4569-b2f7-75dfd50b365a
+md"""
+## 2. Imports
+"""
+
 # ╔═╡ 0da63a00-6cf6-47a4-a4c6-191a4df26837
 PlutoUI.TableOfContents()
 
 # ╔═╡ c5331296-1189-11ef-38cb-9bda1b37621c
 md"""
-## 3. 벡터미분 / 매트릭스미분
+## 3. 벡터미분
 """
 
 # ╔═╡ 27a686c7-81d3-46a0-9309-5ec35254f55e
@@ -85,7 +95,7 @@ md"""
 
 # ╔═╡ f80913c3-86bf-4b71-b99d-d25867fae118
 md"""
-### B. 예제
+### B. 연습문제
 """
 
 # ╔═╡ be4e1e85-e091-4ae7-974d-772f8a966d17
@@ -112,7 +122,7 @@ md"""
 md"""
 -- 예제3: 아래와 같은 함수를 최소화하는 ${\boldsymbol \beta}$를 구하라. 여기에서 각 벡터 및 매트릭스의 차원은 ${\bf y}_{n\times 1}, {\bf X}_{n\times p}, {\boldsymbol \beta}_{p\times 1}$ 로 가정한다. 
 
-$$loss({\boldsymbol \beta}):=({\bf y}-{\bf X}{\boldsymbol \beta})^\top({\bf y}-{\bf X}{\boldsymbol \beta})$$
+$$loss:=({\bf y}-{\bf X}{\boldsymbol \beta})^\top({\bf y}-{\bf X}{\boldsymbol \beta})$$
 
 """
 
@@ -120,12 +130,26 @@ $$loss({\boldsymbol \beta}):=({\bf y}-{\bf X}{\boldsymbol \beta})^\top({\bf y}-{
 md"""
 -- 예제4: 아래와 같은 함수를 최소화하는 ${\boldsymbol \beta}$를 구하라. 여기에서 각 벡터 및 매트릭스의 차원은 ${\bf y}_{n\times 1}, {\bf X}_{n\times p}, {\boldsymbol \beta}_{p\times 1}$ 로 가정한다. 
 
-$$loss({\boldsymbol \beta}):=({\bf y}-{\bf X}{\boldsymbol \beta})^\top({\bf y}-{\bf X}{\boldsymbol \beta})+\lambda{\boldsymbol \beta}^\top{\boldsymbol \beta}$$
+$$loss:=({\bf y}-{\bf X}{\boldsymbol \beta})^\top({\bf y}-{\bf X}{\boldsymbol \beta})+\lambda{\boldsymbol \beta}^\top{\boldsymbol \beta}$$
+"""
+
+# ╔═╡ e7048c45-905b-43de-a11a-2f21dddd61a2
+md"""
+-- 예제5: 예제3과 같은 함수를 아래와 같이 재표현하자. 
+
+- ``{\boldsymbol u} = {\bf X}{\boldsymbol \beta}``
+- ``{\boldsymbol v} = {\bf y}-{\boldsymbol u}``
+- ``loss = {\boldsymbol v}^\top {\boldsymbol v}``
+
+아래와 같이 주장할 수 있는가?
+
+$$\frac{\partial}{\partial \boldsymbol \beta} loss =\bigg(\frac{\partial}{\partial \boldsymbol \beta}{\boldsymbol u}^\top\bigg)\bigg(\frac{\partial}{\partial \boldsymbol u}{\boldsymbol v}^\top\bigg)\bigg(\frac{\partial}{\partial \boldsymbol v}loss\bigg)$$
+
 """
 
 # ╔═╡ 4bfb8c49-9978-4c6e-b2b7-f2576e9e98ed
 md"""
--- 예제5: (직교행렬이 아닌) 임의의 ${\bf V}$ 와 임의의 대각행렬 ${\bf \Lambda}$에 대하여 아래를 보여라. 여기에서 각 매트릭스의 차원은 ${\bf X}_{n\times p}, {\bf V}_{p\times p}, {\bf \Lambda}_{p \times p}$ 로 가정한다. 
+-- 예제6: (직교행렬이 아닌) 임의의 ${\bf V}$ 와 임의의 대각행렬 ${\bf \Lambda}$에 대하여 아래를 보여라. 여기에서 각 매트릭스의 차원은 ${\bf X}_{n\times p}, {\bf V}_{p\times p}, {\bf \Lambda}_{p \times p}$ 로 가정한다. 
 
 `(1)` ``\frac{\partial}{\partial {\bf V}}tr({\bf V}^\top{\bf X}^\top{\bf X}{\bf V}) = 2{\bf X}^\top{\bf X}{\bf V}``
 
@@ -413,6 +437,8 @@ version = "17.4.0+2"
 
 # ╔═╡ Cell order:
 # ╟─e402f73a-264d-42cf-be51-b5fc45e05a1a
+# ╟─6e5d5eda-1194-420c-81e2-d6ce8756331e
+# ╟─06b7582e-07de-4569-b2f7-75dfd50b365a
 # ╠═79ee3d48-46aa-42d2-b3b8-bf12bde667b6
 # ╠═0da63a00-6cf6-47a4-a4c6-191a4df26837
 # ╟─c5331296-1189-11ef-38cb-9bda1b37621c
@@ -426,6 +452,7 @@ version = "17.4.0+2"
 # ╟─247fd51b-7049-4da5-8fde-599754da268f
 # ╟─2e788885-a662-4567-9406-7e2e5f9de351
 # ╟─f65ed75c-fbc1-4b47-a5de-ca0ac1a67781
+# ╟─e7048c45-905b-43de-a11a-2f21dddd61a2
 # ╟─4bfb8c49-9978-4c6e-b2b7-f2576e9e98ed
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
