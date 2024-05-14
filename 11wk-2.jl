@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.41
+# v0.19.42
 
 using Markdown
 using InteractiveUtils
@@ -21,6 +21,9 @@ using PlutoUI, Distributions,LinearAlgebra, CSV, Plots,Random
 md"""
 # 11wk-2:
 """
+
+# ╔═╡ 226b753e-1d6c-4a2c-945e-1a19fa40df5c
+
 
 # ╔═╡ 0484fdc7-ba57-4cbc-8c80-eda285d45ac1
 md"""
@@ -1427,6 +1430,7 @@ version = "1.4.1+1"
 
 # ╔═╡ Cell order:
 # ╟─1f535031-df13-469e-a945-8731b4e31811
+# ╠═226b753e-1d6c-4a2c-945e-1a19fa40df5c
 # ╟─0484fdc7-ba57-4cbc-8c80-eda285d45ac1
 # ╟─94b6107e-16ee-42eb-95ee-9a514e424b0f
 # ╠═3138d79d-b910-4a4a-b9bc-4aa91f03b04e

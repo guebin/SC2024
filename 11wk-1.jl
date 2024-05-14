@@ -27,7 +27,7 @@ PlutoUI.TableOfContents()
 
 # ╔═╡ c5331296-1189-11ef-38cb-9bda1b37621c
 md"""
-## 3. 벡터미분
+## 3. 벡터로 미분
 """
 
 # ╔═╡ 27a686c7-81d3-46a0-9309-5ec35254f55e
@@ -59,7 +59,7 @@ md"""
 md"""
 !!! info "벡터를 벡터로 미분" 
 	
-	임의의 벡터 ${\bf y}$와 ${\bf z}$를 고려하자. 벡터를 벡터로 미분하는 경우 아래와 같은 방식으로 표현 할 수 있다. 
+	임의의 벡터 ${\bf y}_{n\times 1}$와 ${\bf z}_{n\times 1}$를 고려하자. 벡터를 벡터로 미분하는 경우 아래와 같은 방식으로 표현 할 수 있다. 
 	
 	$$\frac{\partial }{\partial \bf y}\bf z^\top:=\frac{\partial \bf z^\top}{\partial \bf y}
 	=\begin{bmatrix} 
@@ -147,16 +147,13 @@ $$\frac{\partial}{\partial \boldsymbol \beta} loss =\bigg(\frac{\partial}{\parti
 
 """
 
-# ╔═╡ 4bfb8c49-9978-4c6e-b2b7-f2576e9e98ed
+# ╔═╡ f78f7525-4ad3-4200-9ada-7c0cda6b0547
 md"""
--- 예제6: (직교행렬이 아닌) 임의의 ${\bf V}$ 와 임의의 대각행렬 ${\bf \Lambda}$에 대하여 아래를 보여라. 여기에서 각 매트릭스의 차원은 ${\bf X}_{n\times p}, {\bf V}_{p\times p}, {\bf \Lambda}_{p \times p}$ 로 가정한다. 
-
-`(1)` ``\frac{\partial}{\partial {\bf V}}tr({\bf V}^\top{\bf X}^\top{\bf X}{\bf V}) = 2{\bf X}^\top{\bf X}{\bf V}``
-
-`(2)` ``\frac{\partial}{\partial {\bf V}}tr({\bf \Lambda}({\bf V}^\top{\bf V}-{\bf I})) = 2{\bf V}{\bf \Lambda}``
-
-`(3)` ``\frac{\partial}{\partial {\bf \Lambda}}tr({\bf \Lambda}({\bf V}^\top {\bf V}-{\bf I}))={\bf V}^\top{\bf V}-{\bf I}``
+## A1. -- 필기자료
 """
+
+# ╔═╡ 661e6bd1-9dcd-4de5-b73a-a3540630e832
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -453,6 +450,7 @@ version = "17.4.0+2"
 # ╟─2e788885-a662-4567-9406-7e2e5f9de351
 # ╟─f65ed75c-fbc1-4b47-a5de-ca0ac1a67781
 # ╟─e7048c45-905b-43de-a11a-2f21dddd61a2
-# ╟─4bfb8c49-9978-4c6e-b2b7-f2576e9e98ed
+# ╟─f78f7525-4ad3-4200-9ada-7c0cda6b0547
+# ╠═661e6bd1-9dcd-4de5-b73a-a3540630e832
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
