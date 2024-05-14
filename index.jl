@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.41
+# v0.19.42
 
 using Markdown
 using InteractiveUtils
@@ -48,6 +48,7 @@ md"""
 - [09wk-1](https://guebin.github.io/SC2024/09wk-1.html): 대각화가능행렬
 - [09wk-2](https://guebin.github.io/SC2024/09wk-2.html): 실대칭행렬, PD-행렬, SVD의 존재성
 - [10wk-2](https://guebin.github.io/SC2024/10wk-2.html): SVD와 회귀분석
+- [11wk-1](https://guebin.github.io/SC2024/11wk-1.html): 벡터미분
 """
 
 

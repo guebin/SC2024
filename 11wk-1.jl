@@ -17,6 +17,17 @@ md"""
 ## 1. 강의영상
 """
 
+# ╔═╡ 0f26a4e6-5cd8-479b-a759-49751e9f9a1f
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://youtube.com/embed/playlist?list=PLQqh36zP38-y9u-sadZtdD3hkPhQsUTCD&si=1A2SFIVlHvZ8Z3PP
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
+
 # ╔═╡ 06b7582e-07de-4569-b2f7-75dfd50b365a
 md"""
 ## 2. Imports
@@ -153,7 +164,9 @@ md"""
 """
 
 # ╔═╡ 661e6bd1-9dcd-4de5-b73a-a3540630e832
-
+md"""
+- [필기자료 보기](https://github.com/guebin/SC2024/blob/main/SC2024-11wk-1-supp.pdf)
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -435,6 +448,7 @@ version = "17.4.0+2"
 # ╔═╡ Cell order:
 # ╟─e402f73a-264d-42cf-be51-b5fc45e05a1a
 # ╟─6e5d5eda-1194-420c-81e2-d6ce8756331e
+# ╟─0f26a4e6-5cd8-479b-a759-49751e9f9a1f
 # ╟─06b7582e-07de-4569-b2f7-75dfd50b365a
 # ╠═79ee3d48-46aa-42d2-b3b8-bf12bde667b6
 # ╠═0da63a00-6cf6-47a4-a4c6-191a4df26837
@@ -451,6 +465,6 @@ version = "17.4.0+2"
 # ╟─f65ed75c-fbc1-4b47-a5de-ca0ac1a67781
 # ╟─e7048c45-905b-43de-a11a-2f21dddd61a2
 # ╟─f78f7525-4ad3-4200-9ada-7c0cda6b0547
-# ╠═661e6bd1-9dcd-4de5-b73a-a3540630e832
+# ╟─661e6bd1-9dcd-4de5-b73a-a3540630e832
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
