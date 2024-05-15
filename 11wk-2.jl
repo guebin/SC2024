@@ -45,10 +45,18 @@ md"""
 df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
 
 # ╔═╡ 109f4a28-ff76-49c4-a14d-ff5ce48765bf
-X1,X2,X3 = eachcol(df)
+let 
+	X1,X2,X3 = eachcol(df)
+	y = X1*3.2 + X2*0.01 + randn(500)
+	X = [X1 X2 X3]
+	β̂ = inv(X'X)X'y
+end
+
+# ╔═╡ 0cdd17d1-62db-429f-9a89-54270db1ba6c
+
 
 # ╔═╡ 2423428e-e096-439c-8f4e-fa534fa75886
-y = X1*3.2 + X2*0.01 + randn(500) 
+
 
 # ╔═╡ 57045abd-dd4f-40d5-a52a-6857373a9504
 X = [ones(500) X1 X2 X3]
@@ -1275,6 +1283,7 @@ version = "1.4.1+1"
 # ╟─6738f8c1-d361-438c-826c-f417652fbe5c
 # ╠═b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
 # ╠═109f4a28-ff76-49c4-a14d-ff5ce48765bf
+# ╠═0cdd17d1-62db-429f-9a89-54270db1ba6c
 # ╠═2423428e-e096-439c-8f4e-fa534fa75886
 # ╠═57045abd-dd4f-40d5-a52a-6857373a9504
 # ╠═c5c6a6c4-7079-4733-afc1-823dc9f3bf86
