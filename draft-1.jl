@@ -4,55 +4,156 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 128613c3-baba-426a-adbf-8abed179eb49
-using PlutoUI,Plots,HTTP,CSV,DataFrames,LinearAlgebra,Statistics
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
 
-# ╔═╡ 7ec1510e-130c-11ef-1e0e-518d9cc440ea
+# ╔═╡ 3138d79d-b910-4a4a-b9bc-4aa91f03b04e
+using PlutoUI, Distributions,LinearAlgebra, CSV, Plots,Random
+
+# ╔═╡ 1f535031-df13-469e-a945-8731b4e31811
 md"""
-# 11wk-2: 다중공선성
+# draft
 """
 
-# ╔═╡ a366d78e-5826-4a65-a3fe-3469fee80f9a
+# ╔═╡ 226b753e-1d6c-4a2c-945e-1a19fa40df5c
+
+
+# ╔═╡ 0484fdc7-ba57-4cbc-8c80-eda285d45ac1
 md"""
 ## 1. 강의영상
 """
 
-# ╔═╡ 4c8cb126-08bd-478e-8472-fd1547e0d128
-
-
-# ╔═╡ 2d2f8c88-07f9-4e8b-86ae-fc9828aba187
+# ╔═╡ 94b6107e-16ee-42eb-95ee-9a514e424b0f
 md"""
 ## 2. Imports
 """
 
-# ╔═╡ 31f2972f-c83f-42ce-999c-842c157899d3
+# ╔═╡ e42fd9e8-7e55-40ee-90cd-ca95a6f64e8d
+PlutoUI.TableOfContents()
+
+# ╔═╡ 7ce11d08-32f4-4661-98af-29084344a1b7
 md"""
-## 3. 다중공선성
+## 3. 대각행렬과 변환
 """
 
-# ╔═╡ 6738f8c1-d361-438c-826c-f417652fbe5c
+# ╔═╡ cc48f711-6201-47e1-91ec-10ba4f04c776
 md"""
-### A. Data
+### A. 의미
 """
 
-# ╔═╡ b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
-df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toiec.csv").body))
+# ╔═╡ 7ad1d554-81da-4945-9b88-a4ced84558b1
+md"""
+실수 $\mathbb{R}$ 에서 $\times 5$, $\times (-2)$ 와 같은 연산행위를 행렬버전으로 "일반화"한 것이 대각행렬이다. 
+"""
+
+# ╔═╡ ae28fe37-243e-4f25-a838-d6973677b2dd
+md"""
+### B. 실습
+"""
+
+# ╔═╡ d7613a6b-3615-4d17-9a6a-47de42177473
+md"d1 = $(@bind d1 Slider(-5:0.1:5, show_value=true,default=2))"
+
+# ╔═╡ 23af1b04-c555-4ef5-b4d9-e0d225cb32a4
+md"d2 = $(@bind d2 Slider(-5:0.1:5, show_value=true,default=1))"
+
+# ╔═╡ 53751238-1109-11ef-0540-19c74b19c7b9
+let 
+	Random.seed!(43052)
+	X1 = rand(1000)
+	X2 = rand(1000)
+	X = [X1 X2] # 매트릭스 
+	scatter(X1,X2,label="X",xlim=(-6,6),ylim=(-4,4),alpha=0.3)
+	D = Diagonal([d1,d2])  
+	Y = X * D
+	Y1, Y2 = eachcol(Y)
+	scatter!(Y1,Y2,label="Y",alpha=0.3)
+end
+
+# ╔═╡ d55d982b-dd56-473f-ad62-c28a17115cf7
+md"""
+## 4. 직교행렬과 변환
+"""
+
+# ╔═╡ d9705238-8e19-4eb0-ac46-7931602450f7
+md"""
+### A. 의미
+"""
+
+# ╔═╡ 3e739816-cc7d-4fd2-ba71-97c57fc53362
+md"""
+-- 직교행렬이 변환으로 사용되면 크기와 각도를 보존하는 변환이 된다.
+
+- 크기보존: 
+- 각도보전: 
+"""
+
+# ╔═╡ fcbca062-05e4-48e6-97b1-cbba93b05584
+md"""
+### B. 직교행렬(=직교변환)의 예시
+"""
+
+# ╔═╡ 38d9f497-6cf5-4748-b566-301d55724903
+md"""
+-- 예제1: (2,2) rotation
+"""
+
+# ╔═╡ 4284ef79-9c9b-4936-9adc-ea4a28f478b1
+θ = @bind θ Slider(-π:(2π)/10:π,show_value=true)
+
+# ╔═╡ c43c4868-5b3a-453e-b113-f72c28937e69
+let 
+	X = [11.0621 61.7510
+		 11.0307 56.3825
+		 11.8972 53.6947
+		 12.2572 57.0326
+		 12.9004 55.9598
+		 13.3987 54.9254
+		 13.7923 49.3133] ./ 100
+	X1,X2 = eachcol(X)
+	scatter(X1,X2,label="X",marker=:star,xlims=(0,0.6),ylims=(0.2,0.6))
+	# R = [cos(θ) -sin(θ)
+	# 	 sin(θ)  cos(θ)]
+	# Y = X*R
+	# Y1,Y2 = eachcol(Y)
+	# scatter!(Y1,Y2,label="Y",marker=:star)
+	# scatter!([0],[0],marker=:cross, label="중심")
+end 
+
+# ╔═╡ 4ff2ae14-7ad9-46c9-af42-5d6cbf015386
+# ursa_major_stars = {
+#     'Dubhe': (11 + 3/60 + 43.7/3600, 61 + 45/60 + 3/3600),
+#     'Merak': (11 + 1/60 + 50.5/3600, 56 + 22/60 + 57/3600),
+#     'Phecda': (11 + 53/60 + 49.8/3600, 53 + 41/60 + 41/3600),
+#     'Megrez': (12 + 15/60 + 25.5/3600, 57 + 1/60 + 57/3600),
+#     'Alioth': (12 + 54/60 + 1.7/3600, 55 + 57/60 + 35/3600),
+#     'Mizar': (13 + 23/60 + 55.5/3600, 54 + 55/60 + 31/3600),
+#     'Alkaid': (13 + 47/60 + 32.4/3600, 49 + 18/60 + 48/3600)
+# }
+
+# ╔═╡ 22990cd0-d039-4fc1-a0e0-675c6a1afda0
+13 + 47/60 + 32.4/3600, 49 + 18/60 + 48/3600
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [compat]
 CSV = "~0.10.14"
-DataFrames = "~1.6.1"
-HTTP = "~1.10.6"
+Distributions = "~0.25.108"
 Plots = "~1.40.4"
 PlutoUI = "~0.7.59"
 """
@@ -63,13 +164,19 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.3"
 manifest_format = "2.0"
-project_hash = "5b46fd4ec420cc6990826528f6bc6e476d7dfebd"
+project_hash = "68fab8a4c72a8af1d28eb8c05598fdfa1a2f472b"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
 git-tree-sha1 = "6e1d2a35f2f90a4bc7c2ed98079b2ba09c35b83a"
 uuid = "6e696c72-6542-2067-7265-42206c756150"
 version = "1.3.2"
+
+[[deps.AliasTables]]
+deps = ["Random"]
+git-tree-sha1 = "07591db28451b3e45f4c0088a2d5e986ae5aa92d"
+uuid = "66dad0bd-aa9a-41b7-9441-69ab47430ed8"
+version = "1.1.1"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -104,6 +211,12 @@ git-tree-sha1 = "a4c43f59baa34011e303e76f5c8c91bf58415aaf"
 uuid = "83423d85-b0ee-5818-9007-b63ccbeb887a"
 version = "1.18.0+1"
 
+[[deps.Calculus]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "f641eb0a4f00c343bbc32346e1217b86f3ce9dad"
+uuid = "49dc2e85-a5d0-5ad3-a950-438e2897f1b9"
+version = "0.5.1"
+
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
 git-tree-sha1 = "59939d8a997469ee05c4b4944560a820f9ba0d73"
@@ -127,12 +240,10 @@ deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "Requires", "Statist
 git-tree-sha1 = "a1f44953f2382ebb937d60dafbe2deea4bd23249"
 uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
 version = "0.10.0"
+weakdeps = ["SpecialFunctions"]
 
     [deps.ColorVectorSpace.extensions]
     SpecialFunctionsExt = "SpecialFunctions"
-
-    [deps.ColorVectorSpace.weakdeps]
-    SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [[deps.Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
@@ -166,21 +277,10 @@ git-tree-sha1 = "439e35b0b36e2e5881738abc8857bd92ad6ff9a8"
 uuid = "d38c429a-6771-53c6-b99e-75d170b6e991"
 version = "0.6.3"
 
-[[deps.Crayons]]
-git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
-uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
-version = "4.1.1"
-
 [[deps.DataAPI]]
 git-tree-sha1 = "abe83f3a2f1b857aac70ef8b269080af17764bbe"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
 version = "1.16.0"
-
-[[deps.DataFrames]]
-deps = ["Compat", "DataAPI", "DataStructures", "Future", "InlineStrings", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrecompileTools", "PrettyTables", "Printf", "REPL", "Random", "Reexport", "SentinelArrays", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
-git-tree-sha1 = "04c738083f29f86e62c8afc341f0967d8717bdb8"
-uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "1.6.1"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
@@ -203,6 +303,22 @@ git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 version = "1.9.1"
 
+[[deps.Distributions]]
+deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
+git-tree-sha1 = "22c595ca4146c07b16bcf9c8bea86f731f7109d2"
+uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
+version = "0.25.108"
+
+    [deps.Distributions.extensions]
+    DistributionsChainRulesCoreExt = "ChainRulesCore"
+    DistributionsDensityInterfaceExt = "DensityInterface"
+    DistributionsTestExt = "Test"
+
+    [deps.Distributions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    DensityInterface = "b429d917-457f-4dbc-8f4c-0cc954292b1d"
+    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
 git-tree-sha1 = "2fb1e02f2b635d0845df5d7c167fec4dd739b00d"
@@ -213,6 +329,12 @@ version = "0.9.3"
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
+
+[[deps.DualNumbers]]
+deps = ["Calculus", "NaNMath", "SpecialFunctions"]
+git-tree-sha1 = "5837a837389fccf076445fce071c8ddaea35a566"
+uuid = "fa6b7ba4-c1ee-5f82-b5fc-ecf0adba8f74"
+version = "0.6.8"
 
 [[deps.EpollShim_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -252,6 +374,18 @@ version = "0.9.21"
 
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
+
+[[deps.FillArrays]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "57f08d5665e76397e96b168f9acc12ab17c84a68"
+uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
+version = "1.10.2"
+weakdeps = ["PDMats", "SparseArrays", "Statistics"]
+
+    [deps.FillArrays.extensions]
+    FillArraysPDMatsExt = "PDMats"
+    FillArraysSparseArraysExt = "SparseArrays"
+    FillArraysStatisticsExt = "Statistics"
 
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
@@ -339,6 +473,12 @@ git-tree-sha1 = "129acf094d168394e80ee1dc4bc06ec835e510a3"
 uuid = "2e76f6c2-a576-52d4-95c1-20adfe4de566"
 version = "2.8.1+1"
 
+[[deps.HypergeometricFunctions]]
+deps = ["DualNumbers", "LinearAlgebra", "OpenLibm_jll", "SpecialFunctions"]
+git-tree-sha1 = "f218fe3736ddf977e0e772bc9a586b2383da2685"
+uuid = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
+version = "0.3.23"
+
 [[deps.Hyperscript]]
 deps = ["Test"]
 git-tree-sha1 = "179267cfa5e712760cd43dcae385d7ea90cc25a4"
@@ -366,11 +506,6 @@ version = "1.4.0"
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
-
-[[deps.InvertedIndices]]
-git-tree-sha1 = "0dc7b50b8d436461be01300fd8cd45aa0274b038"
-uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
-version = "1.3.0"
 
 [[deps.IrrationalConstants]]
 git-tree-sha1 = "630b497eafcc20001bba38a4651b327dcfc491d2"
@@ -635,6 +770,12 @@ git-tree-sha1 = "3da7367955dcc5c54c1ba4d402ccdc09a1a3e046"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
 version = "3.0.13+1"
 
+[[deps.OpenSpecFun_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "13652491f6856acfd2db29360e1bbcd4565d04f1"
+uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
+version = "0.5.5+0"
+
 [[deps.Opus_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "51a08fb14ec28da2ec7a927c4337e4332c2a4720"
@@ -650,6 +791,12 @@ version = "1.6.3"
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
 version = "10.42.0+1"
+
+[[deps.PDMats]]
+deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
+git-tree-sha1 = "949347156c25054de2db3b166c52ac4728cbad65"
+uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
+version = "0.11.31"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
@@ -729,12 +876,6 @@ git-tree-sha1 = "9306f6085165d270f7e3db02af26a400d580f5c6"
 uuid = "21216c6a-2e73-6563-6e65-726566657250"
 version = "1.4.3"
 
-[[deps.PrettyTables]]
-deps = ["Crayons", "LaTeXStrings", "Markdown", "PrecompileTools", "Printf", "Reexport", "StringManipulation", "Tables"]
-git-tree-sha1 = "88b895d13d53b5577fd53379d913b9ab9ac82660"
-uuid = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
-version = "2.3.1"
-
 [[deps.Printf]]
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
@@ -744,6 +885,12 @@ deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll
 git-tree-sha1 = "37b7bb7aabf9a085e0044307e1717436117f2b3b"
 uuid = "c0090381-4147-56d7-9ebc-da0b1113ec56"
 version = "6.5.3+1"
+
+[[deps.QuadGK]]
+deps = ["DataStructures", "LinearAlgebra"]
+git-tree-sha1 = "9b23c31e76e333e6fb4c1595ae6afa74966a729e"
+uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
+version = "2.9.4"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
@@ -781,6 +928,18 @@ deps = ["UUIDs"]
 git-tree-sha1 = "838a3a4188e2ded87a4f9f184b4b0d78a1e91cb7"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.3.0"
+
+[[deps.Rmath]]
+deps = ["Random", "Rmath_jll"]
+git-tree-sha1 = "f65dcb5fa46aee0cf9ed6274ccbd597adc49aa7b"
+uuid = "79098fc4-a85e-5d69-aa6a-4863f24498fa"
+version = "0.7.1"
+
+[[deps.Rmath_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "6ed52fdd3382cf21947b15e8870ac0ddbff736da"
+uuid = "f50d1b31-88e8-58de-be2c-1cc44531875f"
+version = "0.4.0+0"
 
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
@@ -826,6 +985,18 @@ deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 version = "1.10.0"
 
+[[deps.SpecialFunctions]]
+deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
+git-tree-sha1 = "e2cfc4012a19088254b3950b85c3c1d8882d864d"
+uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
+version = "2.3.1"
+
+    [deps.SpecialFunctions.extensions]
+    SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
+
+    [deps.SpecialFunctions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
@@ -843,11 +1014,23 @@ git-tree-sha1 = "5cf7606d6cef84b543b483848d4ae08ad9832b21"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.34.3"
 
-[[deps.StringManipulation]]
-deps = ["PrecompileTools"]
-git-tree-sha1 = "a04cabe79c5f01f4d723cc6704070ada0b9d46d5"
-uuid = "892a3eda-7b42-436c-8928-eab12a02cf0e"
-version = "0.3.4"
+[[deps.StatsFuns]]
+deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
+git-tree-sha1 = "cef0472124fab0695b58ca35a77c6fb942fdab8a"
+uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
+version = "1.3.1"
+
+    [deps.StatsFuns.extensions]
+    StatsFunsChainRulesCoreExt = "ChainRulesCore"
+    StatsFunsInverseFunctionsExt = "InverseFunctions"
+
+    [deps.StatsFuns.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
+
+[[deps.SuiteSparse]]
+deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
+uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
@@ -1246,13 +1429,27 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╟─7ec1510e-130c-11ef-1e0e-518d9cc440ea
-# ╟─a366d78e-5826-4a65-a3fe-3469fee80f9a
-# ╠═4c8cb126-08bd-478e-8472-fd1547e0d128
-# ╟─2d2f8c88-07f9-4e8b-86ae-fc9828aba187
-# ╠═128613c3-baba-426a-adbf-8abed179eb49
-# ╟─31f2972f-c83f-42ce-999c-842c157899d3
-# ╟─6738f8c1-d361-438c-826c-f417652fbe5c
-# ╠═b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
+# ╠═1f535031-df13-469e-a945-8731b4e31811
+# ╠═226b753e-1d6c-4a2c-945e-1a19fa40df5c
+# ╟─0484fdc7-ba57-4cbc-8c80-eda285d45ac1
+# ╟─94b6107e-16ee-42eb-95ee-9a514e424b0f
+# ╠═3138d79d-b910-4a4a-b9bc-4aa91f03b04e
+# ╠═e42fd9e8-7e55-40ee-90cd-ca95a6f64e8d
+# ╟─7ce11d08-32f4-4661-98af-29084344a1b7
+# ╟─cc48f711-6201-47e1-91ec-10ba4f04c776
+# ╟─7ad1d554-81da-4945-9b88-a4ced84558b1
+# ╟─ae28fe37-243e-4f25-a838-d6973677b2dd
+# ╠═d7613a6b-3615-4d17-9a6a-47de42177473
+# ╠═23af1b04-c555-4ef5-b4d9-e0d225cb32a4
+# ╠═53751238-1109-11ef-0540-19c74b19c7b9
+# ╟─d55d982b-dd56-473f-ad62-c28a17115cf7
+# ╟─d9705238-8e19-4eb0-ac46-7931602450f7
+# ╟─3e739816-cc7d-4fd2-ba71-97c57fc53362
+# ╟─fcbca062-05e4-48e6-97b1-cbba93b05584
+# ╟─38d9f497-6cf5-4748-b566-301d55724903
+# ╠═4284ef79-9c9b-4936-9adc-ea4a28f478b1
+# ╠═c43c4868-5b3a-453e-b113-f72c28937e69
+# ╠═4ff2ae14-7ad9-46c9-af42-5d6cbf015386
+# ╠═22990cd0-d039-4fc1-a0e0-675c6a1afda0
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
