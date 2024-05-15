@@ -25,6 +25,12 @@ md"""
 ## 2. Imports
 """
 
+# ╔═╡ 3317fffc-955d-4073-9123-17688a4c6f61
+PlutoUI.TableOfContents()
+
+# ╔═╡ 18996e8e-c802-4e03-a3c6-c4d83aa5afdc
+Plots.plotly()
+
 # ╔═╡ 31f2972f-c83f-42ce-999c-842c157899d3
 md"""
 ## 3. 다중공선성
@@ -36,7 +42,19 @@ md"""
 """
 
 # ╔═╡ b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
-df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toiec.csv").body))
+df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
+
+# ╔═╡ 109f4a28-ff76-49c4-a14d-ff5ce48765bf
+_,X1,X2,X3 = eachcol(df)
+
+# ╔═╡ 2423428e-e096-439c-8f4e-fa534fa75886
+y = X1*3.2 + X2*0.01 + randn(500)
+
+# ╔═╡ 57045abd-dd4f-40d5-a52a-6857373a9504
+X = [ones(500) X1 X2 X3]
+
+# ╔═╡ c5c6a6c4-7079-4733-afc1-823dc9f3bf86
+inv(X'X)X'y
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1251,8 +1269,14 @@ version = "1.4.1+1"
 # ╠═4c8cb126-08bd-478e-8472-fd1547e0d128
 # ╟─2d2f8c88-07f9-4e8b-86ae-fc9828aba187
 # ╠═128613c3-baba-426a-adbf-8abed179eb49
+# ╠═3317fffc-955d-4073-9123-17688a4c6f61
+# ╠═18996e8e-c802-4e03-a3c6-c4d83aa5afdc
 # ╟─31f2972f-c83f-42ce-999c-842c157899d3
 # ╟─6738f8c1-d361-438c-826c-f417652fbe5c
 # ╠═b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
+# ╠═109f4a28-ff76-49c4-a14d-ff5ce48765bf
+# ╠═2423428e-e096-439c-8f4e-fa534fa75886
+# ╠═57045abd-dd4f-40d5-a52a-6857373a9504
+# ╠═c5c6a6c4-7079-4733-afc1-823dc9f3bf86
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
