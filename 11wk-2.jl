@@ -47,13 +47,15 @@ df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC202
 # ╔═╡ 109f4a28-ff76-49c4-a14d-ff5ce48765bf
 let 
 	X1,X2,X3 = eachcol(df)
-	y = X1*3.2 + X2*0.01 + randn(500)
-	X = [X1 X2 X3]
+	y = X1*600 + X2*5 + randn(20000)
+	X = [X1 X2 X3]  
+	y
 	β̂ = inv(X'X)X'y
+	X3
 end
 
 # ╔═╡ 0cdd17d1-62db-429f-9a89-54270db1ba6c
-
+X3
 
 # ╔═╡ 2423428e-e096-439c-8f4e-fa534fa75886
 
