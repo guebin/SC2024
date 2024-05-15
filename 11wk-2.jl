@@ -45,10 +45,10 @@ md"""
 df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
 
 # ╔═╡ 109f4a28-ff76-49c4-a14d-ff5ce48765bf
-_,X1,X2,X3 = eachcol(df)
+X1,X2,X3 = eachcol(df)
 
 # ╔═╡ 2423428e-e096-439c-8f4e-fa534fa75886
-y = X1*3.2 + X2*0.01 + randn(500)
+y = X1*3.2 + X2*0.01 + randn(500) 
 
 # ╔═╡ 57045abd-dd4f-40d5-a52a-6857373a9504
 X = [ones(500) X1 X2 X3]
