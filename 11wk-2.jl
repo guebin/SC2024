@@ -52,7 +52,7 @@ md"""
 """
 
 # ╔═╡ b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
-df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))[1:1000,:]
+df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
 
 # ╔═╡ f9f88913-a23a-4f02-a1cd-f255feb8c834
 begin 
@@ -77,7 +77,9 @@ md"""
 """
 
 # ╔═╡ 2bed0ba1-208e-4629-b145-8fd12a8b40c4
-
+md"""
+-- $\hat{\boldsymbol \beta}$ 를 추정해서 "학점1점 = 연봉600만원", "토익1점 = 연봉5만원" 이라는 법칙을 밝혀보자.
+"""
 
 # ╔═╡ 109f4a28-ff76-49c4-a14d-ff5ce48765bf
 let
@@ -89,12 +91,14 @@ end
 # ╔═╡ 629be1ab-21ac-4322-a765-346c71c49029
 md"""
 - ?? 뭐야?? 
-- 점수가 있으면 1점당 연봉이 372만원이 깍이네
+- 점수가 있으면 1점당 연봉이 대략 373만원이 깍임.
 - 이 평행세계가 잘못되었나?
 """
 
 # ╔═╡ 4499c143-3b8e-4c6b-bfc6-a65ffe629203
-
+md"""
+-- 다른 10개의 평행세계에서 조사해봄.
+"""
 
 # ╔═╡ d1cd7a53-0c94-4393-bc51-3af200a65da4
 for i in 1:10
@@ -112,7 +116,7 @@ md"""
 
 # ╔═╡ c2c0d7f3-ea4e-4126-8ec4-6f62e452675c
 md"""
--- 생각해보니까 toeic ≈ teps 인 상황이라서 토익점수 1점당 연봉 349만원 올려주고, 텝스점수 1점당 연봉 344만원 깍는다는 것은 대충 토익점수 1점당 (혹은 텝스점수 1점당) 연봉 5만원 올려준다는 말임.  
+-- 생각해보니까 toeic ≈ teps 인 상황이라서 토익점수 1점당 연봉 378만원 올려주고, 텝스점수 1점당 연봉 373만원 깍는다는 것은 대충 토익점수 1점당 (혹은 텝스점수 1점당) 연봉 5만원 올려준다는 말임.  
 """
 
 # ╔═╡ 2371e35b-0a3f-42a3-89db-520e44f61450
@@ -176,9 +180,9 @@ md"""
 
 # ╔═╡ d79f13a3-79cd-42ea-9aa7-e9955c9ffe2b
 md"""
-*상상실험*: 토익을 1점 올리면 연봉이 5005만원 상승하고, 텝스를 1점 올리면 연봉이 5000만원 감소한다고 치자. 
+*상상실험*: 주어진 train에서 계수값을 추정한 결과, 토익을 1점 올리면 연봉이 5005만원 상승하고, 텝스를 1점 올리면 연봉이 5000만원 감소하는 법칙을 발견했다고 가정하자. 
 
-이제 아래의 세명의 학생이 있다고 하자. 
+이제 test에서 아래와 세명의 학생을 만났다고 가정하자. 
 
 - 학생1: 토익 805, 텝스 805
 - 학생2: 토익 800, 텝스 810
@@ -198,7 +202,7 @@ md"""
 
 # ╔═╡ 7ec30abc-1be0-4dba-9d47-2cbfb219a508
 md"""
-## 4. 다중공선성의 해결
+### D. 다중공선성의 해결
 """
 
 # ╔═╡ d79b170f-1198-403b-8f27-7c65e72a27b4
@@ -211,12 +215,12 @@ md"""
 
 # ╔═╡ d055be6a-aef8-47d0-b0a2-a56b85089bfc
 md"""
-## 5. 벌점함수 기법
+## 4. 능형회귀
 """
 
 # ╔═╡ 8b6bafd7-7dd9-4c2b-a059-d18fc2ad22f8
 md"""
-### A. 문제제기
+### A. 문제정리
 """
 
 # ╔═╡ 57b42243-1fa1-4a69-b116-044b30d7819b
@@ -249,7 +253,7 @@ loss(β2,β3) = (ỹ-β2*X2-β3*X3)'*(ỹ-β2*X2-β3*X3)/1000
 begin
 	β2 = -10:0.5:15
 	β3 = -10:0.5:15
-	p1 = plot(β2,β3,loss,st=:surface,colorbar=false,alpha=0.8)
+	p1 = plot(β2,β3,loss,st=:surface,colorbar=false,alpha=0.9)
 	p2 = plot(β2,β3,loss,st=:contour,colorbar=false,levels=100)
 	plot(p1,p2)
 end
@@ -320,16 +324,16 @@ md"""
 
 """
 
-# ╔═╡ 6216c9c1-3d3a-4e2c-9fd7-d18cba3b6147
-md"""
--- 아래와 같은 손실함수를 고려해보자.
-
-- ``loss_{\text{L}^2} := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big) + \lambda {\boldsymbol \beta}^\top{\boldsymbol \beta} ``
-"""
-
 # ╔═╡ d7433752-fe73-4477-bcbc-f7ecb78d6af2
 md"""
-λ = $(@bind λ Slider(0:1:50000,show_value=true, default=0))
+λ = $(@bind λ Slider(1:1:50000,show_value=true, default=1))
+"""
+
+# ╔═╡ 6216c9c1-3d3a-4e2c-9fd7-d18cba3b6147
+md"""
+-- ``\lambda \geq 0`` 에 대하여 아래와 같은 손실함수를 고려해보자.
+
+$loss_{\text{L}^2} := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big) + \lambda {\boldsymbol \beta}^\top{\boldsymbol \beta}$
 """
 
 # ╔═╡ 5ba39dcd-1f21-4c83-a420-59de892a8121
@@ -345,9 +349,11 @@ md"""
 
 # ╔═╡ d3416f40-9387-4a44-986f-8657c8ea1c00
 let
+	@show λ
+	println("---")
 	@show loss(2.5,2.5)
 	@show l2(2.5,2.5)
-	@show loss_l2(2.5,2.5)
+	@show loss_l2(2.5,2.5) # 이제는 이게 제일 작음
 	println("---")
 	@show loss(0,5)
 	@show l2(0,5)
@@ -370,7 +376,7 @@ md"""
 
 # ╔═╡ 278ef454-7fcc-4155-89f4-6fd93d168feb
 let
-	p1 = plot(β2,β3,loss,st=:surface,colorbar=false,alpha=0.8)
+	p1 = plot(β2,β3,loss,st=:surface,colorbar=false,alpha=0.9)
 	p2 = plot(β2,β3,loss,st=:contour,colorbar=false,levels=100)
 	plot(p1,p2)
 end 
@@ -382,7 +388,7 @@ md"""
 
 # ╔═╡ c5bdf20e-e89f-46e6-9a9a-2c16a19a54c4
 let
-	p3 = plot(β2,β3,l2,st=:surface,colorbar=false,alpha=0.8)
+	p3 = plot(β2,β3,l2,st=:surface,colorbar=false,alpha=0.9)
 	p4 = plot(β2,β3,l2,st=:contour,colorbar=false,levels=100)
 	plot(p3,p4)
 end
@@ -394,10 +400,75 @@ md"""
 
 # ╔═╡ 14e02673-0863-4aa3-9ba6-af0bc909d0cc
 let
-	p5 = plot(β2,β3,loss_l2,st=:surface,colorbar=false,alpha=0.8)
+	p5 = plot(β2,β3,loss_l2,st=:surface,colorbar=false,alpha=0.9)
 	p6 = plot(β2,β3,loss_l2,st=:contour,colorbar=false,levels=100)
 	plot(p5,p6)
 end 
+
+# ╔═╡ 6d545544-3516-4560-8887-e4413f3c0fc0
+md"""
+### D. 해를 구하는 방법
+"""
+
+# ╔═╡ f5b49064-9f8b-4238-97a4-780b4023a641
+md"""
+-- 결국 ``\lambda \geq 0`` 에 대하여 아래와 같은 손실함수를 최소화하는 $\hat{\boldsymbol \beta}$ 을 구하면 된다. 
+"""
+
+# ╔═╡ cd2fa029-00fb-4503-b0b7-afa2c8db15ed
+md"""
+$loss_{\text{L}^2} := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big) + \lambda {\boldsymbol \beta}^\top{\boldsymbol \beta}$
+"""
+
+# ╔═╡ fb027eea-151d-4ee2-8287-beac504f6868
+md"""
+해는 아래와 같다.
+"""
+
+# ╔═╡ b3d527a8-3151-4f30-8ccd-b53b298855de
+md"""
+$\hat{\boldsymbol \beta}=({\bf X}^\top {\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$
+"""
+
+# ╔═╡ 2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
+let
+	λ = 9
+	β̂ = inv(X'X + λ*I)X'y
+end 
+
+# ╔═╡ 61b295ca-be2d-4326-bff5-0fd860d31919
+md"""
+-- 결과는 그럭저럭 괜찮음. 
+- ``\hat{\beta}_3``, ``\hat{\beta}_3`` 에 대한 추정값이 괜찮게 나온것은 긍정적임. 
+- 그런데 ``\hat{\beta}_1``의 추정값은 $\lambda$ 값을 키울수록 600보다 조금 작게 추정된다. 
+"""
+
+# ╔═╡ 057f12ba-1e54-481a-b9f4-a6e2bcad6805
+md"""
+-- 다른 평행세계에 대하여서도 조사해보자.
+"""
+
+# ╔═╡ 392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
+let 
+	N = 10000
+	E = 300*randn(1000,N)
+	Y = (600*X1 + 5*X2) .+ E
+	λ = 9
+	B̂ = inv(X'X + λ*I)X'Y
+	β̂1s,β̂2s,β̂3s = eachrow(B̂)
+	p1 = histogram(β̂1s,alpha=0.5,label="β̂1")
+	p2 = histogram(β̂2s,alpha=0.5,label="β̂2")
+	p3 = histogram(β̂3s,alpha=0.5,label="β̂3")
+	plot(p1,p2,p3)
+end
+
+# ╔═╡ f8dea7d1-3d18-45aa-af86-3f785a372b47
+md"""
+### E. 능형회귀의 장단점
+"""
+
+# ╔═╡ 414fb566-5ab6-4209-adcc-a13bb632c74d
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1621,10 +1692,10 @@ version = "1.4.1+1"
 # ╠═f9f88913-a23a-4f02-a1cd-f255feb8c834
 # ╠═05c609a1-7ae4-4fb2-8a1f-f6ba12511613
 # ╟─d3772e62-decb-4675-9824-c827a8a442c1
-# ╠═2bed0ba1-208e-4629-b145-8fd12a8b40c4
+# ╟─2bed0ba1-208e-4629-b145-8fd12a8b40c4
 # ╠═109f4a28-ff76-49c4-a14d-ff5ce48765bf
 # ╟─629be1ab-21ac-4322-a765-346c71c49029
-# ╠═4499c143-3b8e-4c6b-bfc6-a65ffe629203
+# ╟─4499c143-3b8e-4c6b-bfc6-a65ffe629203
 # ╠═d1cd7a53-0c94-4393-bc51-3af200a65da4
 # ╟─e0133d36-0be6-4d99-aa51-5d16e5389afa
 # ╟─c2c0d7f3-ea4e-4126-8ec4-6f62e452675c
@@ -1654,8 +1725,8 @@ version = "1.4.1+1"
 # ╟─cbe878f4-07b2-4f21-8a63-7468b2633b6b
 # ╟─90ff8925-e0d6-4982-b19d-0f78b5016545
 # ╟─85ad9c84-87c8-49d9-9139-63605442aa2d
-# ╟─6216c9c1-3d3a-4e2c-9fd7-d18cba3b6147
 # ╠═d7433752-fe73-4477-bcbc-f7ecb78d6af2
+# ╟─6216c9c1-3d3a-4e2c-9fd7-d18cba3b6147
 # ╠═5ba39dcd-1f21-4c83-a420-59de892a8121
 # ╟─1d20583d-bddb-4c38-9da5-03d9e4c53f03
 # ╠═d3416f40-9387-4a44-986f-8657c8ea1c00
@@ -1666,5 +1737,16 @@ version = "1.4.1+1"
 # ╠═c5bdf20e-e89f-46e6-9a9a-2c16a19a54c4
 # ╟─21a75194-76de-43bd-abbe-89d3e28e6d8e
 # ╠═14e02673-0863-4aa3-9ba6-af0bc909d0cc
+# ╟─6d545544-3516-4560-8887-e4413f3c0fc0
+# ╟─f5b49064-9f8b-4238-97a4-780b4023a641
+# ╟─cd2fa029-00fb-4503-b0b7-afa2c8db15ed
+# ╟─fb027eea-151d-4ee2-8287-beac504f6868
+# ╟─b3d527a8-3151-4f30-8ccd-b53b298855de
+# ╠═2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
+# ╟─61b295ca-be2d-4326-bff5-0fd860d31919
+# ╟─057f12ba-1e54-481a-b9f4-a6e2bcad6805
+# ╠═392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
+# ╟─f8dea7d1-3d18-45aa-af86-3f785a372b47
+# ╠═414fb566-5ab6-4209-adcc-a13bb632c74d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
