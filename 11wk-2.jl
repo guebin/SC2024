@@ -55,7 +55,7 @@ md"""
 df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
 
 # ╔═╡ df19fb9c-8f86-4d55-9899-c868c3512411
-n = 1000
+n = 50000
 
 # ╔═╡ f9f88913-a23a-4f02-a1cd-f255feb8c834
 begin 
@@ -435,7 +435,7 @@ $\hat{\boldsymbol \beta}=({\bf X}^\top {\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top
 
 # ╔═╡ 2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
 let
-	λ = 1000
+	λ = 10
 	β̂ = inv(X'X + λ*I)X'y
 end 
 
@@ -443,7 +443,7 @@ end
 md"""
 -- 결과는 그럭저럭 괜찮음. 
 - ``\hat{\beta}_3``, ``\hat{\beta}_3`` 에 대한 추정값이 괜찮게 나온것은 긍정적임. 
-- 그런데 ``\hat{\beta}_1``의 추정값은 $\lambda$ 값을 키울수록 600보다 조금 작게 추정된다. 
+- 그런데 ``\hat{\beta}_1``의 추정값은 $\lambda$ 값을 키울수록 600보다 작게 추정된다. 
 """
 
 # ╔═╡ 057f12ba-1e54-481a-b9f4-a6e2bcad6805
@@ -456,7 +456,7 @@ let
 	N = 10000
 	E = 300*randn(n,N)
 	Y = (600*X1 + 5*X2) .+ E
-	λ = 1000
+	λ = 10
 	B̂ = inv(X'X + λ*I)X'Y
 	β̂1s,β̂2s,β̂3s = eachrow(B̂)
 	p1 = histogram(β̂1s,alpha=0.5,label="β̂1")
