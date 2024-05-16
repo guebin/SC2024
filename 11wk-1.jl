@@ -139,9 +139,14 @@ $$loss:=({\bf y}-{\bf X}{\boldsymbol \beta})^\top({\bf y}-{\bf X}{\boldsymbol \b
 
 # ╔═╡ f65ed75c-fbc1-4b47-a5de-ca0ac1a67781
 md"""
--- 예제4: 아래와 같은 함수를 최소화하는 ${\boldsymbol \beta}$를 구하라. 여기에서 각 벡터 및 매트릭스의 차원은 ${\bf y}_{n\times 1}, {\bf X}_{n\times p}, {\boldsymbol \beta}_{p\times 1}$ 로 가정한다. 
+-- 예제4: 아래와 같은 함수를 최소화하는 ${\boldsymbol \beta}$를 구하라. 여기에서 각 벡터 및 매트릭스의 차원은 ${\bf y}_{n\times 1}, {\bf X}_{n\times p}, {\boldsymbol \beta}_{p\times 1}$ 로 가정하고 $\lambda >0$ 을 가정한다. 
 
 $$loss:=({\bf y}-{\bf X}{\boldsymbol \beta})^\top({\bf y}-{\bf X}{\boldsymbol \beta})+\lambda{\boldsymbol \beta}^\top{\boldsymbol \beta}$$
+"""
+
+# ╔═╡ b5a1bf13-a4e8-4e0a-bc7f-3489a0c886b2
+md"""
+> Check: 추가로 $\lambda >0$ 의 조건에서 $({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}$는 항상존재함을 보여보자. 
 """
 
 # ╔═╡ e7048c45-905b-43de-a11a-2f21dddd61a2
@@ -463,6 +468,7 @@ version = "17.4.0+2"
 # ╟─247fd51b-7049-4da5-8fde-599754da268f
 # ╟─2e788885-a662-4567-9406-7e2e5f9de351
 # ╟─f65ed75c-fbc1-4b47-a5de-ca0ac1a67781
+# ╟─b5a1bf13-a4e8-4e0a-bc7f-3489a0c886b2
 # ╟─e7048c45-905b-43de-a11a-2f21dddd61a2
 # ╟─f78f7525-4ad3-4200-9ada-7c0cda6b0547
 # ╟─661e6bd1-9dcd-4de5-b73a-a3540630e832
