@@ -55,7 +55,7 @@ md"""
 df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
 
 # ╔═╡ df19fb9c-8f86-4d55-9899-c868c3512411
-n = 50000
+n = 500
 
 # ╔═╡ f9f88913-a23a-4f02-a1cd-f255feb8c834
 begin 
