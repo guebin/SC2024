@@ -4,8 +4,18 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ 128613c3-baba-426a-adbf-8abed179eb49
-using PlutoUI,Plots,HTTP,CSV,DataFrames,LinearAlgebra,Statistics
+using PlutoUI,Plots,HTTP,CSV,DataFrames,LinearAlgebra,Statistics,Random
 
 # ╔═╡ 7ec1510e-130c-11ef-1e0e-518d9cc440ea
 md"""
@@ -42,25 +52,352 @@ md"""
 """
 
 # ╔═╡ b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
-df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
+df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))[1:1000,:]
 
-# ╔═╡ 109f4a28-ff76-49c4-a14d-ff5ce48765bf
-let 
+# ╔═╡ f9f88913-a23a-4f02-a1cd-f255feb8c834
+begin 
 	X1,X2,X3 = eachcol(df)
-	y = X1*600 + X2*5 + randn(20000)*300
-	X = [X1 X2 X3]  
-	y
-	β̂ = inv(X'X)X'y
+	X = [X1 X2 X3] 
 end
 
-# ╔═╡ 2423428e-e096-439c-8f4e-fa534fa75886
+# ╔═╡ 05c609a1-7ae4-4fb2-8a1f-f6ba12511613
+let
+	y = 600*X1 + 5*X2 + 300*randn(1000)
+	# 참모형 = 학점1점당 연봉600만원 상승, 토익1점당 연봉5만원 상승!
+	p1 = histogram(y,label="평행세계1",color=1)
+	p2 = histogram(600*X1 + 5*X2 + 300*randn(1000),label="평행세계2",color=2)
+	p3 = histogram(600*X1 + 5*X2 + 300*randn(1000),label="평행세계3",color=3)
+	p4 = histogram(600*X1 + 5*X2 + 300*randn(1000),label="평행세계4",color=4)
+	plot(p1,p2,p3,p4) 
+end 
+
+# ╔═╡ d3772e62-decb-4675-9824-c827a8a442c1
+md"""
+### B. ${\boldsymbol \beta}$ 의 추정
+"""
+
+# ╔═╡ 2bed0ba1-208e-4629-b145-8fd12a8b40c4
 
 
-# ╔═╡ 57045abd-dd4f-40d5-a52a-6857373a9504
-X = [ones(500) X1 X2 X3]
+# ╔═╡ 109f4a28-ff76-49c4-a14d-ff5ce48765bf
+let
+	Random.seed!(43052)
+	y = 600*X1 + 5*X2 + 300*randn(1000)
+	β̂ = inv(X'X)X'y 
+end
 
-# ╔═╡ c5c6a6c4-7079-4733-afc1-823dc9f3bf86
-inv(X'X)X'y
+# ╔═╡ 629be1ab-21ac-4322-a765-346c71c49029
+md"""
+- ?? 뭐야?? 
+- 점수가 있으면 1점당 연봉이 372만원이 깍이네
+- 이 평행세계가 잘못되었나?
+"""
+
+# ╔═╡ 4499c143-3b8e-4c6b-bfc6-a65ffe629203
+
+
+# ╔═╡ d1cd7a53-0c94-4393-bc51-3af200a65da4
+for i in 1:10
+	y = 600*X1 + 5*X2 + 300*randn(1000)
+	β̂ = inv(X'X)X'y 
+	@show β̂
+end
+
+# ╔═╡ e0133d36-0be6-4d99-aa51-5d16e5389afa
+md"""
+- 다른 평행세계도 싹다 이상함. 
+- ``\hat{\beta_1}`` 의 추정값은 600근처에서 안정적임. 
+- ``\hat{\beta_2},\hat{\beta_3}`` 의 추정값은 자기 마음대로임. (왜 그럴까?)
+"""
+
+# ╔═╡ c2c0d7f3-ea4e-4126-8ec4-6f62e452675c
+md"""
+-- 생각해보니까 toeic ≈ teps 인 상황이라서 토익점수 1점당 연봉 349만원 올려주고, 텝스점수 1점당 연봉 344만원 깍는다는 것은 대충 토익점수 1점당 (혹은 텝스점수 1점당) 연봉 5만원 올려준다는 말임.  
+"""
+
+# ╔═╡ 2371e35b-0a3f-42a3-89db-520e44f61450
+for i in 1:10
+	y = 600*X1 + 5*X2 + 300*randn(1000)
+	β̂ = inv(X'X)X'y 
+	_,β̂2,β̂3 = β̂
+	@show β̂
+	@show β̂2+β̂3 # 지 나름대로의 규칙은 있었음 
+	println("--")
+end
+
+# ╔═╡ 533ee620-11b1-4205-a998-9030e414d106
+md"""
+-- 왜 이런 현상이 생기는지는 이해했는데, 짜증나는 상황임. 
+"""
+
+# ╔═╡ 979b1e94-ea18-41f5-9aad-4ac0b5fa4d8b
+md"""
+### C. 다중공선성의 문제점
+"""
+
+# ╔═╡ 1676efae-34e1-4404-bb34-7ba5318da3b0
+md"""
+**문제점1** -- 해석 불가능한 (혹은 해석이 매우 어려운) 계수값을 모형이 추정한다. 
+
+- 토익점수를 올리면 연봉이 줄어요?
+- ``X_2,X_3``이 서로 종속되어있으면 $\beta_2,\beta_3$의 추정치도 서로 종속되어있음. 
+- 계수값을 잘 해석하기 위해서는 이러한 종속관계를 이해하여 해석해야함. (토익과 텝스를 합쳐서 본다든가)
+- 이 예제에서는 이러한 종속관계를 다중우주를 사용하여 포착했는데 실제로는 이러한 분석법은 불가능함.
+"""
+
+# ╔═╡ ebe9ebf5-f816-4659-bb86-72277b14c6d5
+md"""
+**문제점2** -- 추정값의 분산이 매우 크다. 
+
+- 그래도 ``\hat{\beta}_1``은 잘 추정되는 편임. 
+- ``\hat{\beta}_2,\hat{\beta}_3`` 의 값은 뭐가 나올지 전혀 예측할 수 없다. (거의 도깨비 수준임)
+- ``\hat{\beta}_2 +\hat{\beta}_3 \approx 5`` 라는 규칙만 있으면 대충 어떤값을 찍어도 사실상 "수학적으로는 참모형"이다. 
+- 수틀려서 ``\hat{\beta}_2=1005``, ``\hat{\beta}_3=-1000`` 이라 추정해도 사실상 무방. 
+- 관측치가 조금만 바뀌어도 (=새로운 데이터 몇개 추가되면) 기존에 추정했던 계수값이 다 깨짐. 
+"""
+
+# ╔═╡ 00e2c6de-3b6a-4a35-8a36-fe265cbdd925
+let 
+	N = 10000
+	E = 300*randn(1000,N)
+	Y = (600*X1 + 5*X2) .+ E
+	B̂ = inv(X'X)X'Y
+	β̂1s,β̂2s,β̂3s = eachrow(B̂)
+	p1 = histogram(β̂1s,alpha=0.5,label="β̂1")
+	p2 = histogram(β̂2s,alpha=0.5,label="β̂2")
+	p3 = histogram(β̂3s,alpha=0.5,label="β̂3")
+	plot(p1,p2,p3)
+end
+
+# ╔═╡ a6302795-1f59-4666-96e7-38448935de82
+md"""
+-- 문제점2는 오버피팅을 불러올 수 있음.
+"""
+
+# ╔═╡ d79f13a3-79cd-42ea-9aa7-e9955c9ffe2b
+md"""
+*상상실험*: 토익을 1점 올리면 연봉이 5005만원 상승하고, 텝스를 1점 올리면 연봉이 5000만원 감소한다고 치자. 
+
+이제 아래의 세명의 학생이 있다고 하자. 
+
+- 학생1: 토익 805, 텝스 805
+- 학생2: 토익 800, 텝스 810
+- 학생3: 토익 810, 텝스 800
+
+토익,텝스점수만으로 결정한 학생1,2,3 의 연봉은 아래와 같다. 
+
+- 학생1의 연봉 = $(805*5005 - 805*5000)
+- 학생2의 연봉 = $(800*5005 - 810*5000)
+- 학생3의 연봉 = $(810*5005 - 800*5000)
+"""
+
+# ╔═╡ a49196cd-6e9d-4297-a2b5-874a3050598a
+md"""
+*상상실험의 결론*: train 에서는 수학적으로 토익1점당 연봉이 5005 상승, 텝스1점당 연봉 5000 감소와 같이 모형이 적합되었다고 해도, test 에서 그 모형은 완전히 설득력을 잃을 수도 있다. 
+"""
+
+# ╔═╡ 7ec30abc-1be0-4dba-9d47-2cbfb219a508
+md"""
+## 4. 다중공선성의 해결
+"""
+
+# ╔═╡ d79b170f-1198-403b-8f27-7c65e72a27b4
+md"""
+다중공선성을 해결하는 방법은 여러가지가 있지만 전통적으로 아래의 2개정도를 제시한다. 
+
+1. 차원축소기법을 활용하는 방법 (주성분분석)
+2. 손실함수에 벌점함수를 추가하는 방법 (능형회귀, Lasso)
+"""
+
+# ╔═╡ d055be6a-aef8-47d0-b0a2-a56b85089bfc
+md"""
+## 5. 벌점함수 기법
+"""
+
+# ╔═╡ 8b6bafd7-7dd9-4c2b-a059-d18fc2ad22f8
+md"""
+### A. 문제제기
+"""
+
+# ╔═╡ 57b42243-1fa1-4a69-b116-044b30d7819b
+md"""
+-- 일반적인 회귀문제는 아래를 푸는 것이다. 
+"""
+
+# ╔═╡ b70e73b7-c2ae-4c94-9f85-ad0195b5858a
+md"""
+$$\underset{{\boldsymbol \beta} \in \mathbb{R}^p}{\operatorname{argmin}}\bigg\{ \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big)\bigg\}$$
+"""
+
+# ╔═╡ 6601a37b-cb7c-417d-a438-c5c18c19e0cf
+md"""
+-- 이에 대한 수학적인 해는 ${\boldsymbol \beta}$ 값은 $\hat{\boldsymbol \beta}=\big({\bf X}^\top {\bf X}\big)^{-1}{\bf X}^\top{\bf y}$ 임을 너무나도 잘 알고 있지만, 우리의 예제에서는 이 수학적인 해가 별로 쓸모가 없다는 사실을 확인했다. 왜 이런일이 생길까?
+"""
+
+# ╔═╡ 68d0574b-dbd6-4b68-920e-e672fe876ec6
+begin 
+	Random.seed!(43052)
+	# 편의상 GPA에 대한 추정값 600은 정확하게 추정했다고 가정하자. 
+	y = 600*X1 + 5*X2 + 300*randn(1000)
+	ỹ = y - 600*X1
+end 
+
+# ╔═╡ cc6f7ff7-e7ac-409e-9f63-145c58e4ade5
+loss(β2,β3) = (ỹ-β2*X2-β3*X3)'*(ỹ-β2*X2-β3*X3)/1000
+
+# ╔═╡ cbb62ff1-fe39-468e-91a6-0431192fb25d
+begin
+	β2 = -10:0.5:15
+	β3 = -10:0.5:15
+	p1 = plot(β2,β3,loss,st=:surface,colorbar=false,alpha=0.8)
+	p2 = plot(β2,β3,loss,st=:contour,colorbar=false,levels=100)
+	plot(p1,p2)
+end
+
+# ╔═╡ 3bad3692-7f76-494c-93d5-f3951331c74e
+md"""
+- ``\hat{\beta}_2 + \hat{\beta}_3 \approx 5`` 이라면 loss값이 거의 비슷하게 최소값(?)이다.
+"""
+
+# ╔═╡ 758668d4-7d98-46db-8f8a-9a81abe6ad25
+md"""
+-- 수식적으로 그럴듯해 보여도, 모두 바람직한 모형은 아니다. 아래는 모두 참모형이라 생각되어지는 상황이다. 
+
+1. ``\hat{\beta}_2=2.5,\quad \hat{\beta}_3=2.5.``
+2. ``\hat{\beta}_2=5,\quad \hat{\beta}_3=0.``
+3. ``\hat{\beta}_2=100,\quad \hat{\beta}_3=-95.``
+
+그렇지만 상식적으로 3은 용납할 수 없다. 계수값은 최소한 0~5 사이의 값이었으면 좋겠다.
+"""
+
+# ╔═╡ a82b89e1-ac4b-45e0-9e46-db58bc303812
+md"""
+-- 각 경우에 대하여 loss를 계산해보자.
+"""
+
+# ╔═╡ a8e9091b-aa4b-49c8-804f-b0db309329a8
+let
+	@show loss(2.5,2.5)
+	@show loss(5,0)
+	@show loss(100,-95)
+end 
+
+# ╔═╡ cbe878f4-07b2-4f21-8a63-7468b2633b6b
+md"""
+- 이대로라면 컴퓨터입장에서는 경우3이 가장 좋다고 생각하겠는걸?
+"""
+
+# ╔═╡ 90ff8925-e0d6-4982-b19d-0f78b5016545
+md"""
+### B. 해결책
+"""
+
+# ╔═╡ 85ad9c84-87c8-49d9-9139-63605442aa2d
+md"""
+!!! warning "아이디어: 추정된 계수의 절대값이 크면 벌점을 주자"
+	아래와 같은 계수추정값들이 있다고 하자.
+
+	1. ``(\hat{\beta}_2,\hat{\beta}_3) = (0,5)``
+	2. ``(\hat{\beta}_2,\hat{\beta}_3) = (1,4)``
+	3. ``(\hat{\beta}_2,\hat{\beta}_3) = (2,3)``
+	4. ``(\hat{\beta}_2,\hat{\beta}_3) = (2.5,2.5)``
+	5. ``(\hat{\beta}_2,\hat{\beta}_3) = (3,2)``
+	6. ``(\hat{\beta}_2,\hat{\beta}_3) = (4,1)``
+	7. ``(\hat{\beta}_2,\hat{\beta}_3) = (5,0)`` -- 찐 참모형
+
+	이러한 추정값들은 대충 합리적이라 여겨지며 우리는 이러한 값을 사실 추정하고 싶다. (7이 진짜 참모형이지만 1-6도 나쁘지 않은 선택임) 그럼 이제 아래의 값들을 살펴보자. 
+
+	8. ``(\hat{\beta}_2,\hat{\beta}_3) = (-5,10)``
+	9. ``(\hat{\beta}_2,\hat{\beta}_3) = (-95,100)``
+	10. ``(\hat{\beta}_2,\hat{\beta}_3) = (-995,1000)``
+	11. ``(\hat{\beta}_2,\hat{\beta}_3) = (-9995,10000)``
+
+	이 값들은 딱 봐도 짜증나는 상황(그렇지만 수학적으로 가능할 것 같은 상황)이며, 우리는 이러한 값들 추정하고 싶지 않다. 우리가 원하는 추정값과 원하지 않는 추정값을 관찰하면서 얻은 직관은 아래와 같다. 
+
+	> ``\hat{\beta}_2`` 와 ``\hat{\beta}_3`` 의 절대값이 커질수록 우리가 원하는 추정량은 아닌것 같다.
+
+	**그렇다면 ``\hat{\beta}_2`` 와 ``\hat{\beta}_3`` 의 절대값이 클수록 손실함수를 더 크게 만들어 버리면 어떨까??!**
+
+"""
+
+# ╔═╡ 6216c9c1-3d3a-4e2c-9fd7-d18cba3b6147
+md"""
+-- 아래와 같은 손실함수를 고려해보자.
+
+- ``loss_{\text{L}^2} := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big) + \lambda {\boldsymbol \beta}^\top{\boldsymbol \beta} ``
+"""
+
+# ╔═╡ d7433752-fe73-4477-bcbc-f7ecb78d6af2
+md"""
+λ = $(@bind λ Slider(0:1:50000,show_value=true, default=0))
+"""
+
+# ╔═╡ 5ba39dcd-1f21-4c83-a420-59de892a8121
+begin 
+	l2(β2,β3) = λ*(β2^2 + β3^2)
+	loss_l2(β2,β3) = loss(β2,β3) + l2(β2,β3)
+end 
+
+# ╔═╡ 1d20583d-bddb-4c38-9da5-03d9e4c53f03
+md"""
+-- $L_2$ 벌점을 추가할 경우
+"""
+
+# ╔═╡ d3416f40-9387-4a44-986f-8657c8ea1c00
+let
+	@show loss(2.5,2.5)
+	@show l2(2.5,2.5)
+	@show loss_l2(2.5,2.5)
+	println("---")
+	@show loss(0,5)
+	@show l2(0,5)
+	@show loss_l2(0,5)
+	println("---")
+	@show loss(100,-95)
+	@show l2(100,-95)
+	@show loss_l2(100,-95)
+end 
+
+# ╔═╡ 324c7de6-c404-470a-afe3-cc756cf9fa94
+md"""
+### C. 변형된 손실함수 시각화
+"""
+
+# ╔═╡ 05665ffd-fba5-49c4-bae7-65c6b02ebc64
+md"""
+*Figure 1*:  $(x,y,z) = \big(\hat{\beta}_2,~ \hat{\beta}_3,~ loss(\hat{\beta}_2,\hat{\beta}_3)\big)$
+"""
+
+# ╔═╡ 278ef454-7fcc-4155-89f4-6fd93d168feb
+let
+	p1 = plot(β2,β3,loss,st=:surface,colorbar=false,alpha=0.8)
+	p2 = plot(β2,β3,loss,st=:contour,colorbar=false,levels=100)
+	plot(p1,p2)
+end 
+
+# ╔═╡ 14f7efbc-448d-44e1-b107-d52f05bc8520
+md"""
+*Figure 2*:  $(x,y,z) = \big(\hat{\beta}_2, ~\hat{\beta}_3,~ \hat{\beta}_2^2 + \hat{\beta}_3^2\big)$
+"""
+
+# ╔═╡ c5bdf20e-e89f-46e6-9a9a-2c16a19a54c4
+let
+	p3 = plot(β2,β3,l2,st=:surface,colorbar=false,alpha=0.8)
+	p4 = plot(β2,β3,l2,st=:contour,colorbar=false,levels=100)
+	plot(p3,p4)
+end
+
+# ╔═╡ 21a75194-76de-43bd-abbe-89d3e28e6d8e
+md"""
+*Figure 3*:  $(x,y,z) = \big(\hat{\beta}_2,~ \hat{\beta}_3,~ loss(\hat{\beta}_2,\hat{\beta}_3) + \hat{\beta}_2^2 + \hat{\beta}_3^2\big)$
+"""
+
+# ╔═╡ 14e02673-0863-4aa3-9ba6-af0bc909d0cc
+let
+	p5 = plot(β2,β3,loss_l2,st=:surface,colorbar=false,alpha=0.8)
+	p6 = plot(β2,β3,loss_l2,st=:contour,colorbar=false,levels=100)
+	plot(p5,p6)
+end 
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -71,6 +408,7 @@ HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
@@ -87,7 +425,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.10.3"
 manifest_format = "2.0"
-project_hash = "5b46fd4ec420cc6990826528f6bc6e476d7dfebd"
+project_hash = "54e136119fa801107056dd2c099fbaa1ecd2eaec"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1280,9 +1618,53 @@ version = "1.4.1+1"
 # ╟─31f2972f-c83f-42ce-999c-842c157899d3
 # ╟─6738f8c1-d361-438c-826c-f417652fbe5c
 # ╠═b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
+# ╠═f9f88913-a23a-4f02-a1cd-f255feb8c834
+# ╠═05c609a1-7ae4-4fb2-8a1f-f6ba12511613
+# ╟─d3772e62-decb-4675-9824-c827a8a442c1
+# ╠═2bed0ba1-208e-4629-b145-8fd12a8b40c4
 # ╠═109f4a28-ff76-49c4-a14d-ff5ce48765bf
-# ╠═2423428e-e096-439c-8f4e-fa534fa75886
-# ╠═57045abd-dd4f-40d5-a52a-6857373a9504
-# ╠═c5c6a6c4-7079-4733-afc1-823dc9f3bf86
+# ╟─629be1ab-21ac-4322-a765-346c71c49029
+# ╠═4499c143-3b8e-4c6b-bfc6-a65ffe629203
+# ╠═d1cd7a53-0c94-4393-bc51-3af200a65da4
+# ╟─e0133d36-0be6-4d99-aa51-5d16e5389afa
+# ╟─c2c0d7f3-ea4e-4126-8ec4-6f62e452675c
+# ╠═2371e35b-0a3f-42a3-89db-520e44f61450
+# ╟─533ee620-11b1-4205-a998-9030e414d106
+# ╟─979b1e94-ea18-41f5-9aad-4ac0b5fa4d8b
+# ╟─1676efae-34e1-4404-bb34-7ba5318da3b0
+# ╟─ebe9ebf5-f816-4659-bb86-72277b14c6d5
+# ╠═00e2c6de-3b6a-4a35-8a36-fe265cbdd925
+# ╟─a6302795-1f59-4666-96e7-38448935de82
+# ╟─d79f13a3-79cd-42ea-9aa7-e9955c9ffe2b
+# ╟─a49196cd-6e9d-4297-a2b5-874a3050598a
+# ╟─7ec30abc-1be0-4dba-9d47-2cbfb219a508
+# ╟─d79b170f-1198-403b-8f27-7c65e72a27b4
+# ╟─d055be6a-aef8-47d0-b0a2-a56b85089bfc
+# ╟─8b6bafd7-7dd9-4c2b-a059-d18fc2ad22f8
+# ╟─57b42243-1fa1-4a69-b116-044b30d7819b
+# ╟─b70e73b7-c2ae-4c94-9f85-ad0195b5858a
+# ╟─6601a37b-cb7c-417d-a438-c5c18c19e0cf
+# ╠═68d0574b-dbd6-4b68-920e-e672fe876ec6
+# ╠═cc6f7ff7-e7ac-409e-9f63-145c58e4ade5
+# ╠═cbb62ff1-fe39-468e-91a6-0431192fb25d
+# ╟─3bad3692-7f76-494c-93d5-f3951331c74e
+# ╟─758668d4-7d98-46db-8f8a-9a81abe6ad25
+# ╟─a82b89e1-ac4b-45e0-9e46-db58bc303812
+# ╠═a8e9091b-aa4b-49c8-804f-b0db309329a8
+# ╟─cbe878f4-07b2-4f21-8a63-7468b2633b6b
+# ╟─90ff8925-e0d6-4982-b19d-0f78b5016545
+# ╟─85ad9c84-87c8-49d9-9139-63605442aa2d
+# ╟─6216c9c1-3d3a-4e2c-9fd7-d18cba3b6147
+# ╠═d7433752-fe73-4477-bcbc-f7ecb78d6af2
+# ╠═5ba39dcd-1f21-4c83-a420-59de892a8121
+# ╟─1d20583d-bddb-4c38-9da5-03d9e4c53f03
+# ╠═d3416f40-9387-4a44-986f-8657c8ea1c00
+# ╟─324c7de6-c404-470a-afe3-cc756cf9fa94
+# ╟─05665ffd-fba5-49c4-bae7-65c6b02ebc64
+# ╠═278ef454-7fcc-4155-89f4-6fd93d168feb
+# ╟─14f7efbc-448d-44e1-b107-d52f05bc8520
+# ╠═c5bdf20e-e89f-46e6-9a9a-2c16a19a54c4
+# ╟─21a75194-76de-43bd-abbe-89d3e28e6d8e
+# ╠═14e02673-0863-4aa3-9ba6-af0bc909d0cc
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
