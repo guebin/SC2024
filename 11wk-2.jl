@@ -52,10 +52,13 @@ md"""
 """
 
 # ╔═╡ b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
-df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
+# df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
+
+# ╔═╡ 7d800fda-4cee-4bf8-b5cb-83b180c0ffd4
+df = DataFrame(CSV.File("./toeic.csv"))
 
 # ╔═╡ df19fb9c-8f86-4d55-9899-c868c3512411
-n = 500
+n = 5000
 
 # ╔═╡ f9f88913-a23a-4f02-a1cd-f255feb8c834
 begin 
@@ -94,7 +97,7 @@ end
 # ╔═╡ 629be1ab-21ac-4322-a765-346c71c49029
 md"""
 - ?? 뭐야?? 
-- 점수가 있으면 1점당 연봉이 대략 41만원이 깍임.
+- 텝스점수가 있으면 1점당 연봉이 대략 254만원이 깍임.
 - 이 평행세계가 잘못되었나?
 """
 
@@ -119,7 +122,7 @@ md"""
 
 # ╔═╡ c2c0d7f3-ea4e-4126-8ec4-6f62e452675c
 md"""
--- 생각해보니까 toeic ≈ teps 인 상황이라서 토익점수 1점당 연봉 46만원 올려주고, 텝스점수 1점당 연봉 41만원 깍는다는 것은 대충 토익점수 1점당 (혹은 텝스점수 1점당) 연봉 5만원 올려준다는 말임.  
+-- 생각해보니까 그렇게 이상한건 아니다. 지금 toeic ≈ teps 인 상황이라서 토익점수 1점당 연봉 259만원 올려주고, 텝스점수 1점당 연봉 254만원 깍는다는 것은 대충 토익점수 1점당 (혹은 텝스점수 1점당) 연봉 5만원 올려준다는 의미이다. 
 """
 
 # ╔═╡ 2371e35b-0a3f-42a3-89db-520e44f61450
@@ -241,16 +244,30 @@ md"""
 -- 이에 대한 수학적인 해는 ${\boldsymbol \beta}$ 값은 $\hat{\boldsymbol \beta}=\big({\bf X}^\top {\bf X}\big)^{-1}{\bf X}^\top{\bf y}$ 임을 너무나도 잘 알고 있지만, 우리의 예제에서는 이 수학적인 해가 별로 쓸모가 없다는 사실을 확인했다. 왜 이런일이 생길까?
 """
 
+# ╔═╡ 23d619d0-e790-4ddb-97ec-735e42fa85bc
+md"""
+-- 편의상 GPA에 대한 추정값 600은 정확하게 추정했다고 가정하자.
+"""
+
 # ╔═╡ 68d0574b-dbd6-4b68-920e-e672fe876ec6
 begin 
-	Random.seed!(43052)
-	# 편의상 GPA에 대한 추정값 600은 정확하게 추정했다고 가정하자. 
+	Random.seed!(43052) 
 	y = 600*X1 + 5*X2 + 300*randn(n)
 	ỹ = y - 600*X1
 end 
 
+# ╔═╡ ac6df6a5-6742-446a-b119-a0a685de2f3f
+md"""
+-- 손실함수를 정의하자.
+"""
+
 # ╔═╡ cc6f7ff7-e7ac-409e-9f63-145c58e4ade5
 loss(β2,β3) = (ỹ-β2*X2-β3*X3)'*(ỹ-β2*X2-β3*X3)/n
+
+# ╔═╡ f05be255-fae4-4421-a920-c863d0c389a6
+md"""
+-- 손실함수를 그려보자.
+"""
 
 # ╔═╡ cbb62ff1-fe39-468e-91a6-0431192fb25d
 begin
@@ -263,7 +280,7 @@ end
 
 # ╔═╡ 3bad3692-7f76-494c-93d5-f3951331c74e
 md"""
-- ``\hat{\beta}_2 + \hat{\beta}_3 \approx 5`` 이라면 loss값이 거의 비슷하게 최소값(?)이다.
+- ``\hat{\beta}_2 + \hat{\beta}_3 \approx 5`` 이라면 loss값을 거의 최소값과 비슷하게 만든다. 
 """
 
 # ╔═╡ 758668d4-7d98-46db-8f8a-9a81abe6ad25
@@ -274,7 +291,7 @@ md"""
 2. ``\hat{\beta}_2=5,\quad \hat{\beta}_3=0.``
 3. ``\hat{\beta}_2=100,\quad \hat{\beta}_3=-95.``
 
-그렇지만 상식적으로 3은 용납할 수 없다. 계수값은 최소한 0~5 사이의 값이었으면 좋겠다.
+그렇지만 상식적으로 3은 용납할 수 없다. 계수값은 최소한 0~5 사이의 값이었으면 좋겠다. (-0.1정도는 괜찮을 듯)
 """
 
 # ╔═╡ a82b89e1-ac4b-45e0-9e46-db58bc303812
@@ -435,7 +452,7 @@ $\hat{\boldsymbol \beta}=({\bf X}^\top {\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top
 
 # ╔═╡ 2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
 let
-	λ = 10
+	λ = 50
 	β̂ = inv(X'X + λ*I)X'y
 end 
 
@@ -456,7 +473,7 @@ let
 	N = 10000
 	E = 300*randn(n,N)
 	Y = (600*X1 + 5*X2) .+ E
-	λ = 10
+	λ = 50
 	B̂ = inv(X'X + λ*I)X'Y
 	β̂1s,β̂2s,β̂3s = eachrow(B̂)
 	p1 = histogram(β̂1s,alpha=0.5,label="β̂1")
@@ -464,14 +481,6 @@ let
 	p3 = histogram(β̂3s,alpha=0.5,label="β̂3")
 	plot(p1,p2,p3)
 end
-
-# ╔═╡ f8dea7d1-3d18-45aa-af86-3f785a372b47
-md"""
-### E. 능형회귀의 장단점
-"""
-
-# ╔═╡ 414fb566-5ab6-4209-adcc-a13bb632c74d
-
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1692,6 +1701,7 @@ version = "1.4.1+1"
 # ╟─31f2972f-c83f-42ce-999c-842c157899d3
 # ╟─6738f8c1-d361-438c-826c-f417652fbe5c
 # ╠═b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
+# ╠═7d800fda-4cee-4bf8-b5cb-83b180c0ffd4
 # ╠═df19fb9c-8f86-4d55-9899-c868c3512411
 # ╠═f9f88913-a23a-4f02-a1cd-f255feb8c834
 # ╠═05c609a1-7ae4-4fb2-8a1f-f6ba12511613
@@ -1719,8 +1729,11 @@ version = "1.4.1+1"
 # ╟─57b42243-1fa1-4a69-b116-044b30d7819b
 # ╟─b70e73b7-c2ae-4c94-9f85-ad0195b5858a
 # ╟─6601a37b-cb7c-417d-a438-c5c18c19e0cf
+# ╟─23d619d0-e790-4ddb-97ec-735e42fa85bc
 # ╠═68d0574b-dbd6-4b68-920e-e672fe876ec6
+# ╟─ac6df6a5-6742-446a-b119-a0a685de2f3f
 # ╠═cc6f7ff7-e7ac-409e-9f63-145c58e4ade5
+# ╟─f05be255-fae4-4421-a920-c863d0c389a6
 # ╠═cbb62ff1-fe39-468e-91a6-0431192fb25d
 # ╟─3bad3692-7f76-494c-93d5-f3951331c74e
 # ╟─758668d4-7d98-46db-8f8a-9a81abe6ad25
@@ -1750,7 +1763,5 @@ version = "1.4.1+1"
 # ╟─61b295ca-be2d-4326-bff5-0fd860d31919
 # ╟─057f12ba-1e54-481a-b9f4-a6e2bcad6805
 # ╠═392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
-# ╟─f8dea7d1-3d18-45aa-af86-3f785a372b47
-# ╠═414fb566-5ab6-4209-adcc-a13bb632c74d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
