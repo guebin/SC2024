@@ -238,7 +238,7 @@ $$\underset{{\boldsymbol \beta} \in \mathbb{R}^p}{\operatorname{argmin}}\bigg\{ 
 
 # ╔═╡ 6601a37b-cb7c-417d-a438-c5c18c19e0cf
 md"""
--- 이에 대한 수학적인 해는 $\hat{\boldsymbol \beta}=\big({\bf X}^\top {\bf X}\big)^{-1}{\bf X}^\top{\bf y}$ 임을 너무나도 잘 알고 있지만, 우리의 예제에서는 이 수학적인 해가 별로 쓸모가 없다는 사실을 확인했다. 왜 이런일이 생길까?
+-- 이에 대한 수학적인 해는 ${\boldsymbol \beta}$ 값은 $\hat{\boldsymbol \beta}=\big({\bf X}^\top {\bf X}\big)^{-1}{\bf X}^\top{\bf y}$ 임을 너무나도 잘 알고 있지만, 우리의 예제에서는 이 수학적인 해가 별로 쓸모가 없다는 사실을 확인했다. 왜 이런일이 생길까?
 """
 
 # ╔═╡ 23d619d0-e790-4ddb-97ec-735e42fa85bc
