@@ -54,6 +54,9 @@ md"""
 # ╔═╡ b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
 df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
 
+# ╔═╡ df19fb9c-8f86-4d55-9899-c868c3512411
+n = 1000
+
 # ╔═╡ f9f88913-a23a-4f02-a1cd-f255feb8c834
 begin 
 	X1,X2,X3 = eachcol(df)
@@ -62,12 +65,12 @@ end
 
 # ╔═╡ 05c609a1-7ae4-4fb2-8a1f-f6ba12511613
 let
-	y = 600*X1 + 5*X2 + 300*randn(1000)
+	y = 600*X1 + 5*X2 + 300*randn(n)
 	# 참모형 = 학점1점당 연봉600만원 상승, 토익1점당 연봉5만원 상승!
 	p1 = histogram(y,label="평행세계1",color=1)
-	p2 = histogram(600*X1 + 5*X2 + 300*randn(1000),label="평행세계2",color=2)
-	p3 = histogram(600*X1 + 5*X2 + 300*randn(1000),label="평행세계3",color=3)
-	p4 = histogram(600*X1 + 5*X2 + 300*randn(1000),label="평행세계4",color=4)
+	p2 = histogram(600*X1 + 5*X2 + 300*randn(n),label="평행세계2",color=2)
+	p3 = histogram(600*X1 + 5*X2 + 300*randn(n),label="평행세계3",color=3)
+	p4 = histogram(600*X1 + 5*X2 + 300*randn(n),label="평행세계4",color=4)
 	plot(p1,p2,p3,p4) 
 end 
 
@@ -84,14 +87,14 @@ md"""
 # ╔═╡ 109f4a28-ff76-49c4-a14d-ff5ce48765bf
 let
 	Random.seed!(43052)
-	y = 600*X1 + 5*X2 + 300*randn(1000)
+	y = 600*X1 + 5*X2 + 300*randn(n)
 	β̂ = inv(X'X)X'y 
 end
 
 # ╔═╡ 629be1ab-21ac-4322-a765-346c71c49029
 md"""
 - ?? 뭐야?? 
-- 점수가 있으면 1점당 연봉이 대략 373만원이 깍임.
+- 점수가 있으면 1점당 연봉이 대략 344만원이 깍임.
 - 이 평행세계가 잘못되었나?
 """
 
@@ -102,7 +105,7 @@ md"""
 
 # ╔═╡ d1cd7a53-0c94-4393-bc51-3af200a65da4
 for i in 1:10
-	y = 600*X1 + 5*X2 + 300*randn(1000)
+	y = 600*X1 + 5*X2 + 300*randn(n)
 	β̂ = inv(X'X)X'y 
 	@show β̂
 end
@@ -121,7 +124,7 @@ md"""
 
 # ╔═╡ 2371e35b-0a3f-42a3-89db-520e44f61450
 for i in 1:10
-	y = 600*X1 + 5*X2 + 300*randn(1000)
+	y = 600*X1 + 5*X2 + 300*randn(n)
 	β̂ = inv(X'X)X'y 
 	_,β̂2,β̂3 = β̂
 	@show β̂
@@ -163,7 +166,7 @@ md"""
 # ╔═╡ 00e2c6de-3b6a-4a35-8a36-fe265cbdd925
 let 
 	N = 10000
-	E = 300*randn(1000,N)
+	E = 300*randn(n,N)
 	Y = (600*X1 + 5*X2) .+ E
 	B̂ = inv(X'X)X'Y
 	β̂1s,β̂2s,β̂3s = eachrow(B̂)
@@ -242,12 +245,12 @@ md"""
 begin 
 	Random.seed!(43052)
 	# 편의상 GPA에 대한 추정값 600은 정확하게 추정했다고 가정하자. 
-	y = 600*X1 + 5*X2 + 300*randn(1000)
+	y = 600*X1 + 5*X2 + 300*randn(n)
 	ỹ = y - 600*X1
 end 
 
 # ╔═╡ cc6f7ff7-e7ac-409e-9f63-145c58e4ade5
-loss(β2,β3) = (ỹ-β2*X2-β3*X3)'*(ỹ-β2*X2-β3*X3)/1000
+loss(β2,β3) = (ỹ-β2*X2-β3*X3)'*(ỹ-β2*X2-β3*X3)/n
 
 # ╔═╡ cbb62ff1-fe39-468e-91a6-0431192fb25d
 begin
@@ -432,7 +435,7 @@ $\hat{\boldsymbol \beta}=({\bf X}^\top {\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top
 
 # ╔═╡ 2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
 let
-	λ = 9
+	λ = 1000
 	β̂ = inv(X'X + λ*I)X'y
 end 
 
@@ -451,9 +454,9 @@ md"""
 # ╔═╡ 392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
 let 
 	N = 10000
-	E = 300*randn(1000,N)
+	E = 300*randn(n,N)
 	Y = (600*X1 + 5*X2) .+ E
-	λ = 9
+	λ = 1000
 	B̂ = inv(X'X + λ*I)X'Y
 	β̂1s,β̂2s,β̂3s = eachrow(B̂)
 	p1 = histogram(β̂1s,alpha=0.5,label="β̂1")
@@ -1689,11 +1692,12 @@ version = "1.4.1+1"
 # ╟─31f2972f-c83f-42ce-999c-842c157899d3
 # ╟─6738f8c1-d361-438c-826c-f417652fbe5c
 # ╠═b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
+# ╠═df19fb9c-8f86-4d55-9899-c868c3512411
 # ╠═f9f88913-a23a-4f02-a1cd-f255feb8c834
 # ╠═05c609a1-7ae4-4fb2-8a1f-f6ba12511613
 # ╟─d3772e62-decb-4675-9824-c827a8a442c1
 # ╟─2bed0ba1-208e-4629-b145-8fd12a8b40c4
-# ╠═109f4a28-ff76-49c4-a14d-ff5ce48765bf
+# ╟─109f4a28-ff76-49c4-a14d-ff5ce48765bf
 # ╟─629be1ab-21ac-4322-a765-346c71c49029
 # ╟─4499c143-3b8e-4c6b-bfc6-a65ffe629203
 # ╠═d1cd7a53-0c94-4393-bc51-3af200a65da4
