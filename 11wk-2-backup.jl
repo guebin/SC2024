@@ -4,6 +4,16 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ 128613c3-baba-426a-adbf-8abed179eb49
 using PlutoUI,Plots,HTTP,CSV,DataFrames,LinearAlgebra,Statistics,Random
 
@@ -18,15 +28,7 @@ md"""
 """
 
 # ╔═╡ 4c8cb126-08bd-478e-8472-fd1547e0d128
-html"""
-<div style="display: flex; justify-content: center;">
-<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-<iframe src=
-"
-https://youtube.com/embed/playlist?list=PLQqh36zP38-wWZPYeTwGsqyrmvI3wmFDF&si=vPZ_JI-x4Cs-hKbu
-"
-width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-"""
+
 
 # ╔═╡ 2d2f8c88-07f9-4e8b-86ae-fc9828aba187
 md"""
@@ -220,7 +222,7 @@ md"""
 
 # ╔═╡ d055be6a-aef8-47d0-b0a2-a56b85089bfc
 md"""
-## 4. 능형회귀 -- 다음시간이어서
+## 4. 능형회귀
 """
 
 # ╔═╡ 8b6bafd7-7dd9-4c2b-a059-d18fc2ad22f8
@@ -342,6 +344,145 @@ md"""
 	**그렇다면 ``\hat{\beta}_2`` 와 ``\hat{\beta}_3`` 의 절대값이 클수록 손실함수를 더 크게 만들어 버리면 어떨까??!**
 
 """
+
+# ╔═╡ d7433752-fe73-4477-bcbc-f7ecb78d6af2
+md"""
+λ = $(@bind λ Slider(1:1:50000,show_value=true, default=1))
+"""
+
+# ╔═╡ 6216c9c1-3d3a-4e2c-9fd7-d18cba3b6147
+md"""
+-- ``\lambda \geq 0`` 에 대하여 아래와 같은 손실함수를 고려해보자.
+
+$loss_{\text{L}^2} := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big) + \lambda {\boldsymbol \beta}^\top{\boldsymbol \beta}$
+"""
+
+# ╔═╡ 5ba39dcd-1f21-4c83-a420-59de892a8121
+begin 
+	l2(β2,β3) = λ*(β2^2 + β3^2)
+	loss_l2(β2,β3) = loss(β2,β3) + l2(β2,β3)
+end 
+
+# ╔═╡ 1d20583d-bddb-4c38-9da5-03d9e4c53f03
+md"""
+-- $L_2$ 벌점을 추가할 경우
+"""
+
+# ╔═╡ d3416f40-9387-4a44-986f-8657c8ea1c00
+let
+	@show λ
+	println("---")
+	@show loss(2.5,2.5)
+	@show l2(2.5,2.5)
+	@show loss_l2(2.5,2.5) # 이제는 이게 제일 작음
+	println("---")
+	@show loss(0,5)
+	@show l2(0,5)
+	@show loss_l2(0,5)
+	println("---")
+	@show loss(100,-95)
+	@show l2(100,-95)
+	@show loss_l2(100,-95)
+end 
+
+# ╔═╡ 324c7de6-c404-470a-afe3-cc756cf9fa94
+md"""
+### C. 변형된 손실함수 시각화
+"""
+
+# ╔═╡ 05665ffd-fba5-49c4-bae7-65c6b02ebc64
+md"""
+*Figure 1*:  $(x,y,z) = \big(\hat{\beta}_2,~ \hat{\beta}_3,~ loss(\hat{\beta}_2,\hat{\beta}_3)\big)$
+"""
+
+# ╔═╡ 278ef454-7fcc-4155-89f4-6fd93d168feb
+let
+	p1 = plot(β2,β3,loss,st=:surface,colorbar=false,alpha=0.9)
+	p2 = plot(β2,β3,loss,st=:contour,colorbar=false,levels=100)
+	plot(p1,p2)
+end 
+
+# ╔═╡ 14f7efbc-448d-44e1-b107-d52f05bc8520
+md"""
+*Figure 2*:  $(x,y,z) = \big(\hat{\beta}_2, ~\hat{\beta}_3,~ \hat{\beta}_2^2 + \hat{\beta}_3^2\big)$
+"""
+
+# ╔═╡ c5bdf20e-e89f-46e6-9a9a-2c16a19a54c4
+let
+	p3 = plot(β2,β3,l2,st=:surface,colorbar=false,alpha=0.9)
+	p4 = plot(β2,β3,l2,st=:contour,colorbar=false,levels=100)
+	plot(p3,p4)
+end
+
+# ╔═╡ 21a75194-76de-43bd-abbe-89d3e28e6d8e
+md"""
+*Figure 3*:  $(x,y,z) = \big(\hat{\beta}_2,~ \hat{\beta}_3,~ loss(\hat{\beta}_2,\hat{\beta}_3) + \hat{\beta}_2^2 + \hat{\beta}_3^2\big)$
+"""
+
+# ╔═╡ 14e02673-0863-4aa3-9ba6-af0bc909d0cc
+let
+	p5 = plot(β2,β3,loss_l2,st=:surface,colorbar=false,alpha=0.9)
+	p6 = plot(β2,β3,loss_l2,st=:contour,colorbar=false,levels=100)
+	plot(p5,p6)
+end 
+
+# ╔═╡ 6d545544-3516-4560-8887-e4413f3c0fc0
+md"""
+### D. 해를 구하는 방법
+"""
+
+# ╔═╡ f5b49064-9f8b-4238-97a4-780b4023a641
+md"""
+-- 다중공선성이 의심되는 경우에는 단순하게 아래를 최소화 하는 것 보다
+
+$loss := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big)$
+
+``\lambda \geq 0`` 에 대하여 아래와 같은 손실함수를 최소화하는 $\hat{\boldsymbol \beta}$ 을 구하는 것이 더 이득인 것 같다. 
+
+$loss_{\text{L}^2} := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big) + \lambda {\boldsymbol \beta}^\top{\boldsymbol \beta}$
+"""
+
+# ╔═╡ 8a47abe4-22de-48fc-b98c-c4cce53502bb
+md"""
+-- ``loss_{\text{L}^2}``를 최소화하는 수학적인 해는 아래와 같다.
+"""
+
+# ╔═╡ b3d527a8-3151-4f30-8ccd-b53b298855de
+md"""
+$\hat{\boldsymbol \beta}=({\bf X}^\top {\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$
+"""
+
+# ╔═╡ 2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
+let
+	λ = 50
+	β̂ = inv(X'X + λ*I)X'y
+end 
+
+# ╔═╡ 61b295ca-be2d-4326-bff5-0fd860d31919
+md"""
+-- 결과는 그럭저럭 괜찮음. 
+- ``\hat{\beta}_3``, ``\hat{\beta}_3`` 에 대한 추정값이 괜찮게 나온것은 긍정적임. 
+- 그런데 ``\hat{\beta}_1``의 추정값은 $\lambda$ 값을 키울수록 600보다 작게 추정된다. 
+"""
+
+# ╔═╡ 057f12ba-1e54-481a-b9f4-a6e2bcad6805
+md"""
+-- 다른 평행세계에 대하여서도 ``\hat{\boldsymbol \beta}_1``,``\hat{\boldsymbol \beta}_2``, ``\hat{\boldsymbol \beta}_3`` 를 각각 구해보고 그 분포를 살펴보자. 
+"""
+
+# ╔═╡ 392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
+let 
+	N = 10000
+	E = 300*randn(n,N)
+	Y = (600*X1 + 5*X2) .+ E
+	λ = 50
+	B̂ = inv(X'X + λ*I)X'Y
+	β̂1s,β̂2s,β̂3s = eachrow(B̂)
+	p1 = histogram(β̂1s,alpha=0.5,label="β̂1")
+	p2 = histogram(β̂2s,alpha=0.5,label="β̂2")
+	p3 = histogram(β̂3s,alpha=0.5,label="β̂3")
+	plot(p1,p2,p3)
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1554,7 +1695,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─7ec1510e-130c-11ef-1e0e-518d9cc440ea
 # ╟─a366d78e-5826-4a65-a3fe-3469fee80f9a
-# ╟─4c8cb126-08bd-478e-8472-fd1547e0d128
+# ╠═4c8cb126-08bd-478e-8472-fd1547e0d128
 # ╟─2d2f8c88-07f9-4e8b-86ae-fc9828aba187
 # ╠═128613c3-baba-426a-adbf-8abed179eb49
 # ╠═3317fffc-955d-4073-9123-17688a4c6f61
@@ -1603,5 +1744,25 @@ version = "1.4.1+1"
 # ╟─cbe878f4-07b2-4f21-8a63-7468b2633b6b
 # ╟─90ff8925-e0d6-4982-b19d-0f78b5016545
 # ╟─85ad9c84-87c8-49d9-9139-63605442aa2d
+# ╟─d7433752-fe73-4477-bcbc-f7ecb78d6af2
+# ╟─6216c9c1-3d3a-4e2c-9fd7-d18cba3b6147
+# ╠═5ba39dcd-1f21-4c83-a420-59de892a8121
+# ╟─1d20583d-bddb-4c38-9da5-03d9e4c53f03
+# ╠═d3416f40-9387-4a44-986f-8657c8ea1c00
+# ╟─324c7de6-c404-470a-afe3-cc756cf9fa94
+# ╟─05665ffd-fba5-49c4-bae7-65c6b02ebc64
+# ╠═278ef454-7fcc-4155-89f4-6fd93d168feb
+# ╟─14f7efbc-448d-44e1-b107-d52f05bc8520
+# ╠═c5bdf20e-e89f-46e6-9a9a-2c16a19a54c4
+# ╟─21a75194-76de-43bd-abbe-89d3e28e6d8e
+# ╠═14e02673-0863-4aa3-9ba6-af0bc909d0cc
+# ╟─6d545544-3516-4560-8887-e4413f3c0fc0
+# ╟─f5b49064-9f8b-4238-97a4-780b4023a641
+# ╟─8a47abe4-22de-48fc-b98c-c4cce53502bb
+# ╟─b3d527a8-3151-4f30-8ccd-b53b298855de
+# ╠═2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
+# ╟─61b295ca-be2d-4326-bff5-0fd860d31919
+# ╟─057f12ba-1e54-481a-b9f4-a6e2bcad6805
+# ╠═392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

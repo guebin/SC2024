@@ -54,21 +54,24 @@ md"""
 # ╔═╡ b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
 df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
 
-# ╔═╡ df19fb9c-8f86-4d55-9899-c868c3512411
+# ╔═╡ 5cf4fb3d-f6c2-48d9-96ea-e8fc9fcad5b8
 n = 5000
 
 # ╔═╡ 45cc2e44-54d6-4121-b1ec-32af764400f7
-X1,X2,X3 = eachcol(df)
-
-# ╔═╡ bf7d1581-c6b7-470e-9c28-b45a1caf66f6
-let
+begin
+	Random.seed!(43052)
+	X1,X2,X3 = eachcol(df)
 	y = 600*X1 + 5*X2 + 300*randn(n)
-	p1 = histogram(y)
-	p2 = histogram(600*X1 + 5*X2 + 300*randn(n))
-	p3 = histogram(600*X1 + 5*X2 + 300*randn(n))
-	p4 = histogram(600*X1 + 5*X2 + 300*randn(n))
+end
+
+# ╔═╡ bd30a08c-1259-455e-a058-d5acb674ee42
+let 
+	p1=histogram(y)
+	p2=histogram(600*X1 + 5*X2 + 300*randn(n))
+	p3=histogram(600*X1 + 5*X2 + 300*randn(n))
+	p4=histogram(600*X1 + 5*X2 + 300*randn(n))
 	plot(p1,p2,p3,p4)
-end 
+end
 
 # ╔═╡ d3772e62-decb-4675-9824-c827a8a442c1
 md"""
@@ -82,8 +85,6 @@ md"""
 
 # ╔═╡ 109f4a28-ff76-49c4-a14d-ff5ce48765bf
 let
-	Random.seed!(43052)
-	y = 600*X1 + 5*X2 + 300*randn(n)
 	X = [X1 X2 X3]
 	β̂ = inv(X'X)X'y
 end 
@@ -104,8 +105,8 @@ md"""
 for i in 1:10
 	y = 600*X1 + 5*X2 + 300*randn(n)
 	X = [X1 X2 X3]
-	β̂ = inv(X'X)X'y
-	@show β̂ 
+	β̂ = inv(X'X)X'y	
+	@show β̂
 end 
 
 # ╔═╡ e0133d36-0be6-4d99-aa51-5d16e5389afa
@@ -124,10 +125,10 @@ md"""
 for i in 1:10
 	y = 600*X1 + 5*X2 + 300*randn(n)
 	X = [X1 X2 X3]
-	β̂ = inv(X'X)X'y
-	_,β̂1,β̂2 = β̂
+	β̂ = inv(X'X)X'y	
+	_, β̂2, β̂3 = β̂ 
 	@show β̂
-	@show β̂1+β̂2 
+	@show β̂2+β̂3
 	println("---")
 end 
 
@@ -168,12 +169,12 @@ md"""
 
 # ╔═╡ e49db497-7c93-49a8-9826-7de06b854488
 let
-	N = 10000 # 평행세계의 수 
+	N = 10000 
 	X = [X1 X2 X3]
-	E = 300*randn(n,N)
-	Y = (600*X1 + 5*X2) .+ E # Y = [평행세계1에서y, 평행세계2에서y, ... ,평행세계N에서y]
-	B̂ = inv(X'X)*X'Y
-	β̂1s,β̂2s,β̂3s = eachrow(B̂)
+	E = randn(n,N)*300
+	Y = 600*X1 + 5*X2 .+ E
+	B̂ = inv(X'X)X'Y
+	β̂1s, β̂2s, β̂3s = eachrow(B̂)
 	p1 = histogram(β̂1s)
 	p2 = histogram(β̂2s)
 	p3 = histogram(β̂3s)
@@ -252,9 +253,7 @@ md"""
 
 # ╔═╡ 68d0574b-dbd6-4b68-920e-e672fe876ec6
 begin 
-	Random.seed!(43052)
-	y = 600*X1 + 5*X2 + 300*randn(n)
-	ỹ = y-600*X1
+	ỹ = y - X1*600
 end 
 
 # ╔═╡ ac6df6a5-6742-446a-b119-a0a685de2f3f
@@ -263,10 +262,7 @@ md"""
 """
 
 # ╔═╡ cc6f7ff7-e7ac-409e-9f63-145c58e4ade5
-loss(β2,β3) = (ỹ-β2*X2-β3*X3)'*(ỹ-β2*X2-β3*X3)/n
-
-# ╔═╡ 11b5e97b-24ff-4495-8833-abd8d7e443e3
-loss(0,5)
+loss(β2,β3) = (ỹ-X2*β2-X3*β3)'*(ỹ-X2*β2-X3*β3)/n
 
 # ╔═╡ f05be255-fae4-4421-a920-c863d0c389a6
 md"""
@@ -274,13 +270,13 @@ md"""
 """
 
 # ╔═╡ 263d8857-a03f-4390-914b-25a7f9e31615
-let 
+let
 	β2 = -10:0.5:15
-	β3 = -10:0.5:10
-	p1 = plot(β2,β3,loss,st=:surface,colorbar=false)
-	p2 = plot(β2,β3,loss,st=:contour,levels=100,colorbar=false)
+	β3 = -10:0.5:15
+	p1=plot(β2,β3,loss,st=:surface,colorbar=false)
+	p2=plot(β2,β3,loss,st=:contour,colorbar=false,levels=100)
 	plot(p1,p2)
-end 
+end
 
 # ╔═╡ 3bad3692-7f76-494c-93d5-f3951331c74e
 md"""
@@ -304,11 +300,11 @@ md"""
 """
 
 # ╔═╡ a8e9091b-aa4b-49c8-804f-b0db309329a8
-let 
+let
 	@show loss(2.5,2.5)
 	@show loss(5,0)
 	@show loss(100,-95)
-end 
+end
 
 # ╔═╡ cbe878f4-07b2-4f21-8a63-7468b2633b6b
 md"""
@@ -361,10 +357,7 @@ $loss_{\text{L}^2} := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\
 """
 
 # ╔═╡ 5ba39dcd-1f21-4c83-a420-59de892a8121
-begin
-	l2(β2,β3) = λ*(β2^2 + β3^2)
-	loss_l2(β2,β3) = loss(β2,β3) + l2(β2,β3)
-end 
+
 
 # ╔═╡ 1d20583d-bddb-4c38-9da5-03d9e4c53f03
 md"""
@@ -372,20 +365,7 @@ md"""
 """
 
 # ╔═╡ d3416f40-9387-4a44-986f-8657c8ea1c00
-let 
-	@show loss(2.5,2.5)
-	@show l2(2.5,2.5)
-	@show loss_l2(2.5,2.5)
-	println("--")
-	@show loss(5,0)
-	@show l2(5,0)
-	@show loss_l2(5,0)
-	println("--")
-	@show loss(100,-95)
-	@show l2(100,-95)
-	@show loss_l2(100,-95)
-	println("--")
-end 
+
 
 # ╔═╡ 324c7de6-c404-470a-afe3-cc756cf9fa94
 md"""
@@ -398,13 +378,7 @@ md"""
 """
 
 # ╔═╡ 278ef454-7fcc-4155-89f4-6fd93d168feb
-let
-	β2 = -10:0.5:15
-	β3 = -10:0.5:10
-	p1 = plot(β2,β3,loss,st=:surface,colorbar=false)
-	p2 = plot(β2,β3,loss,st=:contour,levels=100,colorbar=false)
-	plot(p1,p2)
-end 
+
 
 # ╔═╡ 14f7efbc-448d-44e1-b107-d52f05bc8520
 md"""
@@ -412,13 +386,7 @@ md"""
 """
 
 # ╔═╡ c5bdf20e-e89f-46e6-9a9a-2c16a19a54c4
-let
-	β2 = -10:0.5:15
-	β3 = -10:0.5:10
-	p1 = plot(β2,β3,l2,st=:surface,colorbar=false)
-	p2 = plot(β2,β3,l2,st=:contour,levels=100,colorbar=false)
-	plot(p1,p2)
-end 
+
 
 # ╔═╡ 21a75194-76de-43bd-abbe-89d3e28e6d8e
 md"""
@@ -426,13 +394,7 @@ md"""
 """
 
 # ╔═╡ 14e02673-0863-4aa3-9ba6-af0bc909d0cc
-let
-	β2 = -10:0.5:15
-	β3 = -10:0.5:10
-	p1 = plot(β2,β3,loss_l2,st=:surface,colorbar=false)
-	p2 = plot(β2,β3,loss_l2,st=:contour,levels=100,colorbar=false)
-	plot(p1,p2)
-end 
+
 
 # ╔═╡ 6d545544-3516-4560-8887-e4413f3c0fc0
 md"""
@@ -461,16 +423,7 @@ $\hat{\boldsymbol \beta}=({\bf X}^\top {\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top
 """
 
 # ╔═╡ 2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
-for i in 1:10
-	y = 600*X1 + 5*X2 + 300*randn(n)
-	X = [X1 X2 X3]
-	λ = 50
-	β̂ = inv(X'X+λ*I)X'y
-	_,β̂1,β̂2 = β̂
-	@show β̂
-	@show β̂1+β̂2 
-	println("---")
-end 
+
 
 # ╔═╡ 61b295ca-be2d-4326-bff5-0fd860d31919
 md"""
@@ -485,19 +438,7 @@ md"""
 """
 
 # ╔═╡ 392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
-let
-	N = 10000 # 평행세계의 수 
-	X = [X1 X2 X3]
-	E = 300*randn(n,N)
-	Y = (600*X1 + 5*X2) .+ E # Y = [평행세계1에서y, 평행세계2에서y, ... ,평행세계N에서y]
-	λ = 50
-	B̂ = inv(X'X+λ*I)*X'Y
-	β̂1s,β̂2s,β̂3s = eachrow(B̂)
-	p1 = histogram(β̂1s)
-	p2 = histogram(β̂2s)
-	p3 = histogram(β̂3s)
-	plot(p1,p2,p3)
-end
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1718,9 +1659,9 @@ version = "1.4.1+1"
 # ╟─31f2972f-c83f-42ce-999c-842c157899d3
 # ╟─6738f8c1-d361-438c-826c-f417652fbe5c
 # ╠═b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
-# ╠═df19fb9c-8f86-4d55-9899-c868c3512411
+# ╠═5cf4fb3d-f6c2-48d9-96ea-e8fc9fcad5b8
 # ╠═45cc2e44-54d6-4121-b1ec-32af764400f7
-# ╠═bf7d1581-c6b7-470e-9c28-b45a1caf66f6
+# ╠═bd30a08c-1259-455e-a058-d5acb674ee42
 # ╟─d3772e62-decb-4675-9824-c827a8a442c1
 # ╟─2bed0ba1-208e-4629-b145-8fd12a8b40c4
 # ╠═109f4a28-ff76-49c4-a14d-ff5ce48765bf
@@ -1734,7 +1675,7 @@ version = "1.4.1+1"
 # ╟─979b1e94-ea18-41f5-9aad-4ac0b5fa4d8b
 # ╟─1676efae-34e1-4404-bb34-7ba5318da3b0
 # ╟─ebe9ebf5-f816-4659-bb86-72277b14c6d5
-# ╠═00e2c6de-3b6a-4a35-8a36-fe265cbdd925
+# ╟─00e2c6de-3b6a-4a35-8a36-fe265cbdd925
 # ╠═e49db497-7c93-49a8-9826-7de06b854488
 # ╟─a6302795-1f59-4666-96e7-38448935de82
 # ╟─d79f13a3-79cd-42ea-9aa7-e9955c9ffe2b
@@ -1750,7 +1691,6 @@ version = "1.4.1+1"
 # ╠═68d0574b-dbd6-4b68-920e-e672fe876ec6
 # ╟─ac6df6a5-6742-446a-b119-a0a685de2f3f
 # ╠═cc6f7ff7-e7ac-409e-9f63-145c58e4ade5
-# ╠═11b5e97b-24ff-4495-8833-abd8d7e443e3
 # ╟─f05be255-fae4-4421-a920-c863d0c389a6
 # ╠═263d8857-a03f-4390-914b-25a7f9e31615
 # ╟─3bad3692-7f76-494c-93d5-f3951331c74e
@@ -1773,8 +1713,8 @@ version = "1.4.1+1"
 # ╟─21a75194-76de-43bd-abbe-89d3e28e6d8e
 # ╠═14e02673-0863-4aa3-9ba6-af0bc909d0cc
 # ╟─6d545544-3516-4560-8887-e4413f3c0fc0
-# ╠═f5b49064-9f8b-4238-97a4-780b4023a641
-# ╠═fb027eea-151d-4ee2-8287-beac504f6868
+# ╟─f5b49064-9f8b-4238-97a4-780b4023a641
+# ╟─fb027eea-151d-4ee2-8287-beac504f6868
 # ╟─b3d527a8-3151-4f30-8ccd-b53b298855de
 # ╠═2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
 # ╟─61b295ca-be2d-4326-bff5-0fd860d31919
