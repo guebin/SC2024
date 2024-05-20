@@ -49,7 +49,8 @@ md"""
 - [09wk-2](https://guebin.github.io/SC2024/09wk-2.html): 실대칭행렬, PD-행렬, SVD의 존재성
 - [10wk-2](https://guebin.github.io/SC2024/10wk-2.html): SVD와 회귀분석
 - [11wk-1](https://guebin.github.io/SC2024/11wk-1.html): 벡터미분
-- [11wk-2](https://guebin.github.io/SC2024/11wk-2.html): 다중공선성과 능형회귀
+- [11wk-2](https://guebin.github.io/SC2024/11wk-2.html): 다중공선성
+- [12wk-1](https://guebin.github.io/SC2024/12wk-1.html): 능형회귀
 """
 
 
