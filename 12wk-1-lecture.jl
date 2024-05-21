@@ -19,7 +19,7 @@ using PlutoUI,Plots,HTTP,CSV,DataFrames,LinearAlgebra,Statistics,Random
 
 # ╔═╡ 7ec1510e-130c-11ef-1e0e-518d9cc440ea
 md"""
-# 11wk-2: 다중공선성
+# 12wk-1: 능형회귀
 """
 
 # ╔═╡ a366d78e-5826-4a65-a3fe-3469fee80f9a
@@ -46,180 +46,30 @@ md"""
 ## 3. 다중공선성
 """
 
-# ╔═╡ 6738f8c1-d361-438c-826c-f417652fbe5c
-md"""
-### A. Data
-"""
-
 # ╔═╡ b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
 df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
 
-# ╔═╡ 5cf4fb3d-f6c2-48d9-96ea-e8fc9fcad5b8
+# ╔═╡ df19fb9c-8f86-4d55-9899-c868c3512411
 n = 5000
 
-# ╔═╡ 45cc2e44-54d6-4121-b1ec-32af764400f7
-begin
-	Random.seed!(43052)
+# ╔═╡ f9f88913-a23a-4f02-a1cd-f255feb8c834
+begin 
 	X1,X2,X3 = eachcol(df)
-	y = 600*X1 + 5*X2 + 300*randn(n)
+	X = [X1 X2 X3] 
 end
 
-# ╔═╡ bd30a08c-1259-455e-a058-d5acb674ee42
-let 
-	p1=histogram(y)
-	p2=histogram(600*X1 + 5*X2 + 300*randn(n))
-	p3=histogram(600*X1 + 5*X2 + 300*randn(n))
-	p4=histogram(600*X1 + 5*X2 + 300*randn(n))
-	plot(p1,p2,p3,p4)
+# ╔═╡ b45868ea-681e-41e3-b9c0-2d0c918e574d
+begin 
+	Random.seed!(43052) 
+	β1 = 600 
+	β2 = 5 
+	β3 = 0
+	β = [β1, β2, β3]
+	σ = 300
+	ϵ = σ*randn(n)
+	#y = β1*X1 + β2*X2 + β3*X3 + ϵ
+	y = X*β + ϵ
 end
-
-# ╔═╡ d3772e62-decb-4675-9824-c827a8a442c1
-md"""
-### B. ${\boldsymbol \beta}$ 의 추정
-"""
-
-# ╔═╡ 2bed0ba1-208e-4629-b145-8fd12a8b40c4
-md"""
--- $\hat{\boldsymbol \beta}$ 를 추정해서 "학점1점 = 연봉600만원", "토익1점 = 연봉5만원" 이라는 법칙을 밝혀보자.
-"""
-
-# ╔═╡ 109f4a28-ff76-49c4-a14d-ff5ce48765bf
-let
-	X = [X1 X2 X3]
-	β̂ = inv(X'X)X'y
-end 
-
-# ╔═╡ 629be1ab-21ac-4322-a765-346c71c49029
-md"""
-- ?? 뭐야?? 
-- 텝스점수가 있으면 1점당 연봉이 대략 254만원이 깍임.
-- 이 평행세계가 잘못되었나?
-"""
-
-# ╔═╡ 4499c143-3b8e-4c6b-bfc6-a65ffe629203
-md"""
--- 다른 10개의 평행세계에서 조사해봄.
-"""
-
-# ╔═╡ d1cd7a53-0c94-4393-bc51-3af200a65da4
-for i in 1:10
-	y = 600*X1 + 5*X2 + 300*randn(n)
-	X = [X1 X2 X3]
-	β̂ = inv(X'X)X'y	
-	@show β̂
-end 
-
-# ╔═╡ e0133d36-0be6-4d99-aa51-5d16e5389afa
-md"""
-- 다른 평행세계도 싹다 이상함. 
-- ``\hat{\beta_1}`` 의 추정값은 600근처에서 안정적임. 
-- ``\hat{\beta_2},\hat{\beta_3}`` 의 추정값은 자기 마음대로임. (왜 그럴까?)
-"""
-
-# ╔═╡ c2c0d7f3-ea4e-4126-8ec4-6f62e452675c
-md"""
--- 생각해보니까 그렇게 이상한건 아니다. 지금 toeic ≈ teps 인 상황이라서 토익점수 1점당 연봉 259만원 올려주고, 텝스점수 1점당 연봉 254만원 깍는다는 것은 대충 토익점수 1점당 (혹은 텝스점수 1점당) 연봉 5만원 올려준다는 의미이다. 
-"""
-
-# ╔═╡ 2371e35b-0a3f-42a3-89db-520e44f61450
-for i in 1:10
-	y = 600*X1 + 5*X2 + 300*randn(n)
-	X = [X1 X2 X3]
-	β̂ = inv(X'X)X'y	
-	_, β̂2, β̂3 = β̂ 
-	@show β̂
-	@show β̂2+β̂3
-	println("---")
-end 
-
-# ╔═╡ 533ee620-11b1-4205-a998-9030e414d106
-md"""
--- 왜 이런 현상이 생기는지는 이해했는데, 짜증나는 상황임. 
-"""
-
-# ╔═╡ 979b1e94-ea18-41f5-9aad-4ac0b5fa4d8b
-md"""
-### C. 다중공선성의 문제점
-"""
-
-# ╔═╡ 1676efae-34e1-4404-bb34-7ba5318da3b0
-md"""
-**문제점1** -- 해석 불가능한 (혹은 해석이 매우 어려운) 계수값을 모형이 추정한다. 
-
-- 토익점수를 올리면 연봉이 줄어요?
-- ``X_2,X_3``이 서로 종속되어있으면 $\beta_2,\beta_3$의 추정치도 서로 종속되어있음. 계수값을 잘 해석하기 위해서는 이러한 종속관계를 이해하여 해석해야함. (토익과 텝스를 합쳐서 본다든가)
-- 이 예제에서는 이러한 종속관계를 다중우주를 사용하여 포착했는데 실제로는 이러한 분석법은 불가능함.
-"""
-
-# ╔═╡ ebe9ebf5-f816-4659-bb86-72277b14c6d5
-md"""
-**문제점2** -- 추정값의 분산이 매우 크다. 
-
-- 그래도 ``\hat{\beta}_1``은 잘 추정되는 편임. 
-- ``\hat{\beta}_2,\hat{\beta}_3`` 의 값은 뭐가 나올지 전혀 예측할 수 없다. (거의 도깨비 수준임)
-- ``\hat{\beta}_2 +\hat{\beta}_3 \approx 5`` 라는 규칙만 있으면 대충 어떤값을 찍어도 사실상 "수학적으로는 참모형"이다. 
-- 수틀려서 ``\hat{\beta}_2=1005``, ``\hat{\beta}_3=-1000`` 이라 추정해도 무방. 
-- 관측치가 조금만 바뀌어도 (=새로운 데이터 몇개 추가되면) 기존에 추정했던 계수값이 다 깨짐. 
-"""
-
-# ╔═╡ 00e2c6de-3b6a-4a35-8a36-fe265cbdd925
-md"""
--- 문제점2를 확인하기 위하여``\hat{\boldsymbol \beta}_1``,``\hat{\boldsymbol \beta}_2``, ``\hat{\boldsymbol \beta}_3`` 를 서로 다른 평행세계에서 각각 구해보고 그 분포를 살펴보자.
-"""
-
-# ╔═╡ e49db497-7c93-49a8-9826-7de06b854488
-let
-	N = 10000 
-	X = [X1 X2 X3]
-	E = randn(n,N)*300
-	Y = 600*X1 + 5*X2 .+ E
-	B̂ = inv(X'X)X'Y
-	β̂1s, β̂2s, β̂3s = eachrow(B̂)
-	p1 = histogram(β̂1s)
-	p2 = histogram(β̂2s)
-	p3 = histogram(β̂3s)
-	plot(p1,p2,p3)
-end
-
-# ╔═╡ a6302795-1f59-4666-96e7-38448935de82
-md"""
--- 문제점2는 오버피팅을 불러올 수 있음.
-"""
-
-# ╔═╡ d79f13a3-79cd-42ea-9aa7-e9955c9ffe2b
-md"""
-*상상실험*: 주어진 train에서 계수값을 추정한 결과, 토익을 1점 올리면 연봉이 5005만원 상승하고, 텝스를 1점 올리면 연봉이 5000만원 감소하는 법칙을 발견했다고 가정하자. 
-
-이제 test에서 아래와 세명의 학생을 만났다고 가정하자. 
-
-- 학생1: 토익 805, 텝스 805
-- 학생2: 토익 800, 텝스 810
-- 학생3: 토익 810, 텝스 800
-
-토익,텝스점수만으로 결정한 학생1,2,3 의 연봉은 아래와 같다. 
-
-- 학생1의 연봉 = $(805*5005 - 805*5000)
-- 학생2의 연봉 = $(800*5005 - 810*5000)
-- 학생3의 연봉 = $(810*5005 - 800*5000)
-"""
-
-# ╔═╡ a49196cd-6e9d-4297-a2b5-874a3050598a
-md"""
-*상상실험의 결론*: train 에서는 수학적으로 토익1점당 연봉이 5005 상승, 텝스1점당 연봉 5000 감소와 같이 모형이 적합되었다고 해도, test 에서 그 모형은 완전히 설득력을 잃을 수도 있다. 
-"""
-
-# ╔═╡ 7ec30abc-1be0-4dba-9d47-2cbfb219a508
-md"""
-### D. 다중공선성의 해결
-"""
-
-# ╔═╡ d79b170f-1198-403b-8f27-7c65e72a27b4
-md"""
-다중공선성을 해결하는 방법은 여러가지가 있지만 전통적으로 아래의 2개정도를 제시한다. 
-
-1. 차원축소기법을 활용하는 방법 (주성분분석)
-2. 손실함수에 벌점함수를 추가하는 방법 (능형회귀, Lasso)
-"""
 
 # ╔═╡ d055be6a-aef8-47d0-b0a2-a56b85089bfc
 md"""
@@ -243,18 +93,18 @@ $$\underset{{\boldsymbol \beta} \in \mathbb{R}^p}{\operatorname{argmin}}\bigg\{ 
 
 # ╔═╡ 6601a37b-cb7c-417d-a438-c5c18c19e0cf
 md"""
--- 이에 대한 수학적인 해는 ${\boldsymbol \beta}$ 값은 $\hat{\boldsymbol \beta}=\big({\bf X}^\top {\bf X}\big)^{-1}{\bf X}^\top{\bf y}$ 임을 너무나도 잘 알고 있지만, 우리의 예제에서는 이 수학적인 해가 별로 쓸모가 없다는 사실을 확인했다. 왜 이런일이 생길까?
+-- 이에 대한 수학적인 해는 $\hat{\boldsymbol \beta}=\big({\bf X}^\top {\bf X}\big)^{-1}{\bf X}^\top{\bf y}$ 임을 너무나도 잘 알고 있지만, 우리의 예제에서는 이 수학적인 해가 별로 쓸모가 없다는 사실을 확인했다. 왜 이런일이 생길까?
 """
 
 # ╔═╡ 23d619d0-e790-4ddb-97ec-735e42fa85bc
 md"""
--- 편의상 GPA에 대한 추정값 600은 정확하게 추정했다고 가정하자.
+-- 편의상 GPA에 대한 추정값 600은 정확하게 추정했다고 가정하자. 즉 이제 아래의 모형을 가정한다.
+
+$\tilde{\bf y}= {\bf y}-\beta_1{\boldsymbol X}_1 =\beta_2{\boldsymbol X}_2 + \beta_3{\boldsymbol X}_3 +{\boldsymbol \epsilon}$
 """
 
 # ╔═╡ 68d0574b-dbd6-4b68-920e-e672fe876ec6
-begin 
-	ỹ = y - X1*600
-end 
+ỹ = y - β1*X1
 
 # ╔═╡ ac6df6a5-6742-446a-b119-a0a685de2f3f
 md"""
@@ -262,19 +112,19 @@ md"""
 """
 
 # ╔═╡ cc6f7ff7-e7ac-409e-9f63-145c58e4ade5
-loss(β2,β3) = (ỹ-X2*β2-X3*β3)'*(ỹ-X2*β2-X3*β3)/n
+loss(β2,β3) = (ỹ-β2*X2-β3*X3)'*(ỹ-β2*X2-β3*X3)/n
 
 # ╔═╡ f05be255-fae4-4421-a920-c863d0c389a6
 md"""
 -- 손실함수를 그려보자.
 """
 
-# ╔═╡ 263d8857-a03f-4390-914b-25a7f9e31615
-let
-	β2 = -10:0.5:15
-	β3 = -10:0.5:15
-	p1=plot(β2,β3,loss,st=:surface,colorbar=false)
-	p2=plot(β2,β3,loss,st=:contour,colorbar=false,levels=100)
+# ╔═╡ cbb62ff1-fe39-468e-91a6-0431192fb25d
+begin
+	β̂2s = -10:0.5:15
+	β̂3s = -10:0.5:15
+	p1 = plot(β̂2s,β̂3s,loss,st=:surface,colorbar=false,alpha=0.9)
+	p2 = plot(β̂2s,β̂3s,loss,st=:contour,colorbar=false,levels=100)
 	plot(p1,p2)
 end
 
@@ -304,7 +154,7 @@ let
 	@show loss(2.5,2.5)
 	@show loss(5,0)
 	@show loss(100,-95)
-end
+end 
 
 # ╔═╡ cbe878f4-07b2-4f21-8a63-7468b2633b6b
 md"""
@@ -344,11 +194,6 @@ md"""
 
 """
 
-# ╔═╡ d7433752-fe73-4477-bcbc-f7ecb78d6af2
-md"""
-λ = $(@bind λ Slider(1:1:50000,show_value=true, default=1))
-"""
-
 # ╔═╡ 6216c9c1-3d3a-4e2c-9fd7-d18cba3b6147
 md"""
 -- ``\lambda \geq 0`` 에 대하여 아래와 같은 손실함수를 고려해보자.
@@ -356,21 +201,44 @@ md"""
 $loss_{\text{L}^2} := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big) + \lambda {\boldsymbol \beta}^\top{\boldsymbol \beta}$
 """
 
-# ╔═╡ 5ba39dcd-1f21-4c83-a420-59de892a8121
-
-
 # ╔═╡ 1d20583d-bddb-4c38-9da5-03d9e4c53f03
 md"""
 -- $L_2$ 벌점을 추가할 경우
 """
 
-# ╔═╡ d3416f40-9387-4a44-986f-8657c8ea1c00
-
-
 # ╔═╡ 324c7de6-c404-470a-afe3-cc756cf9fa94
 md"""
 ### C. 변형된 손실함수 시각화
 """
+
+# ╔═╡ 1109294c-c93c-4156-a301-e76260f5b1a4
+md"""
+λ = $(@bind λ Slider([1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7],show_value=true, default=1e5))
+"""
+
+# ╔═╡ 5ba39dcd-1f21-4c83-a420-59de892a8121
+begin 
+	l2(β̂2,β̂3) = λ*(β̂2^2 + β̂3^2)
+	loss_l2(β̂2,β̂3) = loss(β̂2,β̂3) + l2(β̂2,β̂3)
+end 
+
+# ╔═╡ d3416f40-9387-4a44-986f-8657c8ea1c00
+let
+	λ = 1
+	@show λ
+	println("---")
+	@show loss(2.5,2.5)
+	@show l2(2.5,2.5)
+	@show loss_l2(2.5,2.5) # 이제는 이게 제일 작음
+	println("---")
+	@show loss(0,5)
+	@show l2(0,5)
+	@show loss_l2(0,5)
+	println("---")
+	@show loss(100,-95)
+	@show l2(100,-95)
+	@show loss_l2(100,-95)
+end 
 
 # ╔═╡ 05665ffd-fba5-49c4-bae7-65c6b02ebc64
 md"""
@@ -378,23 +246,35 @@ md"""
 """
 
 # ╔═╡ 278ef454-7fcc-4155-89f4-6fd93d168feb
-
+let
+	p1 = plot(β̂2s,β̂3s,loss,st=:surface,colorbar=false,alpha=0.9)
+	p2 = plot(β̂2s,β̂3s,loss,st=:contour,colorbar=false,levels=100)
+	plot(p1,p2)
+end 
 
 # ╔═╡ 14f7efbc-448d-44e1-b107-d52f05bc8520
 md"""
-*Figure 2*:  $(x,y,z) = \big(\hat{\beta}_2, ~\hat{\beta}_3,~ \hat{\beta}_2^2 + \hat{\beta}_3^2\big)$
+*Figure 2*:  $(x,y,z) = \Big(\hat{\beta}_2, ~\hat{\beta}_3,~ \lambda(\hat{\beta}_2^2 + \hat{\beta}_3^2)\Big)$
 """
 
 # ╔═╡ c5bdf20e-e89f-46e6-9a9a-2c16a19a54c4
-
+let
+	p3 = plot(β̂2s,β̂3s,l2,st=:surface,colorbar=false,alpha=0.9)
+	p4 = plot(β̂2s,β̂3s,l2,st=:contour,colorbar=false,levels=100)
+	plot(p3,p4)
+end
 
 # ╔═╡ 21a75194-76de-43bd-abbe-89d3e28e6d8e
 md"""
-*Figure 3*:  $(x,y,z) = \big(\hat{\beta}_2,~ \hat{\beta}_3,~ loss(\hat{\beta}_2,\hat{\beta}_3) + \hat{\beta}_2^2 + \hat{\beta}_3^2\big)$
+*Figure 3*:  $(x,y,z) = \Big(\hat{\beta}_2,~ \hat{\beta}_3,~ loss(\hat{\beta}_2,\hat{\beta}_3) +\lambda(\hat{\beta}_2^2 + \hat{\beta}_3^2)\Big)$
 """
 
 # ╔═╡ 14e02673-0863-4aa3-9ba6-af0bc909d0cc
-
+let
+	p5 = plot(β̂2s,β̂3s,loss_l2,st=:surface,colorbar=false,alpha=0.9)
+	p6 = plot(β̂2s,β̂3s,loss_l2,st=:contour,colorbar=false,levels=100)
+	plot(p5,p6)
+end 
 
 # ╔═╡ 6d545544-3516-4560-8887-e4413f3c0fc0
 md"""
@@ -412,7 +292,7 @@ $loss := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}
 $loss_{\text{L}^2} := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big) + \lambda {\boldsymbol \beta}^\top{\boldsymbol \beta}$
 """
 
-# ╔═╡ fb027eea-151d-4ee2-8287-beac504f6868
+# ╔═╡ 8a47abe4-22de-48fc-b98c-c4cce53502bb
 md"""
 -- ``loss_{\text{L}^2}``를 최소화하는 수학적인 해는 아래와 같다.
 """
@@ -423,7 +303,10 @@ $\hat{\boldsymbol \beta}=({\bf X}^\top {\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top
 """
 
 # ╔═╡ 2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
-
+let
+	λ = 50
+	β̂ = inv(X'X + λ*I)X'y
+end 
 
 # ╔═╡ 61b295ca-be2d-4326-bff5-0fd860d31919
 md"""
@@ -434,11 +317,251 @@ md"""
 
 # ╔═╡ 057f12ba-1e54-481a-b9f4-a6e2bcad6805
 md"""
--- 다른 평행세계에 대하여서도 ``\hat{\boldsymbol \beta}_1``,``\hat{\boldsymbol \beta}_2``, ``\hat{\boldsymbol \beta}_3`` 를 각각 구해보고 그 분포를 살펴보자. 
+-- 다른 평행세계에 대하여서도 ``\hat{\beta}_1``,``\hat{\beta}_2``, ``\hat{\beta}_3`` 를 각각 구해보고 그 분포를 살펴보자. 
 """
 
 # ╔═╡ 392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
+let 
+	N = 10000
+	E = 300*randn(n,N)
+	Y = (600*X1 + 5*X2) .+ E
+	λ = 50
+	B̂ = inv(X'X + λ*I)X'Y
+	β̂1s,β̂2s,β̂3s = eachrow(B̂)
+	p1 = histogram(β̂1s,alpha=0.5,label="β̂₁")
+	p2 = histogram(β̂2s,alpha=0.5,label="β̂₂")
+	p3 = histogram(β̂3s,alpha=0.5,label="β̂₃")
+	plot(p1,p2,p3)
+end
 
+# ╔═╡ e1fea1fb-7a22-41de-b84a-b02c77c728c9
+md"""
+- 직관1: $\lambda$를 키울수록 추정량의 분산은 줄어든다. (이건 좋은거)
+- 직관2: $\lambda$를 키울수록 추정량이 작은값을 가진다. (이건 나쁜거)
+"""
+
+# ╔═╡ 1c21d098-4764-469a-9a93-9c091304b7cd
+md"""
+## 5. 능형회귀의 특징
+"""
+
+# ╔═╡ 42cd97a0-c604-4656-9d4c-fc4a8f268580
+md"""
+### A. 추정량의 평균
+"""
+
+# ╔═╡ cc218bfe-8862-4e48-8302-88b6a17da2a2
+md"""
+능형회귀로 얻은 추정량 $\hat{\boldsymbol \beta}=({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$ 에 대하여 $\mathbb{E}(\hat{\boldsymbol \beta})$의 값을 조사해보자. 
+"""
+
+# ╔═╡ fbeb2602-7d61-4a6e-9ca6-bf8618721d1d
+md"""
+-- 방법1: 이론적으로 조사하자.
+"""
+
+# ╔═╡ d7206a25-b7f6-4c59-8efc-268f3485fe2d
+md"""
+$\mathbb{E}(\hat{\boldsymbol\beta}) =({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top{\bf X}{\boldsymbol \beta}$
+"""
+
+# ╔═╡ ebb19d9a-0ddc-40a5-9533-79639bba2e82
+md"""
+이 값은 우리가 기대하는 좋은 추정량의 성질인 $\mathbb{E}(\hat{\boldsymbol \beta}) = {\boldsymbol \beta}$ 와 다르다. 
+"""
+
+# ╔═╡ b71607cd-dfb5-4138-9042-fdd1b7b93bba
+md"""
+!!! warning ""
+	아쉬움.. ``\lambda =0`` 이었다면 $\mathbb{E}(\hat{\boldsymbol \beta})={\boldsymbol \beta}$ 이었을텐데.. 
+"""
+
+# ╔═╡ 096103d0-b7e3-4f60-b7d9-a69a58b4d14e
+inv(X'X+0.000000000001*I)X'X*[600,5,0]
+
+# ╔═╡ 0401b893-61ed-426a-8f0c-cfa365c56022
+md"""
+*Figure: $\lambda$에 따른 추정량의 평균변화 (이론)*
+"""
+
+# ╔═╡ 80b71ff3-3b35-4a6d-bacb-5a69d735dabc
+let 
+	function Eβ̂(λ)
+		return inv(X'X+λ*I)X'X*β
+	end
+	
+	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
+	
+	plot(λ -> Eβ̂(λ)[1], λs,xscale= :log10,yscale= :log10, label="E(β̂₁)")
+	plot!(λ -> Eβ̂(λ)[2], label="E(β̂₂)")
+	plot!(λ -> Eβ̂(λ)[3], label="E(β̂₃)")
+end
+
+# ╔═╡ 86ee8e65-1220-4d8f-8801-a51e1924cd85
+md"""
+-- 방법2: 시뮬레이션으로 조사하자.
+"""
+
+# ╔═╡ 828c4d10-263b-46d2-b36f-28f6a0f3c612
+let 
+	λ = 10
+	N = 1000
+	E = σ*randn(n,N)
+	Y = (β1*X1 + β2*X2 + β3*X3) .+ E
+	B̂ = inv(X'X+λ*I)X'Y
+	j = ones(N)
+	B̂ * j/N
+end
+
+# ╔═╡ b1266c8b-2be6-4fb0-a791-38d9f2844d0b
+md"""
+- ``\lambda`` 키울수록 true 값과 멀어진다. 
+- ``\lambda`` 키울수록 $\mathbb{E}(\hat{\beta})$의 관점에서는 손해!
+"""
+
+# ╔═╡ 101cd18a-0b4b-4e1e-8dee-6d687ebedc30
+md"""
+*Figure: $\lambda$에 따른 추정량의 평균변화 (시뮬)*
+"""
+
+# ╔═╡ c029a13f-ab20-47f0-92e0-edd767302f85
+let 
+	function Êβ̂(λ)
+		N = 1000
+		Y = (β1*X1 + β2*X2 + β3*X3) .+ σ*randn(n,N)
+		B̂ = inv(X'X+λ*I)X'Y
+		j = ones(N)
+		return B̂ * j/N
+	end
+	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
+	plot(λ -> Êβ̂(λ)[1],λs,xscale= :log10,yscale= :log10, label="Ê(β̂₁)")
+	plot!(λ -> Êβ̂(λ)[2], label="Ê(β̂₂)")
+	plot!(λ -> Êβ̂(λ)[3], label="Ê(β̂₃)")
+end
+
+# ╔═╡ 0b7a7efb-e3e2-42f5-840c-e8245660e840
+md"""
+!!! warning "능형회귀 추정량에 대한 수식어"
+	능형회귀로 얻은 추정량 $\hat{\boldsymbol \beta}=({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$ 는 unbiased estimator / shrinkage estimator 라고 불린다. 이는 모두 $\mathbb{E}(\hat{\boldsymbol \beta})$ 에 대한 성질때문에 생긴 수식어이다. unbiased 라는 의미는 $\mathbb{E}(\hat{\boldsymbol \beta}) \neq {\boldsymbol \beta}$ 라는 의미이며 shrinkage 는 $\lambda$ 에 의하여 원래 $\mathbb{E}(\boldsymbol \beta)$의 값이 원래 $\beta$ 가 가져야할 값보다 전체적으로 ($L^2$-norm 관점에서!) 작게 추정됨을 의미한다. 요약하면, 능형회귀로 얻은 추정량은 **쓰레기**라는 의미이다. 	
+
+	그렇다면 왜 $\hat{\boldsymbol \beta}=({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$ 을 쓰는것일까? $\mathbb{E}(\hat{\boldsymbol \beta})$ 관점에서는 쓰레기가 맞는데 $\mathbb{V}(\hat{\boldsymbol \beta})$ 의 관점에서는 좋은면이 있기 때문이다. 
+"""
+
+# ╔═╡ 59e96cb9-f277-4825-a482-5f819905312f
+md"""
+### B. 추정량의 분산
+"""
+
+# ╔═╡ ccd985b7-978d-4b15-a206-f1bf323c38e1
+md"""
+-- 방법1: 이론적으로 조사하자.
+"""
+
+# ╔═╡ d1e558cc-a4d6-469d-878c-79bc69247eb5
+md"""
+$\mathbb{V}(\hat{\boldsymbol\beta}) =({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top{\bf X}({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}\sigma^2$
+"""
+
+# ╔═╡ 5d51fb2a-76ba-426b-b6d8-69d8132be55e
+inv(X'X+10*I)X'X*inv(X'X+10*I)*σ^2
+
+# ╔═╡ 6592929c-6d2b-4f0d-bbec-229b0d60ef0a
+diag(inv(X'X+10*I)X'X*inv(X'X+10*I)*σ^2)
+
+# ╔═╡ 3e0fb70f-6855-4867-be33-16d20adef786
+md"""
+*Figure: $\lambda$에 따른 추정량의 분산변화 (이론)*
+"""
+
+# ╔═╡ 22a02082-26e7-452d-bfa4-d9ace93fa11b
+let 
+	function Vβ̂(λ)
+		return diag(inv(X'X+λ*I)X'X*inv(X'X+λ*I)*σ^2)
+	end
+	λs = [1e1,1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
+	plot(λ -> Vβ̂(λ)[1], λs,xscale= :log10,yscale= :log10, label="V(β̂₁)")
+	plot!(λ -> Vβ̂(λ)[2], label="V(β̂₂)")
+	plot!(λ -> Vβ̂(λ)[3], label="V(β̂₃)")
+end
+
+# ╔═╡ 30e9a8de-b9f1-4d94-8de3-78b3f1e4a475
+md"""
+-- 방법2: 시뮬레이션으로 알아보자.
+"""
+
+# ╔═╡ 95631387-6cd1-4917-b8c9-878cc7c4d837
+md"""
+*Figure: $\lambda$에 따른 추정량의 분산변화 (시뮬)*
+"""
+
+# ╔═╡ ff6c8d44-7fbc-44b5-8c4c-23e76b34ef6d
+let 
+	function V̂β̂(λ)
+		N = 1000
+		Y = (β1*X1 + β2*X2 + β3*X3) .+ σ*randn(n,N)
+		B̂ = inv(X'X+λ*I)X'Y
+		j = ones(N)
+		Vβ̂ = (B̂ .- B̂*j/N).^2 *j/N
+		return Vβ̂
+	end
+	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
+	plot(λ -> V̂β̂(λ)[1],λs,xscale= :log10,yscale= :log10, label="V̂(β̂₁)")
+	plot!(λ -> V̂β̂(λ)[2], label="V̂(β̂₂)")
+	plot!(λ -> V̂β̂(λ)[3], label="V̂(β̂₃)")
+end
+
+# ╔═╡ 8aeae892-a26e-4c4e-bcb4-a10b2c4d710c
+md"""
+### C. 추정량의 MSE
+"""
+
+# ╔═╡ ab512892-c838-4967-a0e3-dfc04e6a9df0
+md"""
+ref: <https://en.wikipedia.org/wiki/Mean_squared_error#Estimator>
+"""
+
+# ╔═╡ 1f92a68d-48cd-46a2-b373-2631cf1b56da
+md"""
+-- 능형회귀로 얻은 $\hat{\boldsymbol \beta}$ 의 MSE를 비교하여 보자.
+"""
+
+# ╔═╡ 70bcd059-954e-4077-8460-ba366a3271ee
+md"""
+!!! warning "MSE"
+	여기에서 MSE는 일반적으로 머신러닝에서 사용하는 $\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2$ 의 개념이 아니다. MSE라는 용어를 predictor에 사용할 경우와 estimator에 사용할 경우가 있는데 predictor에 사용할 경우에는 머신러닝에서 사용하는 MSE가 맞지만 estimator에 사용할 경우는 MSE를 아래와 같이 정의한다. 
+
+	$\begin{align}
+	\text{MSE}(\hat{\boldsymbol \beta})&=\mathbb{E}_{\boldsymbol \beta}\big[(\hat{\boldsymbol \beta}-{\boldsymbol \beta})^\top(\hat{\boldsymbol \beta}-{\boldsymbol \beta}) \big]\\
+	&=\text{tr}\big(\mathbb{V}(\hat{\boldsymbol \beta})\big)+\big(\mathbb{E}(\hat{\boldsymbol \beta})-{\boldsymbol \beta}\big)^\top\big(\mathbb{E}(\hat{\boldsymbol \beta})-{\boldsymbol \beta}\big)\\&=\text{Var}+\text{Bias}^2
+	\end{align}$
+
+	일반적으로 ${\boldsymbol \beta}$ 에 대한 추정량이 가졌으면 좋겠는 좋은 성질은 (1) 편향되어있지 않고 (2) 분산이 작은것 인데 MSE는 이 두 가지 기준을 모두 고려한 좋은 평가방법이다. 
+"""
+
+# ╔═╡ 2bacdea6-3f94-44ba-bdb3-c549ee36cbd2
+md"""
+*Figure: $\lambda$에 따른 추정량의 MSE변화 (이론)*
+"""
+
+# ╔═╡ d67d0729-a865-402c-9a87-fd5836b7957c
+let 
+	# function Eβ̂(λ)
+	# 	return inv(X'X+λ*I)X'X*β
+	# end
+	# function Vβ̂(λ)
+	# 	return diag(inv(X'X+λ*I)X'X*inv(X'X+λ*I)*σ^2)
+	# end	
+	function MSEβ̂(λ)
+		Bias² = (inv(X'X+λ*I)X'X*β-β)'*(inv(X'X+λ*I)X'X*β-β)
+		Var = tr(inv(X'X+λ*I)X'X*inv(X'X+λ*I)*σ^2)
+		return Bias² + Var
+	end
+	MSEols = (inv(X'X)X'y-β)'*(inv(X'X)X'y-β) + tr(inv(X'X)X'X*inv(X'X)*σ^2)
+	@show MSEols
+	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
+	plot(λ -> MSEβ̂(λ),λs,xscale= :log10, yscale= :log10, label="MSE(ridge)")
+	plot!(λs,fill(MSEols,length(λs)), label="MSE(ols)", linestyle=:dash)
+end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1657,31 +1780,10 @@ version = "1.4.1+1"
 # ╠═3317fffc-955d-4073-9123-17688a4c6f61
 # ╠═18996e8e-c802-4e03-a3c6-c4d83aa5afdc
 # ╟─31f2972f-c83f-42ce-999c-842c157899d3
-# ╟─6738f8c1-d361-438c-826c-f417652fbe5c
 # ╠═b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
-# ╠═5cf4fb3d-f6c2-48d9-96ea-e8fc9fcad5b8
-# ╠═45cc2e44-54d6-4121-b1ec-32af764400f7
-# ╠═bd30a08c-1259-455e-a058-d5acb674ee42
-# ╟─d3772e62-decb-4675-9824-c827a8a442c1
-# ╟─2bed0ba1-208e-4629-b145-8fd12a8b40c4
-# ╠═109f4a28-ff76-49c4-a14d-ff5ce48765bf
-# ╟─629be1ab-21ac-4322-a765-346c71c49029
-# ╟─4499c143-3b8e-4c6b-bfc6-a65ffe629203
-# ╠═d1cd7a53-0c94-4393-bc51-3af200a65da4
-# ╟─e0133d36-0be6-4d99-aa51-5d16e5389afa
-# ╟─c2c0d7f3-ea4e-4126-8ec4-6f62e452675c
-# ╠═2371e35b-0a3f-42a3-89db-520e44f61450
-# ╟─533ee620-11b1-4205-a998-9030e414d106
-# ╟─979b1e94-ea18-41f5-9aad-4ac0b5fa4d8b
-# ╟─1676efae-34e1-4404-bb34-7ba5318da3b0
-# ╟─ebe9ebf5-f816-4659-bb86-72277b14c6d5
-# ╟─00e2c6de-3b6a-4a35-8a36-fe265cbdd925
-# ╠═e49db497-7c93-49a8-9826-7de06b854488
-# ╟─a6302795-1f59-4666-96e7-38448935de82
-# ╟─d79f13a3-79cd-42ea-9aa7-e9955c9ffe2b
-# ╟─a49196cd-6e9d-4297-a2b5-874a3050598a
-# ╟─7ec30abc-1be0-4dba-9d47-2cbfb219a508
-# ╟─d79b170f-1198-403b-8f27-7c65e72a27b4
+# ╠═df19fb9c-8f86-4d55-9899-c868c3512411
+# ╠═f9f88913-a23a-4f02-a1cd-f255feb8c834
+# ╠═b45868ea-681e-41e3-b9c0-2d0c918e574d
 # ╟─d055be6a-aef8-47d0-b0a2-a56b85089bfc
 # ╟─8b6bafd7-7dd9-4c2b-a059-d18fc2ad22f8
 # ╟─57b42243-1fa1-4a69-b116-044b30d7819b
@@ -1692,7 +1794,7 @@ version = "1.4.1+1"
 # ╟─ac6df6a5-6742-446a-b119-a0a685de2f3f
 # ╠═cc6f7ff7-e7ac-409e-9f63-145c58e4ade5
 # ╟─f05be255-fae4-4421-a920-c863d0c389a6
-# ╠═263d8857-a03f-4390-914b-25a7f9e31615
+# ╠═cbb62ff1-fe39-468e-91a6-0431192fb25d
 # ╟─3bad3692-7f76-494c-93d5-f3951331c74e
 # ╟─758668d4-7d98-46db-8f8a-9a81abe6ad25
 # ╟─a82b89e1-ac4b-45e0-9e46-db58bc303812
@@ -1700,12 +1802,12 @@ version = "1.4.1+1"
 # ╟─cbe878f4-07b2-4f21-8a63-7468b2633b6b
 # ╟─90ff8925-e0d6-4982-b19d-0f78b5016545
 # ╟─85ad9c84-87c8-49d9-9139-63605442aa2d
-# ╟─d7433752-fe73-4477-bcbc-f7ecb78d6af2
 # ╟─6216c9c1-3d3a-4e2c-9fd7-d18cba3b6147
 # ╠═5ba39dcd-1f21-4c83-a420-59de892a8121
 # ╟─1d20583d-bddb-4c38-9da5-03d9e4c53f03
 # ╠═d3416f40-9387-4a44-986f-8657c8ea1c00
 # ╟─324c7de6-c404-470a-afe3-cc756cf9fa94
+# ╟─1109294c-c93c-4156-a301-e76260f5b1a4
 # ╟─05665ffd-fba5-49c4-bae7-65c6b02ebc64
 # ╠═278ef454-7fcc-4155-89f4-6fd93d168feb
 # ╟─14f7efbc-448d-44e1-b107-d52f05bc8520
@@ -1714,11 +1816,44 @@ version = "1.4.1+1"
 # ╠═14e02673-0863-4aa3-9ba6-af0bc909d0cc
 # ╟─6d545544-3516-4560-8887-e4413f3c0fc0
 # ╟─f5b49064-9f8b-4238-97a4-780b4023a641
-# ╟─fb027eea-151d-4ee2-8287-beac504f6868
+# ╟─8a47abe4-22de-48fc-b98c-c4cce53502bb
 # ╟─b3d527a8-3151-4f30-8ccd-b53b298855de
 # ╠═2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
 # ╟─61b295ca-be2d-4326-bff5-0fd860d31919
 # ╟─057f12ba-1e54-481a-b9f4-a6e2bcad6805
 # ╠═392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
+# ╟─e1fea1fb-7a22-41de-b84a-b02c77c728c9
+# ╟─1c21d098-4764-469a-9a93-9c091304b7cd
+# ╟─42cd97a0-c604-4656-9d4c-fc4a8f268580
+# ╟─cc218bfe-8862-4e48-8302-88b6a17da2a2
+# ╟─fbeb2602-7d61-4a6e-9ca6-bf8618721d1d
+# ╟─d7206a25-b7f6-4c59-8efc-268f3485fe2d
+# ╟─ebb19d9a-0ddc-40a5-9533-79639bba2e82
+# ╟─b71607cd-dfb5-4138-9042-fdd1b7b93bba
+# ╠═096103d0-b7e3-4f60-b7d9-a69a58b4d14e
+# ╟─0401b893-61ed-426a-8f0c-cfa365c56022
+# ╠═80b71ff3-3b35-4a6d-bacb-5a69d735dabc
+# ╟─86ee8e65-1220-4d8f-8801-a51e1924cd85
+# ╠═828c4d10-263b-46d2-b36f-28f6a0f3c612
+# ╟─b1266c8b-2be6-4fb0-a791-38d9f2844d0b
+# ╟─101cd18a-0b4b-4e1e-8dee-6d687ebedc30
+# ╠═c029a13f-ab20-47f0-92e0-edd767302f85
+# ╟─0b7a7efb-e3e2-42f5-840c-e8245660e840
+# ╟─59e96cb9-f277-4825-a482-5f819905312f
+# ╟─ccd985b7-978d-4b15-a206-f1bf323c38e1
+# ╟─d1e558cc-a4d6-469d-878c-79bc69247eb5
+# ╠═5d51fb2a-76ba-426b-b6d8-69d8132be55e
+# ╠═6592929c-6d2b-4f0d-bbec-229b0d60ef0a
+# ╟─3e0fb70f-6855-4867-be33-16d20adef786
+# ╠═22a02082-26e7-452d-bfa4-d9ace93fa11b
+# ╟─30e9a8de-b9f1-4d94-8de3-78b3f1e4a475
+# ╟─95631387-6cd1-4917-b8c9-878cc7c4d837
+# ╠═ff6c8d44-7fbc-44b5-8c4c-23e76b34ef6d
+# ╟─8aeae892-a26e-4c4e-bcb4-a10b2c4d710c
+# ╟─ab512892-c838-4967-a0e3-dfc04e6a9df0
+# ╟─1f92a68d-48cd-46a2-b373-2631cf1b56da
+# ╟─70bcd059-954e-4077-8460-ba366a3271ee
+# ╟─2bacdea6-3f94-44ba-bdb3-c549ee36cbd2
+# ╠═d67d0729-a865-402c-9a87-fd5836b7957c
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.41
+# v0.19.42
 
 using Markdown
 using InteractiveUtils
@@ -59,16 +59,16 @@ md"""
 !!! info "행렬의 벡터화 표현"
 	행렬 ${\bf B}_{p \times q}$를 아래와 같이 표한한다고 하자. 
 	
-	$${\bf B} = \begin{bmatrix} B_1 & B_2 & \dots & B_q \end{bmatrix}$$
+	$${\bf B} = \begin{bmatrix} {\boldsymbol B}_1 & {\boldsymbol B}_2 & \dots & {\boldsymbol B}_q \end{bmatrix}$$
 	
 	여기에서 $B_1,\dots,B_q$는 각각 (p,1)의 차원을 가지는 col-vector 이다. 그러면 행렬 ${\bf A}_{n\times p}$와 행렬 ${\bf B}_{p\times q}$를 곱셉 ${\bf A}{\bf B}$는 아래와 같이 표현가능하다. 
 	
-	$${\bf A}{\bf B} = \begin{bmatrix}{\bf A}B_1 & {\bf A}B_2 & \dots & {\bf A}B_q\end{bmatrix}$$
+	$${\bf A}{\bf B} = \begin{bmatrix}{\bf A}{\boldsymbol B}_1 & {\bf A}{\boldsymbol B}_2 & \dots & {\bf A}{\boldsymbol B}_q\end{bmatrix}$$
 """
 
 # ╔═╡ c4c08183-8ae5-4f3c-9a36-8736b0220123
 md"""
--- 예시1: $${\bf B} = \begin{bmatrix} B_1 & B_2 & \dots & B_q \end{bmatrix}$$ 의 표현!
+-- 예시1: $${\bf B} = \begin{bmatrix} {\boldsymbol B}_1 & {\boldsymbol B}_2 & \dots & {\boldsymbol B}_q \end{bmatrix}$$ 의 표현!
 """
 
 # ╔═╡ 69c67f4b-1ea2-4993-b1b8-76b7aae2bafd

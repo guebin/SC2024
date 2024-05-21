@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.41
+# v0.19.42
 
 using Markdown
 using InteractiveUtils
@@ -282,7 +282,7 @@ md"""
 
 	하나의 고유값이 정해지면 그 이후에는 아래의 식을 풀어서 $\psi$를 찾을 수 있다. 
 
-	${\bf A}{\psi} = \lambda \psi$
+	${\bf A}{\boldsymbol\psi} = \lambda {\boldsymbol \psi}$
 """
 
 # ╔═╡ bd9fd3d7-0303-4098-afb6-c169e36ed089
@@ -347,22 +347,24 @@ md"""
 # ╔═╡ 37df0670-5120-4eb6-86bc-31f7d0864fef
 md"""
 !!! info "선형독립 -- 벡터버전"
-	벡터 $A_1,A_2,\dots,A_n$를 고려하자. 만약 
+	벡터 ${\boldsymbol A}_1,{\boldsymbol A}_2,\dots,{\boldsymbol A}_n$를 고려하자. 만약 
 
-	$\psi_1 A_1 + \psi_2A_2 + \dots + \psi_nA_n=0$
+	$\psi_1 {\boldsymbol A}_1 + \psi_2{\boldsymbol A}_2 + \dots + \psi_n{\boldsymbol A}_n=0$
 
-	을 만족하는 경우가 $\psi_1 = \psi_2 = \dots = \psi_n=0$ 뿐이라면 $A_1,A_2,\dots,A_n$ 은 선형독립이고, 그렇지 않다면 $A_1,A_2,\dots,A_n$ 은 선형독립이 아니다.
+	을 만족하는 경우가 $\psi_1 = \psi_2 = \dots = \psi_n=0$ 뿐이라면 ${\boldsymbol A}_1,{\boldsymbol A}_2,\dots,{\boldsymbol A}_n$ 은 선형독립이고, 그렇지 않다면 ${\boldsymbol A}_1,{\boldsymbol A}_2,\dots,{\boldsymbol A}_n$ 은 선형독립이 아니다.
 	
 """
 
 # ╔═╡ b2b8fb13-2427-4f27-9f1e-76321504698b
 md"""
 !!! info "선형독립 -- 매트릭스 버전"
-	벡터 $A_1,A_2,\dots,A_n$을 column으로 가지는 매트릭스 ${\bf A}=[A_1 ~ A_2~ \dots ~ A_n]$ 를 고려하자. 만약 
+	벡터 ${\boldsymbol A}_1,{\boldsymbol A}_2,\dots,{\boldsymbol A}_n$을 column으로 가지는 매트릭스 ${\bf A}=[A_1 ~ A_2~ \dots ~ A_n]$ 를 고려하자. 만약 
 	
-	$${\bf A}{\boldsymbol \psi}=0$$ 
+	$${\bf A}{\boldsymbol \psi}={\bf 0}$$ 
 
-	만족하는 ${\boldsymbol \psi}$가 0-벡터 밖에 없을 경우는 ${\bf A}$의 column들이 선형독립이고 (즉 벡터 $A_1,\dots,A_n$은 선형독립이고), 그렇지 않다면 (= 위의식을 만족하는 ${\boldsymbol \psi}$가 0-벡터 이외에 존재하면) ${\bf A}$의 column들은 선형독립이 아니다.
+	만족하는 ${\boldsymbol \psi}$가 0-벡터 밖에 없을 경우는 ${\bf A}$의 column들이 선형독립이고 (즉 벡터 ${\boldsymbol A}_1,\dots,{\boldsymbol A}_n$은 선형독립이고), 그렇지 않다면 (= 위의식을 만족하는 ${\boldsymbol \psi}$가 0-벡터 이외에 존재하면) ${\bf A}$의 column들은 선형독립이 아니다. 즉 아래를 기억하면 된다. 
+
+	$$\text{$\bf A$'s columns are linearly independent} \Longleftrightarrow \forall {\boldsymbol \psi}\neq {\bf 0}:~ {\bf A}{\boldsymbol \psi}\neq {\bf 0}$$
 """
 
 # ╔═╡ d6de6890-5798-4ccf-af44-4af4edf4ba7e
@@ -372,13 +374,17 @@ md"""
 	
 	(proof) 귀류법을 쓰자. 즉 "고정된 $\lambda^*$에 대응하는 고유벡터가 없다"고 가정하자. 편의상 특성방정식을 만족하는 하나의 근 $\lambda^*$를 fix할 때, $\lambda^*$에 대응하는 고유벡터가 없다는 의미는 
 
-	$$({\bf A}-\lambda^*{\bf I}){\boldsymbol \psi} =0$$
+	$$\forall {\boldsymbol \psi}\neq0:~{\bf A}{\boldsymbol \psi} \neq \lambda{\boldsymbol \psi}$$
 
-	를 만족하는 ${\boldsymbol \psi}$는 오직 ${\boldsymbol \psi}={\bf 0}$ 뿐이라는 것을 의미한다. 즉 $({\bf A}-\lambda^*{\bf I})$ 는 선형독립이라는 의미이다. 그런데 이는 사실이 아니다. 왜냐하면 $\lambda^*$는 
+	라는 의미고 이는 다시 아래의 의미이다. 
+
+	$$\forall {\boldsymbol \psi}\neq0:~({\bf A}-\lambda^*{\bf I}){\boldsymbol \psi} \neq {\bf 0}$$
+
+	따라서 $({\bf A}-\lambda^*{\bf I})$ 는 선형독립이다. 그런데 이는 사실이 아니다. 왜냐하면 $({\bf A}-\lambda^*{\bf I})$ 가 선형독립일 경우는 역행렬이 존재해야하는데, $\lambda^*$는 
 
 	$$\det({\bf A}-\lambda^*{\bf I})=0$$
 
-	를 만족하고 따라서 행렬 ${\bf A}-\lambda^*{\bf I}$는 역행렬이 없는 행렬이 되고 이렇게 되면 ${\bf A}-\lambda^*{\bf I}$의 column 들은 선형독립이 아니게 된다. (모순)
+	를 만족하는 근이므로 행렬 ${\bf A}-\lambda^*{\bf I}$는 역행렬이 없는 행렬이 되기 때문이다. (모순)
 """
 
 # ╔═╡ ef80f82f-6acf-4848-92d0-56f554670055
@@ -1791,10 +1797,10 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╠═e08c8300-db18-11ec-3f60-19c9638fa2d2
+# ╟─e08c8300-db18-11ec-3f60-19c9638fa2d2
 # ╟─5a141d20-3166-4e3c-96a9-ca5f3395d5f5
-# ╠═90db85a9-9864-4e63-98ca-7edb77f1932f
-# ╠═c84fb7f0-e572-46ab-b0a3-7612c1870815
+# ╟─90db85a9-9864-4e63-98ca-7edb77f1932f
+# ╟─c84fb7f0-e572-46ab-b0a3-7612c1870815
 # ╠═15442a71-00fe-48ed-ae51-def2f2d8876e
 # ╠═8b5ce365-94e4-4875-ac48-d7d6f4b7409c
 # ╠═5092b326-2d86-410c-8297-baafb75eefb6

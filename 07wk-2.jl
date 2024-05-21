@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.41
+# v0.19.42
 
 using Markdown
 using InteractiveUtils
@@ -179,9 +179,9 @@ md"""
 !!! info "두 행렬의 곱"
 	임의의 두 행렬 ${\bf A}_{n\times m}$와 ${\bf B}_{m\times k}$의 곱은 항상아래와 같이 표현할 수 있다. 
 
-	${\bf A}_{n\times m}{\bf B}_{m \times k}=\begin{bmatrix} A_1 & A_2 & \dots & A_m\end{bmatrix}\begin{bmatrix} B'_1 \\ B'_2 \\ \dots \\ B'_m \end{bmatrix}=\sum_{i=1}^{m} A_i B_i'$
+	${\bf A}_{n\times m}{\bf B}_{m \times k}=\begin{bmatrix} {\boldsymbol A}_1 & {\boldsymbol A}_2 & \dots & {\boldsymbol A}_m\end{bmatrix}\begin{bmatrix} {\boldsymbol B}'_1 \\ {\boldsymbol B}'_2 \\ \dots \\ {\boldsymbol B}'_m \end{bmatrix}=\sum_{i=1}^{m} {\boldsymbol A}_i {\boldsymbol B}_i'$
 
-	이때 ``A_i`` 는 ${\bf A}$의 $i$-th column을 의미하고, ``B_i'`` 는 ${\bf B}$의 $i$-th row를 의미한다. 
+	이때 ``A_i`` 는 ${\bf A}$의 $i$-th column을 의미하고, ``{\boldsymbol B}_i'`` 는 ${\bf B}$의 $i$-th row를 의미한다. 
 """
 
 # ╔═╡ 3c3e31ce-1e62-4f31-bc64-355242172ed0
@@ -203,12 +203,12 @@ end
 
 # ╔═╡ 9d8ae7bd-377a-40c0-ab49-2e499a859c1f
 md"""
-!!! warning "기호의 유의 -- 저만 이렇게 쓰긴하거든요.. 더 좋은 표현을 못찾아서요"
-	이 강의에 한정하여 matrix ${\bf A}$의 column-vector는 $A_i$와 같이 표현하고, row-vector는 $A_i'$ 와 같이 표현한다. 즉 
+!!! warning "기호 조심 -- 저만 이렇게 쓰긴하거든요.. 더 좋은 표현을 못찾아서요"
+	이 강의에 한정하여 matrix ${\bf A}$의 column-vector는 ${\boldsymbol A}_i$와 같이 표현하고, row-vector는 ${\boldsymbol A}_i'$ 와 같이 표현한다. 즉 
 	
 	${\bf A} = \begin{bmatrix} 1& 2 \\ 3 & 4 \end{bmatrix}$
 
-	일때, $A_1 = \begin{bmatrix} 1 \\ 3 \end{bmatrix}$, $A_2=\begin{bmatrix} 2 \\ 4 \end{bmatrix}$, $A_1'=\begin{bmatrix} 1 & 2 \end{bmatrix}$, $A_2'=\begin{bmatrix} 3 & 4 \end{bmatrix}$ 로 정의한다. 따라서 $(A_1')^\top$는 $A_1$이 아니다. 
+	일때, ${\boldsymbol A}_1 = \begin{bmatrix} 1 \\ 3 \end{bmatrix}$, ${\boldsymbol A}_2=\begin{bmatrix} 2 \\ 4 \end{bmatrix}$, ${\boldsymbol A}_1'=\begin{bmatrix} 1 & 2 \end{bmatrix}$, ${\boldsymbol A}_2'=\begin{bmatrix} 3 & 4 \end{bmatrix}$ 로 정의한다. 따라서 $({\boldsymbol A}_1')^\top \neq {\boldsymbol A}_1$이다. 
 """
 
 # ╔═╡ 877a62a4-f233-4643-8193-96f326d9bf4e
@@ -242,7 +242,7 @@ md"""
 	"아무렇게나 매트릭스 쪼개도 직관적인 곱셈이 모두 잘 성립리하는 거 아니야??" 
 	라는 생각을 할 수 있는데, 그런건 아니다. 아무렇게나 매트릭스를 쪼개다가 ${\bf A}_{n\times m}$, ${\bf B}_{m\times k}$ 의 곱을 아래와 같이 잘못 정의하는 경우도 생긴다. 
 
-	${\bf A}{\bf B} = \begin{bmatrix} A_1 & A_2 & \dots A_m \end{bmatrix} {\bf B} \neq \begin{bmatrix} A_1{\bf B} & A_2{\bf B} & \dots A_m{\bf B} \end{bmatrix}$
+	${\bf A}{\bf B} = \begin{bmatrix} {\boldsymbol A}_1 & {\boldsymbol A}_2 & \dots {\boldsymbol A}_m \end{bmatrix} {\bf B} \neq \begin{bmatrix} {\boldsymbol A}_1{\bf B} & {\boldsymbol A}_2{\bf B} & \dots {\boldsymbol A}_m{\bf B} \end{bmatrix}$
 """
 
 # ╔═╡ 06c0b21a-b4fb-4778-889e-540ecfe4afb9
@@ -329,9 +329,9 @@ md"""
 
 	위는 아래와 같이 분해하여 표현가능하다.
 
-	${\bf X}=U_1 d_1 V_1^\top + U_2 d_2 V_2^\top + \dots + U_m d_m V_m^\top$
+	${\bf X}={\boldsymbol U}_1 d_1 {\boldsymbol V}_1^\top + {\boldsymbol U}_2 d_2 {\boldsymbol V}_2^\top + \dots + {\boldsymbol U}_m d_m {\boldsymbol V}_m^\top$
 
-	여기에서 $m=\min(n,p)$ 이며 $d_i$는 ${\bf D}$의 $i$-th 대각원소, $U_i, V_i$는 각각 ${\bf U}, {\bf V}$의 $i$-th column을 의미한다. 
+	여기에서 $m=\min(n,p)$ 이며 $d_i$는 ${\bf D}$의 $i$-th 대각원소, ${\boldsymbol U}_i, {\boldsymbol V}_i$는 각각 ${\bf U}, {\bf V}$의 $i$-th column을 의미한다. 
 """
 
 # ╔═╡ eeb74143-d724-463d-aeee-b35db2759cb9
@@ -449,7 +449,7 @@ PlutoUI = "~0.7.38"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.10.3"
 manifest_format = "2.0"
 project_hash = "215e7262ec565dbb789ef97f231264378fd54f07"
 
@@ -601,7 +601,7 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+0"
+version = "1.1.1+0"
 
 [[deps.ComputationalResources]]
 git-tree-sha1 = "52cb3ec90e8a8bea0e62e275ba577ad0f74821f7"
@@ -1138,21 +1138,26 @@ version = "0.3.1"
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
 uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
-version = "0.6.3"
+version = "0.6.4"
 
 [[deps.LibCURL_jll]]
 deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "7.84.0+0"
+version = "8.4.0+0"
 
 [[deps.LibGit2]]
-deps = ["Base64", "NetworkOptions", "Printf", "SHA"]
+deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
+
+[[deps.LibGit2_jll]]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
+version = "1.6.4+0"
 
 [[deps.LibSSH2_jll]]
 deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.10.2+0"
+version = "1.11.0+1"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -1275,7 +1280,7 @@ version = "1.1.9"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.2+0"
+version = "2.28.2+1"
 
 [[deps.Measures]]
 git-tree-sha1 = "c13304c81eec1ed3af7fc20e75fb6b26092a1102"
@@ -1305,7 +1310,7 @@ version = "0.3.4"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2022.10.11"
+version = "2023.1.10"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
@@ -1347,7 +1352,7 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.21+4"
+version = "0.3.23+4"
 
 [[deps.OpenEXR]]
 deps = ["Colors", "FileIO", "OpenEXR_jll"]
@@ -1370,7 +1375,7 @@ version = "2.5.0+0"
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+0"
+version = "0.8.1+2"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -1404,7 +1409,7 @@ version = "1.6.3"
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
-version = "10.42.0+0"
+version = "10.42.0+1"
 
 [[deps.PDMats]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
@@ -1450,7 +1455,7 @@ version = "0.42.2+0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.2"
+version = "1.10.0"
 
 [[deps.PkgVersion]]
 deps = ["Pkg"]
@@ -1547,7 +1552,7 @@ deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 
 [[deps.Random]]
-deps = ["SHA", "Serialization"]
+deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[deps.RangeArrays]]
@@ -1686,6 +1691,7 @@ version = "1.2.1"
 [[deps.SparseArrays]]
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+version = "1.10.0"
 
 [[deps.SpecialFunctions]]
 deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
@@ -1722,7 +1728,7 @@ version = "1.4.2"
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-version = "1.9.0"
+version = "1.10.0"
 
 [[deps.StatsAPI]]
 deps = ["LinearAlgebra"]
@@ -1755,9 +1761,9 @@ deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
 uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
 [[deps.SuiteSparse_jll]]
-deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
+deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
 uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
-version = "5.10.1+6"
+version = "7.2.1+1"
 
 [[deps.TOML]]
 deps = ["Dates"]
@@ -2042,7 +2048,7 @@ version = "1.5.0+0"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+0"
+version = "1.2.13+1"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -2083,7 +2089,7 @@ version = "0.15.1+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+0"
+version = "5.8.0+1"
 
 [[deps.libevdev_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2130,12 +2136,12 @@ version = "1.1.6+0"
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-version = "1.48.0+0"
+version = "1.52.0+1"
 
 [[deps.p7zip_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+0"
+version = "17.4.0+2"
 
 [[deps.x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]

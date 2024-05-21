@@ -306,7 +306,7 @@ end
 # ╔═╡ 64636459-f35c-443c-ab88-84150b4accea
 md"""
 *--sklearn 에서의 로직 대충 요약--*
-1. ``{\bf X} := \begin{bmatrix}X_1 & X_2 & \dots & X_p \end{bmatrix}`` 를 centering 하여 ``{\bf Z}``를 만든다. 
+1. ``{\bf X} := \begin{bmatrix}{\boldsymbol X}_1 & {\boldsymbol X}_2 & \dots & {\boldsymbol X}_p \end{bmatrix}`` 를 centering 하여 ``{\bf Z}``를 만든다. 
 2. `svd(Z)`를 이용하여 $X_j$ 에 대응하는 coef 계산. (이것이 $\hat{\beta}_1,\dots,\hat{\beta}_p$가 된다.)
 3. 2를 이용하여 $\hat{\bf y}$을 구하고 $\text{mean}\big({\bf y}-\hat{\bf y}\big)$을 계산하여 bias-term ($=\hat{\beta}_0$) 을 맞춘다. 
 """
