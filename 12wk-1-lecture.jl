@@ -112,7 +112,7 @@ md"""
 """
 
 # ╔═╡ cc6f7ff7-e7ac-409e-9f63-145c58e4ade5
-loss(β2,β3) = (ỹ-β2*X2-β3*X3)'*(ỹ-β2*X2-β3*X3)/n
+loss(β̂2,β̂3) = (ỹ-β̂2*X2-β̂3*X3)'*(ỹ-β̂2*X2-β̂3*X3)/n
 
 # ╔═╡ f05be255-fae4-4421-a920-c863d0c389a6
 md"""
@@ -201,10 +201,20 @@ md"""
 $loss_{\text{L}^2} := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big) + \lambda {\boldsymbol \beta}^\top{\boldsymbol \beta}$
 """
 
+# ╔═╡ 5ba39dcd-1f21-4c83-a420-59de892a8121
+begin 
+end 
+
 # ╔═╡ 1d20583d-bddb-4c38-9da5-03d9e4c53f03
 md"""
--- $L_2$ 벌점을 추가할 경우
+-- $L_2$ 벌점을 추가할 경우 아래의 손실값들 조사
+1. ``\hat{\beta}_2=2.5,\quad \hat{\beta}_3=2.5.``
+2. ``\hat{\beta}_2=5,\quad \hat{\beta}_3=0.``
+3. ``\hat{\beta}_2=100,\quad \hat{\beta}_3=-95.``
 """
+
+# ╔═╡ d3416f40-9387-4a44-986f-8657c8ea1c00
+
 
 # ╔═╡ 324c7de6-c404-470a-afe3-cc756cf9fa94
 md"""
@@ -216,41 +226,13 @@ md"""
 λ = $(@bind λ Slider([1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7],show_value=true, default=1e5))
 """
 
-# ╔═╡ 5ba39dcd-1f21-4c83-a420-59de892a8121
-begin 
-	l2(β̂2,β̂3) = λ*(β̂2^2 + β̂3^2)
-	loss_l2(β̂2,β̂3) = loss(β̂2,β̂3) + l2(β̂2,β̂3)
-end 
-
-# ╔═╡ d3416f40-9387-4a44-986f-8657c8ea1c00
-let
-	λ = 1
-	@show λ
-	println("---")
-	@show loss(2.5,2.5)
-	@show l2(2.5,2.5)
-	@show loss_l2(2.5,2.5) # 이제는 이게 제일 작음
-	println("---")
-	@show loss(0,5)
-	@show l2(0,5)
-	@show loss_l2(0,5)
-	println("---")
-	@show loss(100,-95)
-	@show l2(100,-95)
-	@show loss_l2(100,-95)
-end 
-
 # ╔═╡ 05665ffd-fba5-49c4-bae7-65c6b02ebc64
 md"""
 *Figure 1*:  $(x,y,z) = \big(\hat{\beta}_2,~ \hat{\beta}_3,~ loss(\hat{\beta}_2,\hat{\beta}_3)\big)$
 """
 
 # ╔═╡ 278ef454-7fcc-4155-89f4-6fd93d168feb
-let
-	p1 = plot(β̂2s,β̂3s,loss,st=:surface,colorbar=false,alpha=0.9)
-	p2 = plot(β̂2s,β̂3s,loss,st=:contour,colorbar=false,levels=100)
-	plot(p1,p2)
-end 
+
 
 # ╔═╡ 14f7efbc-448d-44e1-b107-d52f05bc8520
 md"""
@@ -258,11 +240,7 @@ md"""
 """
 
 # ╔═╡ c5bdf20e-e89f-46e6-9a9a-2c16a19a54c4
-let
-	p3 = plot(β̂2s,β̂3s,l2,st=:surface,colorbar=false,alpha=0.9)
-	p4 = plot(β̂2s,β̂3s,l2,st=:contour,colorbar=false,levels=100)
-	plot(p3,p4)
-end
+
 
 # ╔═╡ 21a75194-76de-43bd-abbe-89d3e28e6d8e
 md"""
@@ -270,11 +248,7 @@ md"""
 """
 
 # ╔═╡ 14e02673-0863-4aa3-9ba6-af0bc909d0cc
-let
-	p5 = plot(β̂2s,β̂3s,loss_l2,st=:surface,colorbar=false,alpha=0.9)
-	p6 = plot(β̂2s,β̂3s,loss_l2,st=:contour,colorbar=false,levels=100)
-	plot(p5,p6)
-end 
+
 
 # ╔═╡ 6d545544-3516-4560-8887-e4413f3c0fc0
 md"""
@@ -303,10 +277,12 @@ $\hat{\boldsymbol \beta}=({\bf X}^\top {\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top
 """
 
 # ╔═╡ 2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
-let
-	λ = 50
-	β̂ = inv(X'X + λ*I)X'y
-end 
+md"""
+-- $\lambda$를 적당히 설정하고 $\hat{\boldsymbol \beta}$를 구해보자.
+"""
+
+# ╔═╡ 8ccd9de0-5234-4802-893b-99934373e37a
+
 
 # ╔═╡ 61b295ca-be2d-4326-bff5-0fd860d31919
 md"""
@@ -321,18 +297,7 @@ md"""
 """
 
 # ╔═╡ 392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
-let 
-	N = 10000
-	E = 300*randn(n,N)
-	Y = (600*X1 + 5*X2) .+ E
-	λ = 50
-	B̂ = inv(X'X + λ*I)X'Y
-	β̂1s,β̂2s,β̂3s = eachrow(B̂)
-	p1 = histogram(β̂1s,alpha=0.5,label="β̂₁")
-	p2 = histogram(β̂2s,alpha=0.5,label="β̂₂")
-	p3 = histogram(β̂3s,alpha=0.5,label="β̂₃")
-	plot(p1,p2,p3)
-end
+
 
 # ╔═╡ e1fea1fb-7a22-41de-b84a-b02c77c728c9
 md"""
@@ -376,26 +341,13 @@ md"""
 	아쉬움.. ``\lambda =0`` 이었다면 $\mathbb{E}(\hat{\boldsymbol \beta})={\boldsymbol \beta}$ 이었을텐데.. 
 """
 
-# ╔═╡ 096103d0-b7e3-4f60-b7d9-a69a58b4d14e
-inv(X'X+0.000000000001*I)X'X*[600,5,0]
-
 # ╔═╡ 0401b893-61ed-426a-8f0c-cfa365c56022
 md"""
 *Figure: $\lambda$에 따른 추정량의 평균변화 (이론)*
 """
 
 # ╔═╡ 80b71ff3-3b35-4a6d-bacb-5a69d735dabc
-let 
-	function Eβ̂(λ)
-		return inv(X'X+λ*I)X'X*β
-	end
-	
-	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
-	
-	plot(λ -> Eβ̂(λ)[1], λs,xscale= :log10,yscale= :log10, label="E(β̂₁)")
-	plot!(λ -> Eβ̂(λ)[2], label="E(β̂₂)")
-	plot!(λ -> Eβ̂(λ)[3], label="E(β̂₃)")
-end
+
 
 # ╔═╡ 86ee8e65-1220-4d8f-8801-a51e1924cd85
 md"""
@@ -403,15 +355,7 @@ md"""
 """
 
 # ╔═╡ 828c4d10-263b-46d2-b36f-28f6a0f3c612
-let 
-	λ = 10
-	N = 1000
-	E = σ*randn(n,N)
-	Y = (β1*X1 + β2*X2 + β3*X3) .+ E
-	B̂ = inv(X'X+λ*I)X'Y
-	j = ones(N)
-	B̂ * j/N
-end
+
 
 # ╔═╡ b1266c8b-2be6-4fb0-a791-38d9f2844d0b
 md"""
@@ -425,24 +369,12 @@ md"""
 """
 
 # ╔═╡ c029a13f-ab20-47f0-92e0-edd767302f85
-let 
-	function Êβ̂(λ)
-		N = 1000
-		Y = (β1*X1 + β2*X2 + β3*X3) .+ σ*randn(n,N)
-		B̂ = inv(X'X+λ*I)X'Y
-		j = ones(N)
-		return B̂ * j/N
-	end
-	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
-	plot(λ -> Êβ̂(λ)[1],λs,xscale= :log10,yscale= :log10, label="Ê(β̂₁)")
-	plot!(λ -> Êβ̂(λ)[2], label="Ê(β̂₂)")
-	plot!(λ -> Êβ̂(λ)[3], label="Ê(β̂₃)")
-end
+
 
 # ╔═╡ 0b7a7efb-e3e2-42f5-840c-e8245660e840
 md"""
 !!! warning "능형회귀 추정량에 대한 수식어"
-	능형회귀로 얻은 추정량 $\hat{\boldsymbol \beta}=({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$ 는 unbiased estimator / shrinkage estimator 라고 불린다. 이는 모두 $\mathbb{E}(\hat{\boldsymbol \beta})$ 에 대한 성질때문에 생긴 수식어이다. unbiased 라는 의미는 $\mathbb{E}(\hat{\boldsymbol \beta}) \neq {\boldsymbol \beta}$ 라는 의미이며 shrinkage 는 $\lambda$ 에 의하여 원래 $\mathbb{E}(\boldsymbol \beta)$의 값이 원래 $\beta$ 가 가져야할 값보다 전체적으로 ($L^2$-norm 관점에서!) 작게 추정됨을 의미한다. 요약하면, 능형회귀로 얻은 추정량은 **쓰레기**라는 의미이다. 	
+	능형회귀로 얻은 추정량 $\hat{\boldsymbol \beta}=({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$ 는 *unbiased estimator* / *shrinkage estimator* 라고 불린다. 이는 모두 $\mathbb{E}(\hat{\boldsymbol \beta})$ 에 대한 성질때문에 생긴 수식어이다. 여기에서 *unbiased* 의 의미는 $\mathbb{E}(\hat{\boldsymbol \beta}) \neq {\boldsymbol \beta}$ 라는 의미이며 *shrinkage* 는 $\lambda$ 에 의하여 원래 $\mathbb{E}(\boldsymbol \beta)$의 값이 원래 $\beta$ 가 가져야할 값보다 전체적으로 ($L^2$-norm 관점에서!) 작게 추정됨을 의미한다. 요약하면, 능형회귀로 얻은 추정량은 **쓰레기**라는 의미이다. 	
 
 	그렇다면 왜 $\hat{\boldsymbol \beta}=({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$ 을 쓰는것일까? $\mathbb{E}(\hat{\boldsymbol \beta})$ 관점에서는 쓰레기가 맞는데 $\mathbb{V}(\hat{\boldsymbol \beta})$ 의 관점에서는 좋은면이 있기 때문이다. 
 """
@@ -463,10 +395,10 @@ $\mathbb{V}(\hat{\boldsymbol\beta}) =({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{
 """
 
 # ╔═╡ 5d51fb2a-76ba-426b-b6d8-69d8132be55e
-inv(X'X+10*I)X'X*inv(X'X+10*I)*σ^2
+
 
 # ╔═╡ 6592929c-6d2b-4f0d-bbec-229b0d60ef0a
-diag(inv(X'X+10*I)X'X*inv(X'X+10*I)*σ^2)
+
 
 # ╔═╡ 3e0fb70f-6855-4867-be33-16d20adef786
 md"""
@@ -474,15 +406,7 @@ md"""
 """
 
 # ╔═╡ 22a02082-26e7-452d-bfa4-d9ace93fa11b
-let 
-	function Vβ̂(λ)
-		return diag(inv(X'X+λ*I)X'X*inv(X'X+λ*I)*σ^2)
-	end
-	λs = [1e1,1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
-	plot(λ -> Vβ̂(λ)[1], λs,xscale= :log10,yscale= :log10, label="V(β̂₁)")
-	plot!(λ -> Vβ̂(λ)[2], label="V(β̂₂)")
-	plot!(λ -> Vβ̂(λ)[3], label="V(β̂₃)")
-end
+
 
 # ╔═╡ 30e9a8de-b9f1-4d94-8de3-78b3f1e4a475
 md"""
@@ -495,20 +419,7 @@ md"""
 """
 
 # ╔═╡ ff6c8d44-7fbc-44b5-8c4c-23e76b34ef6d
-let 
-	function V̂β̂(λ)
-		N = 1000
-		Y = (β1*X1 + β2*X2 + β3*X3) .+ σ*randn(n,N)
-		B̂ = inv(X'X+λ*I)X'Y
-		j = ones(N)
-		Vβ̂ = (B̂ .- B̂*j/N).^2 *j/N
-		return Vβ̂
-	end
-	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
-	plot(λ -> V̂β̂(λ)[1],λs,xscale= :log10,yscale= :log10, label="V̂(β̂₁)")
-	plot!(λ -> V̂β̂(λ)[2], label="V̂(β̂₂)")
-	plot!(λ -> V̂β̂(λ)[3], label="V̂(β̂₃)")
-end
+
 
 # ╔═╡ 8aeae892-a26e-4c4e-bcb4-a10b2c4d710c
 md"""
@@ -528,7 +439,7 @@ md"""
 # ╔═╡ 70bcd059-954e-4077-8460-ba366a3271ee
 md"""
 !!! warning "MSE"
-	여기에서 MSE는 일반적으로 머신러닝에서 사용하는 $\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2$ 의 개념이 아니다. MSE라는 용어를 predictor에 사용할 경우와 estimator에 사용할 경우가 있는데 predictor에 사용할 경우에는 머신러닝에서 사용하는 MSE가 맞지만 estimator에 사용할 경우는 MSE를 아래와 같이 정의한다. 
+	여기에서 MSE는 일반적으로 머신러닝에서 사용하는 $\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2$ 의 개념이 아니다. MSE라는 용어를 predictor에 사용할 경우와 estimator에 사용할 경우가 있는데, predictor에 MSE 라는 용어를 사용할 경우에는 $\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2$ 를 지칭하지만 estimator에 사용할 경우는 MSE는 아래를 의미한다. 
 
 	$\begin{align}
 	\text{MSE}(\hat{\boldsymbol \beta})&=\mathbb{E}_{\boldsymbol \beta}\big[(\hat{\boldsymbol \beta}-{\boldsymbol \beta})^\top(\hat{\boldsymbol \beta}-{\boldsymbol \beta}) \big]\\
@@ -544,24 +455,7 @@ md"""
 """
 
 # ╔═╡ d67d0729-a865-402c-9a87-fd5836b7957c
-let 
-	# function Eβ̂(λ)
-	# 	return inv(X'X+λ*I)X'X*β
-	# end
-	# function Vβ̂(λ)
-	# 	return diag(inv(X'X+λ*I)X'X*inv(X'X+λ*I)*σ^2)
-	# end	
-	function MSEβ̂(λ)
-		Bias² = (inv(X'X+λ*I)X'X*β-β)'*(inv(X'X+λ*I)X'X*β-β)
-		Var = tr(inv(X'X+λ*I)X'X*inv(X'X+λ*I)*σ^2)
-		return Bias² + Var
-	end
-	MSEols = (inv(X'X)X'y-β)'*(inv(X'X)X'y-β) + tr(inv(X'X)X'X*inv(X'X)*σ^2)
-	@show MSEols
-	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
-	plot(λ -> MSEβ̂(λ),λs,xscale= :log10, yscale= :log10, label="MSE(ridge)")
-	plot!(λs,fill(MSEols,length(λs)), label="MSE(ols)", linestyle=:dash)
-end
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1818,7 +1712,8 @@ version = "1.4.1+1"
 # ╟─f5b49064-9f8b-4238-97a4-780b4023a641
 # ╟─8a47abe4-22de-48fc-b98c-c4cce53502bb
 # ╟─b3d527a8-3151-4f30-8ccd-b53b298855de
-# ╠═2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
+# ╟─2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
+# ╠═8ccd9de0-5234-4802-893b-99934373e37a
 # ╟─61b295ca-be2d-4326-bff5-0fd860d31919
 # ╟─057f12ba-1e54-481a-b9f4-a6e2bcad6805
 # ╠═392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
@@ -1830,7 +1725,6 @@ version = "1.4.1+1"
 # ╟─d7206a25-b7f6-4c59-8efc-268f3485fe2d
 # ╟─ebb19d9a-0ddc-40a5-9533-79639bba2e82
 # ╟─b71607cd-dfb5-4138-9042-fdd1b7b93bba
-# ╠═096103d0-b7e3-4f60-b7d9-a69a58b4d14e
 # ╟─0401b893-61ed-426a-8f0c-cfa365c56022
 # ╠═80b71ff3-3b35-4a6d-bacb-5a69d735dabc
 # ╟─86ee8e65-1220-4d8f-8801-a51e1924cd85
