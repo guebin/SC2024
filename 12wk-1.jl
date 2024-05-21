@@ -121,10 +121,10 @@ md"""
 
 # ╔═╡ cbb62ff1-fe39-468e-91a6-0431192fb25d
 begin
-	β2s = -10:0.5:15
-	β3s = -10:0.5:15
-	p1 = plot(β2s,β3s,loss,st=:surface,colorbar=false,alpha=0.9)
-	p2 = plot(β2s,β3s,loss,st=:contour,colorbar=false,levels=100)
+	β̂2s = -10:0.5:15
+	β̂3s = -10:0.5:15
+	p1 = plot(β̂2s,β̂3s,loss,st=:surface,colorbar=false,alpha=0.9)
+	p2 = plot(β̂2s,β̂3s,loss,st=:contour,colorbar=false,levels=100)
 	plot(p1,p2)
 end
 
@@ -213,13 +213,13 @@ md"""
 
 # ╔═╡ 1109294c-c93c-4156-a301-e76260f5b1a4
 md"""
-λ = $(@bind λ Slider([1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7],show_value=true, default=1))
+λ = $(@bind λ Slider([1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7],show_value=true, default=1e5))
 """
 
 # ╔═╡ 5ba39dcd-1f21-4c83-a420-59de892a8121
 begin 
-	l2(β2,β3) = λ*(β2^2 + β3^2)
-	loss_l2(β2,β3) = loss(β2,β3) + l2(β2,β3)
+	l2(β̂2,β̂3) = λ*(β̂2^2 + β̂3^2)
+	loss_l2(β̂2,β̂3) = loss(β̂2,β̂3) + l2(β̂2,β̂3)
 end 
 
 # ╔═╡ d3416f40-9387-4a44-986f-8657c8ea1c00
@@ -247,8 +247,8 @@ md"""
 
 # ╔═╡ 278ef454-7fcc-4155-89f4-6fd93d168feb
 let
-	p1 = plot(β2,β3,loss,st=:surface,colorbar=false,alpha=0.9)
-	p2 = plot(β2,β3,loss,st=:contour,colorbar=false,levels=100)
+	p1 = plot(β̂2s,β̂3s,loss,st=:surface,colorbar=false,alpha=0.9)
+	p2 = plot(β̂2s,β̂3s,loss,st=:contour,colorbar=false,levels=100)
 	plot(p1,p2)
 end 
 
@@ -259,8 +259,8 @@ md"""
 
 # ╔═╡ c5bdf20e-e89f-46e6-9a9a-2c16a19a54c4
 let
-	p3 = plot(β2,β3,l2,st=:surface,colorbar=false,alpha=0.9)
-	p4 = plot(β2,β3,l2,st=:contour,colorbar=false,levels=100)
+	p3 = plot(β̂2s,β̂3s,l2,st=:surface,colorbar=false,alpha=0.9)
+	p4 = plot(β̂2s,β̂3s,l2,st=:contour,colorbar=false,levels=100)
 	plot(p3,p4)
 end
 
@@ -271,8 +271,8 @@ md"""
 
 # ╔═╡ 14e02673-0863-4aa3-9ba6-af0bc909d0cc
 let
-	p5 = plot(β2,β3,loss_l2,st=:surface,colorbar=false,alpha=0.9)
-	p6 = plot(β2,β3,loss_l2,st=:contour,colorbar=false,levels=100)
+	p5 = plot(β̂2s,β̂3s,loss_l2,st=:surface,colorbar=false,alpha=0.9)
+	p6 = plot(β̂2s,β̂3s,loss_l2,st=:contour,colorbar=false,levels=100)
 	plot(p5,p6)
 end 
 
@@ -328,9 +328,9 @@ let
 	λ = 50
 	B̂ = inv(X'X + λ*I)X'Y
 	β̂1s,β̂2s,β̂3s = eachrow(B̂)
-	p1 = histogram(β̂1s,alpha=0.5,label="β̂1")
-	p2 = histogram(β̂2s,alpha=0.5,label="β̂2")
-	p3 = histogram(β̂3s,alpha=0.5,label="β̂3")
+	p1 = histogram(β̂1s,alpha=0.5,label="β̂₁")
+	p2 = histogram(β̂2s,alpha=0.5,label="β̂₂")
+	p3 = histogram(β̂3s,alpha=0.5,label="β̂₃")
 	plot(p1,p2,p3)
 end
 
@@ -434,9 +434,9 @@ let
 		return B̂ * j/N
 	end
 	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
-	plot(λ -> Êβ̂(λ)[1],λs,xscale= :log10,yscale= :log10, label="E(β̂₁)")
-	plot!(λ -> Êβ̂(λ)[2], label="E(β̂₂)")
-	plot!(λ -> Êβ̂(λ)[3], label="E(β̂₃)")
+	plot(λ -> Êβ̂(λ)[1],λs,xscale= :log10,yscale= :log10, label="Ê(β̂₁)")
+	plot!(λ -> Êβ̂(λ)[2], label="Ê(β̂₂)")
+	plot!(λ -> Êβ̂(λ)[3], label="Ê(β̂₃)")
 end
 
 # ╔═╡ 0b7a7efb-e3e2-42f5-840c-e8245660e840
@@ -505,9 +505,9 @@ let
 		return Vβ̂
 	end
 	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
-	plot(λ -> V̂β̂(λ)[1],λs,xscale= :log10,yscale= :log10, label="V(β̂₁)")
-	plot!(λ -> V̂β̂(λ)[2], label="V(β̂₂)")
-	plot!(λ -> V̂β̂(λ)[3], label="V(β̂₃)")
+	plot(λ -> V̂β̂(λ)[1],λs,xscale= :log10,yscale= :log10, label="V̂(β̂₁)")
+	plot!(λ -> V̂β̂(λ)[2], label="V̂(β̂₂)")
+	plot!(λ -> V̂β̂(λ)[3], label="V̂(β̂₃)")
 end
 
 # ╔═╡ 8aeae892-a26e-4c4e-bcb4-a10b2c4d710c
@@ -536,6 +536,11 @@ md"""
 	\end{align}$
 
 	일반적으로 ${\boldsymbol \beta}$ 에 대한 추정량이 가졌으면 좋겠는 좋은 성질은 (1) 편향되어있지 않고 (2) 분산이 작은것 인데 MSE는 이 두 가지 기준을 모두 고려한 좋은 평가방법이다. 
+"""
+
+# ╔═╡ 2bacdea6-3f94-44ba-bdb3-c549ee36cbd2
+md"""
+*Figure: $\lambda$에 따른 추정량의 MSE변화 (이론)*
 """
 
 # ╔═╡ d67d0729-a865-402c-9a87-fd5836b7957c
@@ -1848,6 +1853,7 @@ version = "1.4.1+1"
 # ╟─ab512892-c838-4967-a0e3-dfc04e6a9df0
 # ╟─1f92a68d-48cd-46a2-b373-2631cf1b56da
 # ╟─70bcd059-954e-4077-8460-ba366a3271ee
+# ╟─2bacdea6-3f94-44ba-bdb3-c549ee36cbd2
 # ╠═d67d0729-a865-402c-9a87-fd5836b7957c
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
