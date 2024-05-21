@@ -19,7 +19,7 @@ using PlutoUI,Plots,HTTP,CSV,DataFrames,LinearAlgebra,Statistics,Random
 
 # ╔═╡ 7ec1510e-130c-11ef-1e0e-518d9cc440ea
 md"""
-# 12wk-1: 능형회귀
+# 12wk-1: 능형회귀 (1)
 """
 
 # ╔═╡ a366d78e-5826-4a65-a3fe-3469fee80f9a
@@ -28,7 +28,15 @@ md"""
 """
 
 # ╔═╡ 4c8cb126-08bd-478e-8472-fd1547e0d128
-
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://youtube.com/embed/playlist?list=PLQqh36zP38-y5K74hZNfuDUv2WsUHehw_&si=NO3AvV5GHNHRh65c
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
 
 # ╔═╡ 2d2f8c88-07f9-4e8b-86ae-fc9828aba187
 md"""
@@ -407,7 +415,7 @@ let
 	λ = 10
 	N = 1000
 	E = σ*randn(n,N)
-	Y = (β1*X1 + β2*X2 + β3*X3) .+ E
+	Y = X*β .+ E
 	B̂ = inv(X'X+λ*I)X'Y
 	j = ones(N)
 	B̂ * j/N
@@ -428,7 +436,8 @@ md"""
 let 
 	function Êβ̂(λ)
 		N = 1000
-		Y = (β1*X1 + β2*X2 + β3*X3) .+ σ*randn(n,N)
+		E = randn(n,N)*σ
+		Y = X*β .+ E
 		B̂ = inv(X'X+λ*I)X'Y
 		j = ones(N)
 		return B̂ * j/N
@@ -445,6 +454,11 @@ md"""
 	능형회귀로 얻은 추정량 $\hat{\boldsymbol \beta}=({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$ 는 *biased estimator* / *shrinkage estimator* 라고 불린다. 이는 모두 $\mathbb{E}(\hat{\boldsymbol \beta})$ 에 대한 성질때문에 생긴 수식어이다. 여기에서 *biased* 라는 의미는 $\mathbb{E}(\hat{\boldsymbol \beta}) \neq {\boldsymbol \beta}$ 라는 의미이며 *shrinkage* 는 $\lambda$ 에 의하여 원래 $\mathbb{E}(\boldsymbol \beta)$의 값이 원래 $\beta$ 가 가져야할 값보다 전체적으로 ($L^2$-norm 관점에서!) 작게 추정됨을 의미한다. 요약하면, 능형회귀로 얻은 추정량은 **쓰레기**라는 의미이다. 	
 
 	그렇다면 왜 $\hat{\boldsymbol \beta}=({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$ 을 쓰는것일까? $\mathbb{E}(\hat{\boldsymbol \beta})$ 관점에서는 쓰레기가 맞는데 $\mathbb{V}(\hat{\boldsymbol \beta})$ 의 관점에서는 좋은면이 있기 때문이다. 
+"""
+
+# ╔═╡ e9e42e74-b295-4cc7-94f4-33b23d4fc751
+md"""
+> 이전 강의노트에서 *biased* 가 아닌 *unbiased* 라고 되어있었습니다. 제가 설명도 *unbiased* 로 잘못했는데요, *biased*로 이해하고 설명들으시면 됩니다. 혼란을 드려 죄송합니다. 
 """
 
 # ╔═╡ 59e96cb9-f277-4825-a482-5f819905312f
@@ -1766,7 +1780,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─7ec1510e-130c-11ef-1e0e-518d9cc440ea
 # ╟─a366d78e-5826-4a65-a3fe-3469fee80f9a
-# ╠═4c8cb126-08bd-478e-8472-fd1547e0d128
+# ╟─4c8cb126-08bd-478e-8472-fd1547e0d128
 # ╟─2d2f8c88-07f9-4e8b-86ae-fc9828aba187
 # ╠═128613c3-baba-426a-adbf-8abed179eb49
 # ╠═3317fffc-955d-4073-9123-17688a4c6f61
@@ -1831,6 +1845,7 @@ version = "1.4.1+1"
 # ╟─101cd18a-0b4b-4e1e-8dee-6d687ebedc30
 # ╠═c029a13f-ab20-47f0-92e0-edd767302f85
 # ╟─0b7a7efb-e3e2-42f5-840c-e8245660e840
+# ╟─e9e42e74-b295-4cc7-94f4-33b23d4fc751
 # ╟─59e96cb9-f277-4825-a482-5f819905312f
 # ╟─ccd985b7-978d-4b15-a206-f1bf323c38e1
 # ╟─d1e558cc-a4d6-469d-878c-79bc69247eb5
