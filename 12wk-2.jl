@@ -4,570 +4,365 @@
 using Markdown
 using InteractiveUtils
 
-# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
-macro bind(def, element)
-    quote
-        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
-        local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
-        el
-    end
-end
+# ╔═╡ 5854ee01-9e1e-4b8e-bde0-e1a63ce5fca3
+using PlutoUI,Plots,HTTP,CSV,DataFrames,LinearAlgebra,Statistics,Random,Distributions
 
-# ╔═╡ 128613c3-baba-426a-adbf-8abed179eb49
-using PlutoUI,Plots,HTTP,CSV,DataFrames,LinearAlgebra,Statistics,Random
-
-# ╔═╡ 7ec1510e-130c-11ef-1e0e-518d9cc440ea
+# ╔═╡ fee1b074-1882-11ef-3461-816618892a75
 md"""
-# 12wk-1: 능형회귀 (1)
+# 12wk-2: 능형회귀 (2)
 """
 
-# ╔═╡ a366d78e-5826-4a65-a3fe-3469fee80f9a
+# ╔═╡ e25f8240-7fc5-4075-84f3-f300e3688f50
 md"""
 ## 1. 강의영상
 """
 
-# ╔═╡ 4c8cb126-08bd-478e-8472-fd1547e0d128
+# ╔═╡ 4c275cc8-f6cd-4a23-826e-1bebfe54b0e8
 html"""
 <div style="display: flex; justify-content: center;">
 <div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
 <iframe src=
 "
-https://youtube.com/embed/playlist?list=PLQqh36zP38-y5K74hZNfuDUv2WsUHehw_&si=NO3AvV5GHNHRh65c
+https://youtube.com/embed/playlist?list=PLQqh36zP38-zN5HD4xmAMyhxTGr7RY8VY&si=j2GhMZ9uo0TcbGuk
 "
 width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 """
 
-# ╔═╡ 2d2f8c88-07f9-4e8b-86ae-fc9828aba187
+# ╔═╡ 044e4338-8cea-4bfc-996f-eda7638bdc82
 md"""
 ## 2. Imports
 """
 
-# ╔═╡ 3317fffc-955d-4073-9123-17688a4c6f61
+# ╔═╡ 3dbe9873-f1d3-46d7-be7a-951d8d2175db
 PlutoUI.TableOfContents()
 
-# ╔═╡ 18996e8e-c802-4e03-a3c6-c4d83aa5afdc
+# ╔═╡ a93414c7-a321-48bc-aa60-06c66ef073bb
 Plots.plotly()
 
-# ╔═╡ 31f2972f-c83f-42ce-999c-842c157899d3
+# ╔═╡ 5479a62f-42b9-4902-a1ba-a9470438bd4f
 md"""
-## 3. 다중공선성
+## 3. Data
 """
 
-# ╔═╡ b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
-df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
-
-# ╔═╡ df19fb9c-8f86-4d55-9899-c868c3512411
-n = 5000
-
-# ╔═╡ f9f88913-a23a-4f02-a1cd-f255feb8c834
-begin 
+# ╔═╡ 322970a5-e143-4e14-9b7e-3e81617e7294
+begin
+	df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
+	n,_ = size(df)
 	X1,X2,X3 = eachcol(df)
 	X = [X1 X2 X3] 
-end
-
-# ╔═╡ b45868ea-681e-41e3-b9c0-2d0c918e574d
-begin 
-	Random.seed!(43052) 
-	β1 = 600 
-	β2 = 5 
-	β3 = 0
+	β1,β2,β3 = [600,5,0]
 	β = [β1, β2, β3]
 	σ = 300
 	ϵ = σ*randn(n)
-	#y = β1*X1 + β2*X2 + β3*X3 + ϵ
 	y = X*β + ϵ
 end
 
-# ╔═╡ d055be6a-aef8-47d0-b0a2-a56b85089bfc
+# ╔═╡ 48037b61-c63d-4f7d-b5d9-7ba2306e6d9e
+U,d,V = svd(X)
+
+# ╔═╡ 799ad3a7-3650-4d55-9c4f-a991ee7770f9
 md"""
-## 4. 능형회귀
+## 4. $\hat{\boldsymbol \beta}^R$의 SVD표현
 """
 
-# ╔═╡ 8b6bafd7-7dd9-4c2b-a059-d18fc2ad22f8
+# ╔═╡ 18e972a5-2e31-4e8b-ac3e-69fbfd31d7b2
 md"""
-### A. 문제정리
+-- $\hat{\boldsymbol \beta}^R$ 을 SVD로 표현하면 아래와 같다.
 """
 
-# ╔═╡ 57b42243-1fa1-4a69-b116-044b30d7819b
+# ╔═╡ 05e6dc51-e731-482e-9f79-3f659f4312ad
 md"""
--- 일반적인 회귀문제는 아래를 푸는 것이다. 
+$\hat{\boldsymbol \beta}^R ={\bf V}\text{diag}\Big(\frac{d_j}{d_j^2+\lambda}\Big){\bf U}^\top {\bf y}$
 """
 
-# ╔═╡ b70e73b7-c2ae-4c94-9f85-ad0195b5858a
+# ╔═╡ beeb4dc9-a44e-4c01-944c-012f51cea490
 md"""
-$$\underset{{\boldsymbol \beta} \in \mathbb{R}^p}{\operatorname{argmin}}\bigg\{ \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big)\bigg\}$$
+-- 공식확인용 코드
 """
 
-# ╔═╡ 6601a37b-cb7c-417d-a438-c5c18c19e0cf
-md"""
--- 이에 대한 수학적인 해는 $\hat{\boldsymbol \beta}=\big({\bf X}^\top {\bf X}\big)^{-1}{\bf X}^\top{\bf y}$ 임을 너무나도 잘 알고 있지만, 우리의 예제에서는 이 수학적인 해가 별로 쓸모가 없다는 사실을 확인했다. 왜 이런일이 생길까?
-"""
-
-# ╔═╡ 23d619d0-e790-4ddb-97ec-735e42fa85bc
-md"""
--- 편의상 GPA에 대한 추정값 600은 정확하게 추정했다고 가정하자. 즉 이제 아래의 모형을 가정한다.
-
-$\tilde{\bf y}= {\bf y}-\beta_1{\boldsymbol X}_1 =\beta_2{\boldsymbol X}_2 + \beta_3{\boldsymbol X}_3 +{\boldsymbol \epsilon}$
-"""
-
-# ╔═╡ 68d0574b-dbd6-4b68-920e-e672fe876ec6
-ỹ = y - β1*X1
-
-# ╔═╡ ac6df6a5-6742-446a-b119-a0a685de2f3f
-md"""
--- 손실함수를 정의하자.
-"""
-
-# ╔═╡ cc6f7ff7-e7ac-409e-9f63-145c58e4ade5
-loss(β2,β3) = (ỹ-β2*X2-β3*X3)'*(ỹ-β2*X2-β3*X3)/n
-
-# ╔═╡ f05be255-fae4-4421-a920-c863d0c389a6
-md"""
--- 손실함수를 그려보자.
-"""
-
-# ╔═╡ cbb62ff1-fe39-468e-91a6-0431192fb25d
-begin
-	β̂2s = -10:0.5:15
-	β̂3s = -10:0.5:15
-	p1 = plot(β̂2s,β̂3s,loss,st=:surface,colorbar=false,alpha=0.9)
-	p2 = plot(β̂2s,β̂3s,loss,st=:contour,colorbar=false,levels=100)
-	plot(p1,p2)
-end
-
-# ╔═╡ 3bad3692-7f76-494c-93d5-f3951331c74e
-md"""
-- ``\hat{\beta}_2 + \hat{\beta}_3 \approx 5`` 이라면 loss값을 거의 최소값과 비슷하게 만든다. 
-"""
-
-# ╔═╡ 758668d4-7d98-46db-8f8a-9a81abe6ad25
-md"""
--- 수식적으로 그럴듯해 보여도, 모두 바람직한 모형은 아니다. 아래는 모두 참모형이라 생각되어지는 상황이다. 
-
-1. ``\hat{\beta}_2=2.5,\quad \hat{\beta}_3=2.5.``
-2. ``\hat{\beta}_2=5,\quad \hat{\beta}_3=0.``
-3. ``\hat{\beta}_2=100,\quad \hat{\beta}_3=-95.``
-
-그렇지만 상식적으로 3은 용납할 수 없다. 계수값은 최소한 0~5 사이의 값이었으면 좋겠다. (-0.1정도는 괜찮을 듯)
-"""
-
-# ╔═╡ a82b89e1-ac4b-45e0-9e46-db58bc303812
-md"""
--- 각 경우에 대하여 loss를 계산해보자.
-"""
-
-# ╔═╡ a8e9091b-aa4b-49c8-804f-b0db309329a8
-let
-	@show loss(2.5,2.5)
-	@show loss(5,0)
-	@show loss(100,-95)
+# ╔═╡ b8bb438f-7f2b-4f55-b55a-b9ad9f135db1
+let 
+	λ = 2 
+	β̂r = inv(X'X+λ*I)X'y
 end 
 
-# ╔═╡ cbe878f4-07b2-4f21-8a63-7468b2633b6b
-md"""
-- 이대로라면 컴퓨터입장에서는 경우3이 가장 좋다고 생각하겠는걸?
-"""
-
-# ╔═╡ 90ff8925-e0d6-4982-b19d-0f78b5016545
-md"""
-### B. 해결책
-"""
-
-# ╔═╡ 85ad9c84-87c8-49d9-9139-63605442aa2d
-md"""
-!!! warning "아이디어: 추정된 계수의 절대값이 크면 벌점을 주자"
-	아래와 같은 계수추정값들이 있다고 하자.
-
-	1. ``(\hat{\beta}_2,\hat{\beta}_3) = (0,5)``
-	2. ``(\hat{\beta}_2,\hat{\beta}_3) = (1,4)``
-	3. ``(\hat{\beta}_2,\hat{\beta}_3) = (2,3)``
-	4. ``(\hat{\beta}_2,\hat{\beta}_3) = (2.5,2.5)``
-	5. ``(\hat{\beta}_2,\hat{\beta}_3) = (3,2)``
-	6. ``(\hat{\beta}_2,\hat{\beta}_3) = (4,1)``
-	7. ``(\hat{\beta}_2,\hat{\beta}_3) = (5,0)`` -- 찐 참모형
-
-	이러한 추정값들은 대충 합리적이라 여겨지며 우리는 이러한 값을 사실 추정하고 싶다. (7이 진짜 참모형이지만 1-6도 나쁘지 않은 선택임) 그럼 이제 아래의 값들을 살펴보자. 
-
-	8. ``(\hat{\beta}_2,\hat{\beta}_3) = (-5,10)``
-	9. ``(\hat{\beta}_2,\hat{\beta}_3) = (-95,100)``
-	10. ``(\hat{\beta}_2,\hat{\beta}_3) = (-995,1000)``
-	11. ``(\hat{\beta}_2,\hat{\beta}_3) = (-9995,10000)``
-
-	이 값들은 딱 봐도 짜증나는 상황(그렇지만 수학적으로 가능할 것 같은 상황)이며, 우리는 이러한 값들 추정하고 싶지 않다. 우리가 원하는 추정값과 원하지 않는 추정값을 관찰하면서 얻은 직관은 아래와 같다. 
-
-	> ``\hat{\beta}_2`` 와 ``\hat{\beta}_3`` 의 절대값이 커질수록 우리가 원하는 추정량은 아닌것 같다.
-
-	**그렇다면 ``\hat{\beta}_2`` 와 ``\hat{\beta}_3`` 의 절대값이 클수록 손실함수를 더 크게 만들어 버리면 어떨까??!**
-
-"""
-
-# ╔═╡ 6216c9c1-3d3a-4e2c-9fd7-d18cba3b6147
-md"""
--- ``\lambda \geq 0`` 에 대하여 아래와 같은 손실함수를 고려해보자.
-
-$loss_{\text{L}^2} := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big) + \lambda {\boldsymbol \beta}^\top{\boldsymbol \beta}$
-"""
-
-# ╔═╡ 1d20583d-bddb-4c38-9da5-03d9e4c53f03
-md"""
--- $L_2$ 벌점을 추가할 경우 아래를 계산해보자.
-
-1. ``\hat{\beta}_2=2.5,\quad \hat{\beta}_3=2.5.``
-2. ``\hat{\beta}_2=5,\quad \hat{\beta}_3=0.``
-3. ``\hat{\beta}_2=100,\quad \hat{\beta}_3=-95.``
-
-"""
-
-# ╔═╡ d3416f40-9387-4a44-986f-8657c8ea1c00
-let
-	@show λ
-	println("---")
-	@show loss(2.5,2.5)
-	@show l2(2.5,2.5)
-	@show loss_l2(2.5,2.5) # 이제는 이게 제일 작음
-	println("---")
-	@show loss(0,5)
-	@show l2(0,5)
-	@show loss_l2(0,5)
-	println("---")
-	@show loss(100,-95)
-	@show l2(100,-95)
-	@show loss_l2(100,-95)
+# ╔═╡ 8d6b1d21-bf82-4745-bc4d-16f6c30214b2
+let 
+	λ = 2 
+	β̂r = V * Diagonal(@. d/(d^2+λ)) * U'*y
 end 
 
-# ╔═╡ 324c7de6-c404-470a-afe3-cc756cf9fa94
+# ╔═╡ 1939fd2e-4411-4e5b-9eac-c33215defb2f
 md"""
-### C. 변형된 손실함수 시각화
+## 5. $\hat{\boldsymbol \beta}^R$의 편향을 SVD로 표현
 """
 
-# ╔═╡ 1109294c-c93c-4156-a301-e76260f5b1a4
+# ╔═╡ 6dedcc9f-aa46-4526-bb90-5d9a9981f6a2
 md"""
-λ = $(@bind λ Slider([1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7],show_value=true, default=1e5))
+### A. 편향
 """
 
-# ╔═╡ 5ba39dcd-1f21-4c83-a420-59de892a8121
-begin 
-	l2(β̂2,β̂3) = λ*(β̂2^2 + β̂3^2)
-	loss_l2(β̂2,β̂3) = loss(β̂2,β̂3) + l2(β̂2,β̂3)
+# ╔═╡ c82296fd-c5c7-42f6-9d07-b17137a3468f
+md"""
+-- $\hat{\boldsymbol \beta}^R$의 편향을 표현하면 아래와 같다. 
+"""
+
+# ╔═╡ 5a85a782-5df7-4b1f-9d74-02088318864c
+md"""
+$\text{\tt Bias} := \mathbb{E}(\hat{\boldsymbol \beta}^R)-{\boldsymbol \beta}
+={\bf V}\text{diag}\Big(\frac{-\lambda}{d_j^2+\lambda}\Big){\bf V}^\top {\boldsymbol \beta}$
+"""
+
+# ╔═╡ 94481eb2-daf8-4cc0-8bc6-ab6d9dbd0662
+md"""
+-- 공식확인용 코드
+"""
+
+# ╔═╡ 7aa0eb52-11cb-466b-b2ea-b7b11278f494
+let 
+	λ = 2 
+	Bias = inv(X'X+λ*I)X'X*β - β
+	Bias
 end 
 
-# ╔═╡ 05665ffd-fba5-49c4-bae7-65c6b02ebc64
-md"""
-*Figure 1*:  $(x,y,z) = \big(\hat{\beta}_2,~ \hat{\beta}_3,~ loss(\hat{\beta}_2,\hat{\beta}_3)\big)$
-"""
-
-# ╔═╡ 278ef454-7fcc-4155-89f4-6fd93d168feb
-let
-	p1 = plot(β̂2s,β̂3s,loss,st=:surface,colorbar=false,alpha=0.9)
-	p2 = plot(β̂2s,β̂3s,loss,st=:contour,colorbar=false,levels=100)
-	plot(p1,p2)
+# ╔═╡ a612d40a-d642-487a-9dc2-3c351189e3b4
+let 
+	λ = 2
+	Bias = V * Diagonal(@. -2/(d^2+2))*V'*β
 end 
 
-# ╔═╡ 14f7efbc-448d-44e1-b107-d52f05bc8520
+# ╔═╡ 976274be-d8ca-4ca2-bb13-04275fa55f20
 md"""
-*Figure 2*:  $(x,y,z) = \Big(\hat{\beta}_2, ~\hat{\beta}_3,~ \lambda(\hat{\beta}_2^2 + \hat{\beta}_3^2)\Big)$
+### B. 편향제곱합
 """
 
-# ╔═╡ c5bdf20e-e89f-46e6-9a9a-2c16a19a54c4
-let
-	p3 = plot(β̂2s,β̂3s,l2,st=:surface,colorbar=false,alpha=0.9)
-	p4 = plot(β̂2s,β̂3s,l2,st=:contour,colorbar=false,levels=100)
-	plot(p3,p4)
-end
-
-# ╔═╡ 21a75194-76de-43bd-abbe-89d3e28e6d8e
+# ╔═╡ 9e7e7313-ed44-45bc-864d-73a9c08c3bae
 md"""
-*Figure 3*:  $(x,y,z) = \Big(\hat{\beta}_2,~ \hat{\beta}_3,~ loss(\hat{\beta}_2,\hat{\beta}_3) +\lambda(\hat{\beta}_2^2 + \hat{\beta}_3^2)\Big)$
+-- 편향제곱합은 아래와 같다.
 """
 
-# ╔═╡ 14e02673-0863-4aa3-9ba6-af0bc909d0cc
-let
-	p5 = plot(β̂2s,β̂3s,loss_l2,st=:surface,colorbar=false,alpha=0.9)
-	p6 = plot(β̂2s,β̂3s,loss_l2,st=:contour,colorbar=false,levels=100)
-	plot(p5,p6)
+# ╔═╡ f98636f7-7fc0-4ef3-a024-2894c9920ad0
+md"""
+$\text{\tt Bias}^2:=\Big(\mathbb{E}(\hat{\boldsymbol \beta}^R)-{\boldsymbol \beta}\Big)^\top\Big(\mathbb{E}(\hat{\boldsymbol \beta}^R)-{\boldsymbol \beta}\Big)
+=\sum_{j=1}^{p}\frac{\lambda^2}{(d_j^2+\lambda)^2}\big({\boldsymbol V}_i^\top{\boldsymbol \beta}\big)^2$
+"""
+
+# ╔═╡ 3e1cfaa7-4fc4-4d06-9193-bd6c3a047ae4
+md"""
+-- 공식확인용 코드
+"""
+
+# ╔═╡ 43245d61-d0cd-419f-86ce-90497ba14571
+let 
+	λ = 2 
+	Bias = inv(X'X+λ*I)X'X*β - β
+	Bias² = Bias'Bias
+	Bias²
 end 
 
-# ╔═╡ 6d545544-3516-4560-8887-e4413f3c0fc0
-md"""
-### D. 해를 구하는 방법
-"""
-
-# ╔═╡ f5b49064-9f8b-4238-97a4-780b4023a641
-md"""
--- 다중공선성이 의심되는 경우에는 단순하게 아래를 최소화 하는 것 보다
-
-$loss := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big)$
-
-``\lambda \geq 0`` 에 대하여 아래와 같은 손실함수를 최소화하는 $\hat{\boldsymbol \beta}$ 을 구하는 것이 더 이득인 것 같다. 
-
-$loss_{\text{L}^2} := \big({\bf y}-{\bf X}{\boldsymbol \beta} \big)^\top \big({\bf y}-{\bf X}{\boldsymbol \beta}  \big) + \lambda {\boldsymbol \beta}^\top{\boldsymbol \beta}$
-"""
-
-# ╔═╡ 8a47abe4-22de-48fc-b98c-c4cce53502bb
-md"""
--- ``loss_{\text{L}^2}``를 최소화하는 수학적인 해는 아래와 같다.
-"""
-
-# ╔═╡ b3d527a8-3151-4f30-8ccd-b53b298855de
-md"""
-$\hat{\boldsymbol \beta}=({\bf X}^\top {\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$
-"""
-
-# ╔═╡ 2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
-let
-	λ = 50
-	β̂ = inv(X'X + λ*I)X'y
+# ╔═╡ 68e10203-5989-46df-a895-3d89fe843ced
+let 
+	λ = 2
+	Bias² = (λ.^2 ./ (d.^2 .+ λ).^2) .* (V'*β).^2 |> sum
+	Bias²
 end 
 
-# ╔═╡ 61b295ca-be2d-4326-bff5-0fd860d31919
+# ╔═╡ 2712977a-4048-47be-8d10-35da77a86d90
 md"""
--- 결과는 그럭저럭 괜찮음. 
-- ``\hat{\beta}_3``, ``\hat{\beta}_3`` 에 대한 추정값이 괜찮게 나온것은 긍정적임. 
-- 그런데 ``\hat{\beta}_1``의 추정값은 $\lambda$ 값을 키울수록 600보다 작게 추정된다. 
+## 6. $\hat{\boldsymbol \beta}^R$의 분산을 SVD로 표현
 """
 
-# ╔═╡ 057f12ba-1e54-481a-b9f4-a6e2bcad6805
+# ╔═╡ 47c0f979-f633-435a-932a-f5d3ab817def
 md"""
--- 다른 평행세계에 대하여서도 ``\hat{\beta}_1``,``\hat{\beta}_2``, ``\hat{\beta}_3`` 를 각각 구해보고 그 분포를 살펴보자. 
+### A. 분산
 """
 
-# ╔═╡ 392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
+# ╔═╡ aed2aa72-8fdb-43d7-bcaa-455a61cffd03
+md"""
+-- $\hat{\boldsymbol \beta}^R$의 분산을 표현하면 아래와 같다. 
+"""
+
+# ╔═╡ 18d1cc96-7bab-4501-8a75-782dfcd55d31
+md"""
+$$\text{\tt Var} := \mathbb{V}(\hat{\boldsymbol \beta}^R)={\bf V}\text{diag}\Bigg(\frac{d_j^2}{(d_j^2+\lambda)^2}\Bigg){\bf V}^\top \sigma^2$$
+"""
+
+# ╔═╡ eff3302c-1d6b-47fb-b1bf-4b3b7360892a
+md"""
+-- 공식확인용 코드
+"""
+
+# ╔═╡ f472d0bf-aa8c-4dcc-8d6c-729127257cdf
 let 
-	N = 10000
-	E = 300*randn(n,N)
-	Y = (600*X1 + 5*X2) .+ E
-	λ = 50
-	B̂ = inv(X'X + λ*I)X'Y
-	β̂1s,β̂2s,β̂3s = eachrow(B̂)
-	p1 = histogram(β̂1s,alpha=0.5,label="β̂₁")
-	p2 = histogram(β̂2s,alpha=0.5,label="β̂₂")
-	p3 = histogram(β̂3s,alpha=0.5,label="β̂₃")
-	plot(p1,p2,p3)
+	#β̂r = inv(X'X+λ*I)X'y = Ay
+	λ = 2
+	A = inv(X'X+λ*I)X'
+	Var = A*A'*σ^2
+end 
+
+# ╔═╡ 21eb44ac-c955-49c5-81cc-cf5be1be2ce1
+let 
+	λ = 2
+	Var = V*Diagonal(@. d^2 / (d^2+λ)^2)*V'*σ^2
+end 
+
+# ╔═╡ 2fd845fa-ff7c-4b93-9534-881c8bc9e408
+md"""
+### B. 분산의 trace
+"""
+
+# ╔═╡ 3dffdaba-411d-4f60-8b9c-0016e238a031
+md"""
+-- $\hat{\boldsymbol \beta}^R$의 분산의 trace를 계산하면 아래와 같다. 
+"""
+
+# ╔═╡ 5a875fca-ef96-4a51-8542-1bcbfe66b1c9
+md"""
+$$\text{tr}\big(\mathbb{V}(\hat{\boldsymbol \beta}^R)\big) = \sum_{j=1}^{p} \frac{d_j^2}{(d_j^2+\lambda)^2}\sigma^2$$
+"""
+
+# ╔═╡ 292aae41-99ff-4724-9dbb-0e0a1ec0a1a9
+md"""
+-- 공식확인용 코드
+"""
+
+# ╔═╡ 38532cf7-80f5-483b-885c-31d9e903c7ee
+let 
+	#β̂r = inv(X'X+λ*I)X'y = Ay
+	λ = 2
+	A = inv(X'X+λ*I)X'
+	Var = A*A'*σ^2
+	tr(Var)
+end 
+
+# ╔═╡ d19c186a-b123-41db-96d6-1e09e428b857
+let 
+	λ = 2
+	trVar = sum(@. d^2 / (d^2+λ)^2)*σ^2
+end 
+
+# ╔═╡ 28fa7031-6689-42f6-b9c4-3627aab7c67f
+md"""
+## 7. $\hat{\boldsymbol \beta}^R$ 의 MSE를 SVD로 표현
+"""
+
+# ╔═╡ a7167109-ecca-400d-80a6-b9954d2402b8
+md"""
+### A. MSE의 표현
+"""
+
+# ╔═╡ 4dc9a627-420d-4e3f-aa1c-d86f87a28b75
+md"""
+-- $\hat{\boldsymbol \beta}^R$의 MSE를 표현하면 아래와 같다. 
+"""
+
+# ╔═╡ 04283269-d101-4908-a70b-f0c86d6b38f3
+md"""
+$\begin{align}
+\text{MSE}(\hat{\boldsymbol \beta}^R)&=\text{tr}\Big(\mathbb{V}(\hat{\boldsymbol \beta}^R)\Big)+\Big(\mathbb{E}(\hat{\boldsymbol \beta}^R)-{\boldsymbol \beta}\Big)^\top\Big(\mathbb{E}(\hat{\boldsymbol \beta}^R)-{\boldsymbol \beta}\Big)\\
+&=\sigma^2 \sum_{j=1}^{p}\frac{d_j^2}{(d_j^2+\lambda)^2}+\sum_{j=1}^{p}\frac{\lambda^2}{(d_j^2+\lambda)^2}\big({\boldsymbol V}_i^\top{\boldsymbol \beta}\big)^2
+\end{align}$
+"""
+
+# ╔═╡ 351b666f-2c5c-4b99-b00d-cba26ed443a9
+md"""
+### B. 비교
+"""
+
+# ╔═╡ 0851c0c3-2f44-48a1-b45b-f359eee3c006
+md"""
+-- $\hat{\boldsymbol \beta}$의 MSE는 아래와 같다.
+"""
+
+# ╔═╡ 236a1358-7c1c-4b07-9e06-f5a57f522d7b
+md"""
+$$\begin{align}
+\text{MSE}(\hat{\boldsymbol \beta})&=\text{tr}\Big(\mathbb{V}(\hat{\boldsymbol \beta})\Big)+\Big(\mathbb{E}(\hat{\boldsymbol \beta})-{\boldsymbol \beta}\Big)^\top\Big(\mathbb{E}(\hat{\boldsymbol \beta})-{\boldsymbol \beta}\Big)\\
+&=\sigma^2 \sum_{j=1}^{p}\frac{1}{d_j^2}+0
+\end{align}$$
+"""
+
+# ╔═╡ e5d99d52-60cb-45cb-9190-dabb8ec1f66d
+md"""
+따라서 만일 "$d_i \approx 0$ for some $i$" 이면
+
+$MSE(\hat{\boldsymbol \beta}^R) < MSE(\hat{\boldsymbol\beta})$
+
+이 된다.
+"""
+
+# ╔═╡ 40d5b240-7a9b-4c54-bd35-5b50e6a95771
+md"""
+*Figure: ${\bf X} = \begin{bmatrix} {\boldsymbol X}_1 & {\boldsymbol X}_2 & {\boldsymbol X}_3 \end{bmatrix}$ 일때, $\hat{\boldsymbol \beta}^R$ 와 $\hat{\boldsymbol \beta}$의 MSE 비교*
+"""
+
+# ╔═╡ ec896b33-bfe4-426e-bd18-23abf792a2b3
+let
+	@show d
+	
+	Bias²(λ) = sum((@. λ^2/ (d^2+λ)^2) .* (V'β).^2)
+	trVar(λ) = sum(@. d^2 / (d^2+λ)^2)*σ^2
+
+	λs = [10^k for k in 0:0.01:11]
+	p1 = plot(
+		Bias², λs, 
+		xscale=:log10, yscale=:log10, 
+		color=1,linestyle=:dashdot, 
+		label="Bias² --ridge"
+	)
+	plot!(
+		trVar,λs,
+		color=1, linestyle=:dash,
+		label="tr(Var) -- ridge"
+	)
+	plot!(
+		λ -> Bias²(λ)+trVar(λ), λs, 
+		color=1, 
+		label="MSE -- ridge"
+	)
+	plot!(
+		λs,fill(σ^2*sum(1 ./d.^2),length(λs)),
+		color=2,
+		label="MSE -- ols"
+	)
 end
 
-# ╔═╡ e1fea1fb-7a22-41de-b84a-b02c77c728c9
+# ╔═╡ 72b3026d-aed4-44e3-aed0-d8728d728823
 md"""
-- 직관1: $\lambda$를 키울수록 추정량의 분산은 줄어든다. (이건 좋은거)
-- 직관2: $\lambda$를 키울수록 추정량이 작은값을 가진다. (이건 나쁜거)
+*Figure: ${\bf X} = \begin{bmatrix} {\boldsymbol X}_1 & {\boldsymbol X}_2 \end{bmatrix}$ 일때, $\hat{\boldsymbol \beta}^R$ 와 $\hat{\boldsymbol \beta}$의 MSE 비교*
 """
 
-# ╔═╡ 1c21d098-4764-469a-9a93-9c091304b7cd
-md"""
-## 5. 능형회귀의 특징
-"""
-
-# ╔═╡ 42cd97a0-c604-4656-9d4c-fc4a8f268580
-md"""
-### A. 추정량의 평균
-"""
-
-# ╔═╡ cc218bfe-8862-4e48-8302-88b6a17da2a2
-md"""
-능형회귀로 얻은 추정량 $\hat{\boldsymbol \beta}=({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$ 에 대하여 $\mathbb{E}(\hat{\boldsymbol \beta})$의 값을 조사해보자. 
-"""
-
-# ╔═╡ fbeb2602-7d61-4a6e-9ca6-bf8618721d1d
-md"""
--- 방법1: 이론적으로 조사하자.
-"""
-
-# ╔═╡ d7206a25-b7f6-4c59-8efc-268f3485fe2d
-md"""
-$\mathbb{E}(\hat{\boldsymbol\beta}) =({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top{\bf X}{\boldsymbol \beta}$
-"""
-
-# ╔═╡ ebb19d9a-0ddc-40a5-9533-79639bba2e82
-md"""
-이 값은 우리가 기대하는 좋은 추정량의 성질인 $\mathbb{E}(\hat{\boldsymbol \beta}) = {\boldsymbol \beta}$ 와 다르다. 
-"""
-
-# ╔═╡ b71607cd-dfb5-4138-9042-fdd1b7b93bba
-md"""
-!!! warning ""
-	아쉬움.. ``\lambda =0`` 이었다면 $\mathbb{E}(\hat{\boldsymbol \beta})={\boldsymbol \beta}$ 이었을텐데.. 
-"""
-
-# ╔═╡ 096103d0-b7e3-4f60-b7d9-a69a58b4d14e
-inv(X'X+0.000000000001*I)X'X*[600,5,0]
-
-# ╔═╡ 0401b893-61ed-426a-8f0c-cfa365c56022
-md"""
-*Figure: $\lambda$에 따른 추정량의 평균변화 (이론)*
-"""
-
-# ╔═╡ 80b71ff3-3b35-4a6d-bacb-5a69d735dabc
+# ╔═╡ e9663623-d3d4-4246-bc6d-36f227dc7c31
 let 
-	Eβ̂(λ) = inv(X'X+λ*I)X'X*β
-	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
-	plot(λ -> Eβ̂(λ)[1], λs, xscale= :log10, yscale= :log10, label="E(β̂₁)")
-	plot!(λ -> Eβ̂(λ)[2], label="E(β̂₂)")
-	plot!(λ -> Eβ̂(λ)[3], label="E(β̂₃)")
-end
+	β = [600,5]
+	X = [X1 X2]
+	U,d,V = svd(X)
+	@show d
+	Bias²(λ) = sum((@. λ^2/ (d^2+λ)^2) .* (V'β).^2)
+	trVar(λ) = sum(@. d^2 / (d^2+λ)^2)*σ^2
 
-# ╔═╡ 86ee8e65-1220-4d8f-8801-a51e1924cd85
-md"""
--- 방법2: 시뮬레이션으로 조사하자.
-"""
-
-# ╔═╡ 828c4d10-263b-46d2-b36f-28f6a0f3c612
-let 
-	λ = 10
-	N = 1000
-	E = σ*randn(n,N)
-	Y = X*β .+ E
-	B̂ = inv(X'X+λ*I)X'Y
-	j = ones(N)
-	B̂ * j/N
-end
-
-# ╔═╡ b1266c8b-2be6-4fb0-a791-38d9f2844d0b
-md"""
-- ``\lambda`` 키울수록 true 값과 멀어진다. 
-- ``\lambda`` 키울수록 $\mathbb{E}(\hat{\beta})$의 관점에서는 손해!
-"""
-
-# ╔═╡ 101cd18a-0b4b-4e1e-8dee-6d687ebedc30
-md"""
-*Figure: $\lambda$에 따른 추정량의 평균변화 (시뮬)*
-"""
-
-# ╔═╡ c029a13f-ab20-47f0-92e0-edd767302f85
-let 
-	function Êβ̂(λ)
-		N = 1000
-		E = randn(n,N)*σ
-		Y = X*β .+ E
-		B̂ = inv(X'X+λ*I)X'Y
-		j = ones(N)
-		return B̂ * j/N
-	end
-	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
-	plot(λ -> Êβ̂(λ)[1],λs,xscale= :log10,yscale= :log10, label="Ê(β̂₁)")
-	plot!(λ -> Êβ̂(λ)[2], label="Ê(β̂₂)")
-	plot!(λ -> Êβ̂(λ)[3], label="Ê(β̂₃)")
-end
-
-# ╔═╡ 0b7a7efb-e3e2-42f5-840c-e8245660e840
-md"""
-!!! warning "능형회귀 추정량에 대한 수식어"
-	능형회귀로 얻은 추정량 $\hat{\boldsymbol \beta}=({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$ 는 *biased estimator* / *shrinkage estimator* 라고 불린다. 이는 모두 $\mathbb{E}(\hat{\boldsymbol \beta})$ 에 대한 성질때문에 생긴 수식어이다. 여기에서 *biased* 라는 의미는 $\mathbb{E}(\hat{\boldsymbol \beta}) \neq {\boldsymbol \beta}$ 라는 의미이며 *shrinkage* 는 $\lambda$ 에 의하여 원래 $\mathbb{E}(\boldsymbol \beta)$의 값이 원래 $\beta$ 가 가져야할 값보다 전체적으로 ($L^2$-norm 관점에서!) 작게 추정됨을 의미한다. 요약하면, 능형회귀로 얻은 추정량은 **쓰레기**라는 의미이다. 	
-
-	그렇다면 왜 $\hat{\boldsymbol \beta}=({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top {\bf y}$ 을 쓰는것일까? $\mathbb{E}(\hat{\boldsymbol \beta})$ 관점에서는 쓰레기가 맞는데 $\mathbb{V}(\hat{\boldsymbol \beta})$ 의 관점에서는 좋은면이 있기 때문이다. 
-"""
-
-# ╔═╡ e9e42e74-b295-4cc7-94f4-33b23d4fc751
-md"""
-> 이전 강의노트에서 *biased* 가 아닌 *unbiased* 라고 되어있었습니다. 제가 설명도 *unbiased* 로 잘못했는데요, *biased*로 이해하고 설명들으시면 됩니다. 혼란을 드려 죄송합니다. 
-"""
-
-# ╔═╡ 59e96cb9-f277-4825-a482-5f819905312f
-md"""
-### B. 추정량의 분산
-"""
-
-# ╔═╡ ccd985b7-978d-4b15-a206-f1bf323c38e1
-md"""
--- 방법1: 이론적으로 조사하자.
-"""
-
-# ╔═╡ d1e558cc-a4d6-469d-878c-79bc69247eb5
-md"""
-$\mathbb{V}(\hat{\boldsymbol\beta}) =({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}{\bf X}^\top{\bf X}({\bf X}^\top{\bf X}+\lambda {\bf I})^{-1}\sigma^2$
-"""
-
-# ╔═╡ 5d51fb2a-76ba-426b-b6d8-69d8132be55e
-inv(X'X+10*I)X'X*inv(X'X+10*I)*σ^2
-
-# ╔═╡ 6592929c-6d2b-4f0d-bbec-229b0d60ef0a
-diag(inv(X'X+10*I)X'X*inv(X'X+10*I)'*σ^2)
-
-# ╔═╡ 3e0fb70f-6855-4867-be33-16d20adef786
-md"""
-*Figure: $\lambda$에 따른 추정량의 분산변화 (이론)*
-"""
-
-# ╔═╡ 22a02082-26e7-452d-bfa4-d9ace93fa11b
-let 
-	Vβ̂(λ) = diag(inv(X'X+λ*I)X'X*inv(X'X+λ*I)*σ^2)
-	λs = [1e1,1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
-	plot(λ -> Vβ̂(λ)[1], λs,xscale= :log10,yscale= :log10, label="V(β̂₁)")
-	plot!(λ -> Vβ̂(λ)[2], label="V(β̂₂)")
-	plot!(λ -> Vβ̂(λ)[3], label="V(β̂₃)")
-end
-
-# ╔═╡ 30e9a8de-b9f1-4d94-8de3-78b3f1e4a475
-md"""
--- 방법2: 시뮬레이션으로 알아보자.
-"""
-
-# ╔═╡ 95631387-6cd1-4917-b8c9-878cc7c4d837
-md"""
-*Figure: $\lambda$에 따른 추정량의 분산변화 (시뮬)*
-"""
-
-# ╔═╡ ff6c8d44-7fbc-44b5-8c4c-23e76b34ef6d
-let 
-	function V̂β̂(λ)
-		N = 1000
-		Y = (β1*X1 + β2*X2 + β3*X3) .+ σ*randn(n,N)
-		B̂ = inv(X'X+λ*I)X'Y
-		j = ones(N)
-		Vβ̂ = (B̂ .- B̂*j/N).^2 *j/N
-		return Vβ̂
-	end
-	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
-	plot(λ -> V̂β̂(λ)[1],λs,xscale= :log10,yscale= :log10, label="V̂(β̂₁)")
-	plot!(λ -> V̂β̂(λ)[2], label="V̂(β̂₂)")
-	plot!(λ -> V̂β̂(λ)[3], label="V̂(β̂₃)")
-end
-
-# ╔═╡ 8aeae892-a26e-4c4e-bcb4-a10b2c4d710c
-md"""
-### C. 추정량의 MSE
-"""
-
-# ╔═╡ ab512892-c838-4967-a0e3-dfc04e6a9df0
-md"""
-ref: <https://en.wikipedia.org/wiki/Mean_squared_error#Estimator>
-"""
-
-# ╔═╡ 1f92a68d-48cd-46a2-b373-2631cf1b56da
-md"""
--- 능형회귀로 얻은 $\hat{\boldsymbol \beta}$ 의 MSE를 비교하여 보자.
-"""
-
-# ╔═╡ 70bcd059-954e-4077-8460-ba366a3271ee
-md"""
-!!! warning "MSE"
-	여기에서 MSE는 일반적으로 머신러닝에서 사용하는 $\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2$ 의 개념이 아니다. MSE라는 용어를 predictor에 사용할 경우와 estimator에 사용할 경우가 있는데, predictor에 MSE 라는 용어를 사용할 경우에는 $\frac{1}{n}\sum_{i=1}^{n}(y_i-\hat{y}_i)^2$ 를 지칭하지만 estimator에 사용할 경우는 MSE는 아래를 의미한다. 
-
-	$\begin{align}
-	\text{MSE}(\hat{\boldsymbol \beta})&=\mathbb{E}_{\boldsymbol \beta}\big[(\hat{\boldsymbol \beta}-{\boldsymbol \beta})^\top(\hat{\boldsymbol \beta}-{\boldsymbol \beta}) \big]\\
-	&=\text{tr}\big(\mathbb{V}(\hat{\boldsymbol \beta})\big)+\big(\mathbb{E}(\hat{\boldsymbol \beta})-{\boldsymbol \beta}\big)^\top\big(\mathbb{E}(\hat{\boldsymbol \beta})-{\boldsymbol \beta}\big)\\&=\text{Var}+\text{Bias}^2
-	\end{align}$
-
-	일반적으로 ${\boldsymbol \beta}$ 에 대한 추정량이 가졌으면 좋겠는 좋은 성질은 (1) 편향되어있지 않고 (2) 분산이 작은것 인데 MSE는 이 두 가지 기준을 모두 고려한 좋은 평가방법이다. 
-"""
-
-# ╔═╡ 2bacdea6-3f94-44ba-bdb3-c549ee36cbd2
-md"""
-*Figure: $\lambda$에 따른 추정량의 MSE변화 (이론)*
-"""
-
-# ╔═╡ d67d0729-a865-402c-9a87-fd5836b7957c
-let 
-	function MSEβ̂(λ)
-		Bias² = (inv(X'X+λ*I)X'X*β-β)'*(inv(X'X+λ*I)X'X*β-β)
-		trVar = tr(inv(X'X+λ*I)X'X*inv(X'X+λ*I)*σ^2)
-		return Bias² + trVar
-	end
-	MSEols = (inv(X'X)X'X*β-β)'*(inv(X'X)X'X*β-β) + tr(inv(X'X)*σ^2)
-	#MSEols = tr(inv(X'X)*σ^2) # <-- 사실상이거
-	@show MSEols
-	λs = [1e0,1e1,1e2,1e3,1e4,1e5,1e6,1e7,1e8,1e9,1e10,1e11]
-	plot(λ -> MSEβ̂(λ),λs,xscale= :log10, yscale= :log10, label="MSE -- ridge")
-	plot!(λs,fill(MSEols,length(λs)), label="MSE -- ols", linestyle=:dash)
+	λs = [10^k for k in -5:0.01:10]
+	p1 = plot(
+		Bias², λs, 
+		xscale=:log10, yscale=:log10, 
+		color=1,linestyle=:dashdot, 
+		label="Bias² --ridge"
+	)
+	plot!(
+		trVar,λs,
+		color=1, linestyle=:dash,
+		label="tr(Var) -- ridge"
+	)
+	plot!(
+		λ -> Bias²(λ)+trVar(λ), λs, 
+		color=1, 
+		label="MSE -- ridge"
+	)
+	plot!(
+		λs,fill(σ^2*sum(1 ./d.^2),length(λs)),
+		color=2,
+		label="MSE -- ols"
+	)
 end
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -575,6 +370,7 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
@@ -585,7 +381,8 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 [compat]
 CSV = "~0.10.14"
 DataFrames = "~1.6.1"
-HTTP = "~1.10.6"
+Distributions = "~0.25.108"
+HTTP = "~1.10.8"
 Plots = "~1.40.4"
 PlutoUI = "~0.7.59"
 """
@@ -596,13 +393,19 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "54e136119fa801107056dd2c099fbaa1ecd2eaec"
+project_hash = "a0cf3412dce72c1ef49b5410b72f573a10aac538"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
 git-tree-sha1 = "6e1d2a35f2f90a4bc7c2ed98079b2ba09c35b83a"
 uuid = "6e696c72-6542-2067-7265-42206c756150"
 version = "1.3.2"
+
+[[deps.AliasTables]]
+deps = ["PtrArrays", "Random"]
+git-tree-sha1 = "9876e1e164b144ca45e9e3198d0b689cadfed9ff"
+uuid = "66dad0bd-aa9a-41b7-9441-69ab47430ed8"
+version = "1.1.3"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -637,6 +440,12 @@ git-tree-sha1 = "a2f1c8c668c8e3cb4cca4e57a8efdb09067bb3fd"
 uuid = "83423d85-b0ee-5818-9007-b63ccbeb887a"
 version = "1.18.0+2"
 
+[[deps.Calculus]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "f641eb0a4f00c343bbc32346e1217b86f3ce9dad"
+uuid = "49dc2e85-a5d0-5ad3-a950-438e2897f1b9"
+version = "0.5.1"
+
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
 git-tree-sha1 = "59939d8a997469ee05c4b4944560a820f9ba0d73"
@@ -660,12 +469,10 @@ deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "Requires", "Statist
 git-tree-sha1 = "a1f44953f2382ebb937d60dafbe2deea4bd23249"
 uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
 version = "0.10.0"
+weakdeps = ["SpecialFunctions"]
 
     [deps.ColorVectorSpace.extensions]
     SpecialFunctionsExt = "SpecialFunctions"
-
-    [deps.ColorVectorSpace.weakdeps]
-    SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [[deps.Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
@@ -736,6 +543,22 @@ git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 version = "1.9.1"
 
+[[deps.Distributions]]
+deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
+git-tree-sha1 = "22c595ca4146c07b16bcf9c8bea86f731f7109d2"
+uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
+version = "0.25.108"
+
+    [deps.Distributions.extensions]
+    DistributionsChainRulesCoreExt = "ChainRulesCore"
+    DistributionsDensityInterfaceExt = "DensityInterface"
+    DistributionsTestExt = "Test"
+
+    [deps.Distributions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    DensityInterface = "b429d917-457f-4dbc-8f4c-0cc954292b1d"
+    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
 git-tree-sha1 = "2fb1e02f2b635d0845df5d7c167fec4dd739b00d"
@@ -746,6 +569,12 @@ version = "0.9.3"
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
+
+[[deps.DualNumbers]]
+deps = ["Calculus", "NaNMath", "SpecialFunctions"]
+git-tree-sha1 = "5837a837389fccf076445fce071c8ddaea35a566"
+uuid = "fa6b7ba4-c1ee-5f82-b5fc-ecf0adba8f74"
+version = "0.6.8"
 
 [[deps.EpollShim_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -785,6 +614,18 @@ version = "0.9.21"
 
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
+
+[[deps.FillArrays]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "0653c0a2396a6da5bc4766c43041ef5fd3efbe57"
+uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
+version = "1.11.0"
+weakdeps = ["PDMats", "SparseArrays", "Statistics"]
+
+    [deps.FillArrays.extensions]
+    FillArraysPDMatsExt = "PDMats"
+    FillArraysSparseArraysExt = "SparseArrays"
+    FillArraysStatisticsExt = "Statistics"
 
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
@@ -871,6 +712,12 @@ deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll",
 git-tree-sha1 = "129acf094d168394e80ee1dc4bc06ec835e510a3"
 uuid = "2e76f6c2-a576-52d4-95c1-20adfe4de566"
 version = "2.8.1+1"
+
+[[deps.HypergeometricFunctions]]
+deps = ["DualNumbers", "LinearAlgebra", "OpenLibm_jll", "SpecialFunctions"]
+git-tree-sha1 = "f218fe3736ddf977e0e772bc9a586b2383da2685"
+uuid = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
+version = "0.3.23"
 
 [[deps.Hyperscript]]
 deps = ["Test"]
@@ -1163,6 +1010,12 @@ git-tree-sha1 = "3da7367955dcc5c54c1ba4d402ccdc09a1a3e046"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
 version = "3.0.13+1"
 
+[[deps.OpenSpecFun_jll]]
+deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "13652491f6856acfd2db29360e1bbcd4565d04f1"
+uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
+version = "0.5.5+0"
+
 [[deps.Opus_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "51a08fb14ec28da2ec7a927c4337e4332c2a4720"
@@ -1178,6 +1031,12 @@ version = "1.6.3"
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
 version = "10.42.0+0"
+
+[[deps.PDMats]]
+deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
+git-tree-sha1 = "949347156c25054de2db3b166c52ac4728cbad65"
+uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
+version = "0.11.31"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
@@ -1267,11 +1126,22 @@ version = "2.3.1"
 deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
+[[deps.PtrArrays]]
+git-tree-sha1 = "f011fbb92c4d401059b2212c05c0601b70f8b759"
+uuid = "43287f4e-b6f4-7ad1-bb20-aadabca52c3d"
+version = "1.2.0"
+
 [[deps.Qt6Base_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "OpenSSL_jll", "Vulkan_Loader_jll", "Xorg_libSM_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_cursor_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "libinput_jll", "xkbcommon_jll"]
 git-tree-sha1 = "37b7bb7aabf9a085e0044307e1717436117f2b3b"
 uuid = "c0090381-4147-56d7-9ebc-da0b1113ec56"
 version = "6.5.3+1"
+
+[[deps.QuadGK]]
+deps = ["DataStructures", "LinearAlgebra"]
+git-tree-sha1 = "9b23c31e76e333e6fb4c1595ae6afa74966a729e"
+uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
+version = "2.9.4"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
@@ -1309,6 +1179,18 @@ deps = ["UUIDs"]
 git-tree-sha1 = "838a3a4188e2ded87a4f9f184b4b0d78a1e91cb7"
 uuid = "ae029012-a4dd-5104-9daa-d747884805df"
 version = "1.3.0"
+
+[[deps.Rmath]]
+deps = ["Random", "Rmath_jll"]
+git-tree-sha1 = "f65dcb5fa46aee0cf9ed6274ccbd597adc49aa7b"
+uuid = "79098fc4-a85e-5d69-aa6a-4863f24498fa"
+version = "0.7.1"
+
+[[deps.Rmath_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "d483cd324ce5cf5d61b77930f0bbd6cb61927d21"
+uuid = "f50d1b31-88e8-58de-be2c-1cc44531875f"
+version = "0.4.2+0"
 
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
@@ -1353,6 +1235,18 @@ version = "1.2.1"
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
+[[deps.SpecialFunctions]]
+deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
+git-tree-sha1 = "2f5d4697f21388cbe1ff299430dd169ef97d7e14"
+uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
+version = "2.4.0"
+
+    [deps.SpecialFunctions.extensions]
+    SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
+
+    [deps.SpecialFunctions.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
@@ -1370,11 +1264,29 @@ git-tree-sha1 = "5cf7606d6cef84b543b483848d4ae08ad9832b21"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.34.3"
 
+[[deps.StatsFuns]]
+deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
+git-tree-sha1 = "cef0472124fab0695b58ca35a77c6fb942fdab8a"
+uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
+version = "1.3.1"
+
+    [deps.StatsFuns.extensions]
+    StatsFunsChainRulesCoreExt = "ChainRulesCore"
+    StatsFunsInverseFunctionsExt = "InverseFunctions"
+
+    [deps.StatsFuns.weakdeps]
+    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
+    InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
+
 [[deps.StringManipulation]]
 deps = ["PrecompileTools"]
 git-tree-sha1 = "a04cabe79c5f01f4d723cc6704070ada0b9d46d5"
 uuid = "892a3eda-7b42-436c-8928-eab12a02cf0e"
 version = "0.3.4"
+
+[[deps.SuiteSparse]]
+deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
+uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
@@ -1773,89 +1685,59 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╟─7ec1510e-130c-11ef-1e0e-518d9cc440ea
-# ╟─a366d78e-5826-4a65-a3fe-3469fee80f9a
-# ╠═4c8cb126-08bd-478e-8472-fd1547e0d128
-# ╟─2d2f8c88-07f9-4e8b-86ae-fc9828aba187
-# ╠═128613c3-baba-426a-adbf-8abed179eb49
-# ╠═3317fffc-955d-4073-9123-17688a4c6f61
-# ╠═18996e8e-c802-4e03-a3c6-c4d83aa5afdc
-# ╟─31f2972f-c83f-42ce-999c-842c157899d3
-# ╠═b5277d9e-216f-444f-bcae-e7ddf5d2e9b5
-# ╠═df19fb9c-8f86-4d55-9899-c868c3512411
-# ╠═f9f88913-a23a-4f02-a1cd-f255feb8c834
-# ╠═b45868ea-681e-41e3-b9c0-2d0c918e574d
-# ╟─d055be6a-aef8-47d0-b0a2-a56b85089bfc
-# ╟─8b6bafd7-7dd9-4c2b-a059-d18fc2ad22f8
-# ╟─57b42243-1fa1-4a69-b116-044b30d7819b
-# ╟─b70e73b7-c2ae-4c94-9f85-ad0195b5858a
-# ╟─6601a37b-cb7c-417d-a438-c5c18c19e0cf
-# ╟─23d619d0-e790-4ddb-97ec-735e42fa85bc
-# ╠═68d0574b-dbd6-4b68-920e-e672fe876ec6
-# ╟─ac6df6a5-6742-446a-b119-a0a685de2f3f
-# ╠═cc6f7ff7-e7ac-409e-9f63-145c58e4ade5
-# ╟─f05be255-fae4-4421-a920-c863d0c389a6
-# ╠═cbb62ff1-fe39-468e-91a6-0431192fb25d
-# ╟─3bad3692-7f76-494c-93d5-f3951331c74e
-# ╟─758668d4-7d98-46db-8f8a-9a81abe6ad25
-# ╟─a82b89e1-ac4b-45e0-9e46-db58bc303812
-# ╠═a8e9091b-aa4b-49c8-804f-b0db309329a8
-# ╟─cbe878f4-07b2-4f21-8a63-7468b2633b6b
-# ╟─90ff8925-e0d6-4982-b19d-0f78b5016545
-# ╟─85ad9c84-87c8-49d9-9139-63605442aa2d
-# ╟─6216c9c1-3d3a-4e2c-9fd7-d18cba3b6147
-# ╠═5ba39dcd-1f21-4c83-a420-59de892a8121
-# ╟─1d20583d-bddb-4c38-9da5-03d9e4c53f03
-# ╠═d3416f40-9387-4a44-986f-8657c8ea1c00
-# ╟─324c7de6-c404-470a-afe3-cc756cf9fa94
-# ╟─1109294c-c93c-4156-a301-e76260f5b1a4
-# ╟─05665ffd-fba5-49c4-bae7-65c6b02ebc64
-# ╠═278ef454-7fcc-4155-89f4-6fd93d168feb
-# ╟─14f7efbc-448d-44e1-b107-d52f05bc8520
-# ╠═c5bdf20e-e89f-46e6-9a9a-2c16a19a54c4
-# ╟─21a75194-76de-43bd-abbe-89d3e28e6d8e
-# ╠═14e02673-0863-4aa3-9ba6-af0bc909d0cc
-# ╟─6d545544-3516-4560-8887-e4413f3c0fc0
-# ╟─f5b49064-9f8b-4238-97a4-780b4023a641
-# ╟─8a47abe4-22de-48fc-b98c-c4cce53502bb
-# ╟─b3d527a8-3151-4f30-8ccd-b53b298855de
-# ╠═2fed1588-f9cc-4c6d-a8ff-751352a1fcd0
-# ╟─61b295ca-be2d-4326-bff5-0fd860d31919
-# ╟─057f12ba-1e54-481a-b9f4-a6e2bcad6805
-# ╠═392d159d-c7a4-47f8-bdfd-c28fdfc1e6a6
-# ╟─e1fea1fb-7a22-41de-b84a-b02c77c728c9
-# ╟─1c21d098-4764-469a-9a93-9c091304b7cd
-# ╟─42cd97a0-c604-4656-9d4c-fc4a8f268580
-# ╟─cc218bfe-8862-4e48-8302-88b6a17da2a2
-# ╟─fbeb2602-7d61-4a6e-9ca6-bf8618721d1d
-# ╟─d7206a25-b7f6-4c59-8efc-268f3485fe2d
-# ╟─ebb19d9a-0ddc-40a5-9533-79639bba2e82
-# ╟─b71607cd-dfb5-4138-9042-fdd1b7b93bba
-# ╠═096103d0-b7e3-4f60-b7d9-a69a58b4d14e
-# ╟─0401b893-61ed-426a-8f0c-cfa365c56022
-# ╠═80b71ff3-3b35-4a6d-bacb-5a69d735dabc
-# ╟─86ee8e65-1220-4d8f-8801-a51e1924cd85
-# ╠═828c4d10-263b-46d2-b36f-28f6a0f3c612
-# ╟─b1266c8b-2be6-4fb0-a791-38d9f2844d0b
-# ╟─101cd18a-0b4b-4e1e-8dee-6d687ebedc30
-# ╠═c029a13f-ab20-47f0-92e0-edd767302f85
-# ╟─0b7a7efb-e3e2-42f5-840c-e8245660e840
-# ╟─e9e42e74-b295-4cc7-94f4-33b23d4fc751
-# ╟─59e96cb9-f277-4825-a482-5f819905312f
-# ╟─ccd985b7-978d-4b15-a206-f1bf323c38e1
-# ╟─d1e558cc-a4d6-469d-878c-79bc69247eb5
-# ╠═5d51fb2a-76ba-426b-b6d8-69d8132be55e
-# ╠═6592929c-6d2b-4f0d-bbec-229b0d60ef0a
-# ╟─3e0fb70f-6855-4867-be33-16d20adef786
-# ╠═22a02082-26e7-452d-bfa4-d9ace93fa11b
-# ╟─30e9a8de-b9f1-4d94-8de3-78b3f1e4a475
-# ╟─95631387-6cd1-4917-b8c9-878cc7c4d837
-# ╠═ff6c8d44-7fbc-44b5-8c4c-23e76b34ef6d
-# ╟─8aeae892-a26e-4c4e-bcb4-a10b2c4d710c
-# ╟─ab512892-c838-4967-a0e3-dfc04e6a9df0
-# ╟─1f92a68d-48cd-46a2-b373-2631cf1b56da
-# ╟─70bcd059-954e-4077-8460-ba366a3271ee
-# ╟─2bacdea6-3f94-44ba-bdb3-c549ee36cbd2
-# ╠═d67d0729-a865-402c-9a87-fd5836b7957c
+# ╟─fee1b074-1882-11ef-3461-816618892a75
+# ╟─e25f8240-7fc5-4075-84f3-f300e3688f50
+# ╟─4c275cc8-f6cd-4a23-826e-1bebfe54b0e8
+# ╟─044e4338-8cea-4bfc-996f-eda7638bdc82
+# ╠═5854ee01-9e1e-4b8e-bde0-e1a63ce5fca3
+# ╠═3dbe9873-f1d3-46d7-be7a-951d8d2175db
+# ╠═a93414c7-a321-48bc-aa60-06c66ef073bb
+# ╟─5479a62f-42b9-4902-a1ba-a9470438bd4f
+# ╠═322970a5-e143-4e14-9b7e-3e81617e7294
+# ╠═48037b61-c63d-4f7d-b5d9-7ba2306e6d9e
+# ╟─799ad3a7-3650-4d55-9c4f-a991ee7770f9
+# ╟─18e972a5-2e31-4e8b-ac3e-69fbfd31d7b2
+# ╟─05e6dc51-e731-482e-9f79-3f659f4312ad
+# ╟─beeb4dc9-a44e-4c01-944c-012f51cea490
+# ╠═b8bb438f-7f2b-4f55-b55a-b9ad9f135db1
+# ╠═8d6b1d21-bf82-4745-bc4d-16f6c30214b2
+# ╟─1939fd2e-4411-4e5b-9eac-c33215defb2f
+# ╟─6dedcc9f-aa46-4526-bb90-5d9a9981f6a2
+# ╟─c82296fd-c5c7-42f6-9d07-b17137a3468f
+# ╟─5a85a782-5df7-4b1f-9d74-02088318864c
+# ╟─94481eb2-daf8-4cc0-8bc6-ab6d9dbd0662
+# ╠═7aa0eb52-11cb-466b-b2ea-b7b11278f494
+# ╠═a612d40a-d642-487a-9dc2-3c351189e3b4
+# ╟─976274be-d8ca-4ca2-bb13-04275fa55f20
+# ╟─9e7e7313-ed44-45bc-864d-73a9c08c3bae
+# ╟─f98636f7-7fc0-4ef3-a024-2894c9920ad0
+# ╟─3e1cfaa7-4fc4-4d06-9193-bd6c3a047ae4
+# ╠═43245d61-d0cd-419f-86ce-90497ba14571
+# ╠═68e10203-5989-46df-a895-3d89fe843ced
+# ╟─2712977a-4048-47be-8d10-35da77a86d90
+# ╟─47c0f979-f633-435a-932a-f5d3ab817def
+# ╟─aed2aa72-8fdb-43d7-bcaa-455a61cffd03
+# ╟─18d1cc96-7bab-4501-8a75-782dfcd55d31
+# ╟─eff3302c-1d6b-47fb-b1bf-4b3b7360892a
+# ╠═f472d0bf-aa8c-4dcc-8d6c-729127257cdf
+# ╠═21eb44ac-c955-49c5-81cc-cf5be1be2ce1
+# ╟─2fd845fa-ff7c-4b93-9534-881c8bc9e408
+# ╟─3dffdaba-411d-4f60-8b9c-0016e238a031
+# ╟─5a875fca-ef96-4a51-8542-1bcbfe66b1c9
+# ╟─292aae41-99ff-4724-9dbb-0e0a1ec0a1a9
+# ╠═38532cf7-80f5-483b-885c-31d9e903c7ee
+# ╠═d19c186a-b123-41db-96d6-1e09e428b857
+# ╟─28fa7031-6689-42f6-b9c4-3627aab7c67f
+# ╟─a7167109-ecca-400d-80a6-b9954d2402b8
+# ╟─4dc9a627-420d-4e3f-aa1c-d86f87a28b75
+# ╟─04283269-d101-4908-a70b-f0c86d6b38f3
+# ╟─351b666f-2c5c-4b99-b00d-cba26ed443a9
+# ╟─0851c0c3-2f44-48a1-b45b-f359eee3c006
+# ╟─236a1358-7c1c-4b07-9e06-f5a57f522d7b
+# ╟─e5d99d52-60cb-45cb-9190-dabb8ec1f66d
+# ╟─40d5b240-7a9b-4c54-bd35-5b50e6a95771
+# ╠═ec896b33-bfe4-426e-bd18-23abf792a2b3
+# ╟─72b3026d-aed4-44e3-aed0-d8728d728823
+# ╠═e9663623-d3d4-4246-bc6d-36f227dc7c31
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
