@@ -50,7 +50,9 @@ md"""
 - [10wk-2](https://guebin.github.io/SC2024/10wk-2.html): SVD와 회귀분석
 - [11wk-1](https://guebin.github.io/SC2024/11wk-1.html): 벡터미분
 - [11wk-2](https://guebin.github.io/SC2024/11wk-2.html): 다중공선성
-- [12wk-1](https://guebin.github.io/SC2024/12wk-1.html): 능형회귀
+- [12wk-1](https://guebin.github.io/SC2024/12wk-1.html): 능형회귀 (1)
+- [12wk-2](https://guebin.github.io/SC2024/12wk-2.html): 능형회귀 (2)
+- [13wk-1](https://guebin.github.io/SC2024/12wk-2.html): 변환을 의미하는 행렬
 """
 
 
