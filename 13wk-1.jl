@@ -247,7 +247,7 @@ md"""
 """
 
 # ╔═╡ 9d8c4cbe-5b21-4633-b5ef-3bd7a78e0c4b
-theta = @bind θ Slider(-π:(2π/24):π,show_value=true,default= π/3)
+md"θ = $(@bind θ Slider(-π:(2π/24):π,show_value=true,default= π/3))"
 
 # ╔═╡ 8797fe9b-879a-4d54-ac12-55a56b93b0a5
 let 
@@ -1762,7 +1762,7 @@ version = "1.4.1+1"
 # ╟─9276a1a1-c7d4-47c6-841a-7ba7b0678b47
 # ╠═67dcaab6-c244-48ad-b354-c073faf41fa8
 # ╟─e079a51a-92a3-44f5-af30-994f4c7c6c3e
-# ╠═9d8c4cbe-5b21-4633-b5ef-3bd7a78e0c4b
+# ╟─9d8c4cbe-5b21-4633-b5ef-3bd7a78e0c4b
 # ╠═8797fe9b-879a-4d54-ac12-55a56b93b0a5
 # ╟─92426a94-bf38-4e54-b8a1-a69c1bb1cb0a
 # ╠═4ad6d6fa-7345-4459-ae2d-b3321fc7a76d
