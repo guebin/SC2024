@@ -28,15 +28,15 @@ md"""
 """
 
 # ╔═╡ 7bf0dbd6-6ea2-41f2-8677-e57317a6f31e
-# html"""
-# <div style="display: flex; justify-content: center;">
-# <div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-# <iframe src=
-# "
-# https://youtube.com/embed/playlist?list=PLQqh36zP38-zN5HD4xmAMyhxTGr7RY8VY&si=j2GhMZ9uo0TcbGuk
-# "
-# width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-# """
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://youtube.com/embed/playlist?list=PLQqh36zP38-yCBy0OhjuoaI_GxuMjDxm-&si=m0vNSwRJVnz3mIcK
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
 
 # ╔═╡ ae425091-985a-4fac-b6b5-57e7c5d3a144
 md"""
@@ -305,6 +305,18 @@ md"""
 - 크기보존: $\|{\boldsymbol x}_1^\top\|^2=\|{\boldsymbol x}_1^\top {\bf A} \|^2$ 이므로 크기가 보존 
 - 각도보전: $\frac{{\boldsymbol x}_1^\top \cdot {\boldsymbol x}_2^\top}{\|{\boldsymbol x}_1^\top\|\|{\boldsymbol x}_2^\top\|}=\frac{({\boldsymbol x}_1^\top{\bf A})\cdot ({\boldsymbol x}_2^\top{\bf A})}{\|{\boldsymbol x}_1^\top {\bf A}\|\|{\boldsymbol x}_2^\top{\bf A}\|}$ 이므로 각도도 보존 
 
+"""
+
+# ╔═╡ 8d72c6f7-d8aa-4f06-ae33-f9d7b4a53954
+md"""
+!!! warning "벡터의 크기"
+
+	벡터의 크기를 재기 위하여 ``\|\cdot\|^2`` 의 기호를 처리할때 col-vector일 경우와 row-vector일 경우 크기를 재는 공식을 아래와 같이 적용한다.
+	- row-vertor: ``\|{\boldsymbol x}_1^\top\|^2=x_{11}^2 + \dots + x_{1p}^2 = {\boldsymbol x}_1^\top{\boldsymbol x}_1``
+	- col-vector: ``\|{\boldsymbol X}_1\|^2=x_{11}^2 + \dots + x_{1n}^2 = {\boldsymbol X}_1^\top{\boldsymbol X}_1``
+	즉 아래와 같이 생각한다. 
+	
+	$\|\star\|^2 = \begin{cases} \star^\top\star & \text{⋆ is col-vector} \\ \star\star^\top & \text{⋆ is row-vector}\end{cases}$
 """
 
 # ╔═╡ b8584068-76b5-4205-8de7-ddbfc6223f07
@@ -1717,7 +1729,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─83e7bec4-1c6d-11ef-3f2b-591f94a974c8
 # ╟─974408b1-8167-41f8-bb1f-eb9b39838a79
-# ╠═7bf0dbd6-6ea2-41f2-8677-e57317a6f31e
+# ╟─7bf0dbd6-6ea2-41f2-8677-e57317a6f31e
 # ╟─ae425091-985a-4fac-b6b5-57e7c5d3a144
 # ╠═5e629d25-6118-444b-a59d-021da400f759
 # ╠═190e9d94-30b9-4a9f-9408-6325c6839590
@@ -1757,6 +1769,7 @@ version = "1.4.1+1"
 # ╟─1632539f-f0be-4640-bbc3-a113f0169d84
 # ╟─d59c37b5-a201-4220-8a76-aadc50c343eb
 # ╟─fd9ae9d3-20a4-4765-9935-484d04ec09f3
+# ╟─8d72c6f7-d8aa-4f06-ae33-f9d7b4a53954
 # ╟─b8584068-76b5-4205-8de7-ddbfc6223f07
 # ╟─e47e3400-35d8-4849-b624-4aafc8cae2de
 # ╠═2e94478d-af51-48e6-b908-cce77ef9f35b
