@@ -154,7 +154,7 @@ md"""
 """
 
 # ╔═╡ 59eb5cc9-4a13-4b56-8044-d242d3f583ae
-k = @bind k Slider(0:20,show_value=true)
+md"k = $(@bind k Slider(0:20,show_value=true,default=3))"
 
 # ╔═╡ 2b025cbb-7d49-4a03-a0c4-73e96ff6502a
 let 
@@ -1749,7 +1749,7 @@ version = "1.4.1+1"
 # ╟─a536bd0c-0b64-42b6-914d-ea46deadb5de
 # ╠═e712ebff-1f70-48e0-a65d-a27378296a16
 # ╟─a7f3d892-1be5-4b96-8aca-dd25a858da4c
-# ╠═59eb5cc9-4a13-4b56-8044-d242d3f583ae
+# ╟─59eb5cc9-4a13-4b56-8044-d242d3f583ae
 # ╠═2b025cbb-7d49-4a03-a0c4-73e96ff6502a
 # ╟─9c8779e6-3ee1-45c0-a2bc-cd2e937ee217
 # ╟─0b3104d1-df93-414b-ba29-f5ee2f162234
