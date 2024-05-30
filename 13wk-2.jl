@@ -14,401 +14,243 @@ macro bind(def, element)
     end
 end
 
-# ╔═╡ 5e629d25-6118-444b-a59d-021da400f759
-using PlutoUI,Plots,HTTP,CSV,DataFrames,LinearAlgebra,Statistics,Random,Distributions
+# ╔═╡ a5608d85-a589-481e-9621-eb127298e14f
+using PlutoUI,Plots,CSV,LinearAlgebra,Statistics,Random,Distributions,RDatasets
 
-# ╔═╡ 83e7bec4-1c6d-11ef-3f2b-591f94a974c8
+# ╔═╡ 7e60801c-1e1d-11ef-0cbb-abe6d18a8d96
 md"""
-# 13wk-1: 변환을 의미하는 행렬
+# 13wk-1: 변환의 분해
 """
 
-# ╔═╡ 974408b1-8167-41f8-bb1f-eb9b39838a79
+# ╔═╡ ea4f159d-f310-4b9d-b9a3-006ea1eaf686
 md"""
 ## 1. 강의영상
 """
 
-# ╔═╡ 7bf0dbd6-6ea2-41f2-8677-e57317a6f31e
-html"""
-<div style="display: flex; justify-content: center;">
-<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
-<iframe src=
-"
-https://youtube.com/embed/playlist?list=PLQqh36zP38-yCBy0OhjuoaI_GxuMjDxm-&si=m0vNSwRJVnz3mIcK
-"
-width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-"""
+# ╔═╡ 2a2a8120-3a68-48a9-894b-11437854819c
+# html"""
+# <div style="display: flex; justify-content: center;">
+# <div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+# <iframe src=
+# "
+# https://youtube.com/embed/playlist?list=PLQqh36zP38-yCBy0OhjuoaI_GxuMjDxm-&si=m0vNSwRJVnz3mIcK
+# "
+# width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+# """
 
-# ╔═╡ ae425091-985a-4fac-b6b5-57e7c5d3a144
+# ╔═╡ a4a4ad6f-4039-4fc9-9882-79f73fe67f2a
 md"""
-## 2. Imports
+## 2. Imports 
 """
 
-# ╔═╡ 190e9d94-30b9-4a9f-9408-6325c6839590
+# ╔═╡ f09b2fdf-4056-4873-a940-3a8a09073e79
 PlutoUI.TableOfContents()
 
-# ╔═╡ fc43f2b3-9c5a-4ad5-be76-6ab36ba170db
+# ╔═╡ c965ba95-abbf-4529-8d9f-9579dd92771f
 Plots.plotly()
 
-# ╔═╡ 3f064ea6-f4d7-4021-8238-b4068c8474b5
+# ╔═╡ dd0d1ce5-5ff4-4836-91dc-4740d116985f
+default(markersize = 2, markerstrokewidth = 0, alpha = 0.5)
+
+# ╔═╡ 3cca6dfb-f2c1-4c43-bc44-9dbb421c6aec
 md"""
-## 3. 변환을 의미하는 행렬
+## 3. 예비학습
 """
 
-# ╔═╡ b2bcafa5-2d3b-4b96-ae41-42860f32919e
+# ╔═╡ a9cb5710-eef2-4c02-abf6-a7e3f2176da5
 md"""
-### A. 열 단위 변환 (column-wise transform)
+!!! info "SVD 버전2"
+	임의의 매트릭스 ${\bf X}_{n\times p}$ 는 아래와 같이 분해가능하다. 
+	
+	$${\bf X} = {\bf U}{\bf D}{\bf V}^\top$$
+
+	여기에서 ${\bf D}$를 대각행렬로 가정하지 않고 $n\times p$ matrix로 가정한다면, ${\bf U} ,{\bf V}$ 는 언제나 직교행렬로 "선택"할 수 있다. 
+
+	--- 
+
+	(proof) 
+
+	임의의 (n,p)-matrix ``{\bf X}``의 SVD를 아래와 같다고 하자. 
+
+	$${\bf X} = {\bf U}{\bf D}{\bf V}^\top$$
+
+	여기에서 ${\bf D}$는 대각행렬이고 ${\bf U}$와 ${\bf V}$는 각각 ${\bf U}^\top {\bf U}={\bf I}$, ${\bf V}{\bf V}^\top= {\bf V}^\top{\bf V}={\bf I}$ 를 만족한다. 이제 아래를 관찰하여 보자. 
+
+	$$\begin{bmatrix} {\bf U} & \tilde{\bf U}\end{bmatrix} \begin{bmatrix}{\bf D} \\ {\bf O}\end{bmatrix}={\bf U}{\bf D} + \tilde{\bf U}{\bf O} = {\bf U}{\bf D}$$
+
+	위의 식은 $\tilde{\bf U}$의 값에 상관없이 성립한다. 만약에 $\begin{bmatrix} {\bf U} & \tilde{\bf U}\end{bmatrix}$가 직교행렬이 되도록 $\tilde{\bf U}$ 값을 설정한다면, ${\bf X}$는 아래와 같이 표현할 수 있다. 
+
+	$${\bf X} = \begin{bmatrix} {\bf U} & \tilde{\bf U}\end{bmatrix} \begin{bmatrix}{\bf D} \\ {\bf O}\end{bmatrix}{\bf V}^\top:= {\bf U}^\star {\bf D}^\star {\bf V}^\top$$
+
+	이 표현에서 ${\bf D}^\star$는 대각행렬이 아니라는 단점이 있지만 ${\bf U}^\star$와 ${\bf V}$는 모두 직교행렬이라는 장점이 있다. 
 """
 
-# ╔═╡ dde0da2a-dc19-415d-b6f1-9139024a99ca
+# ╔═╡ 478146f4-ed1a-46bf-af30-2d5e530af9b9
 md"""
--- 변환을 의미하는 행렬 ${\bf A}$가 데이터를 의미하는 행렬 ${\bf X}$ 앞에 곱해지는 경우 ${\bf A}$는 ${\bf X}$의 열별로 적용되는 어떠한 선형변환을 의미한다.
+!!! info "예전에 했었는데.."
+
 """
 
-# ╔═╡ d9a13225-5c3b-4f61-aff1-a533ceccf994
+# ╔═╡ e7669a4c-0e63-4683-9640-a2183db236bf
 md"""
-${\bf A} {\bf X} = \begin{bmatrix} {\bf A}{\boldsymbol X}_1 & {\bf A}{\boldsymbol X}_2 & \dots & {\bf A}{\boldsymbol X}_p\end{bmatrix}$
+## 4. "데이터×변환"에서 변환의 분해
 """
 
-# ╔═╡ c805ca53-80e0-4b4f-b008-770153c59642
+# ╔═╡ 7be6c908-97b5-47a9-a67b-58ab720f2e2f
 md"""
--- 예시1: 열별로 평균계산
+### A. 오징어게임 달고나
 """
 
-# ╔═╡ a648c2a0-e2d5-4215-a73a-49c739eca30c
-let
-	n = 6
-	X1 = [0,0,0,10,10,10]
-	X2 = [-10,-10,-10,0,0,0]
-	X = [X1 X2]
-	j = ones(n)
-	(1/n*j')*X ≈ [mean(X1) mean(X2)]
-end 
-
-# ╔═╡ 91e05f69-5f30-4216-a14e-f563c2d6fe2e
+# ╔═╡ cee1923c-39ec-4865-a7bc-2194ff45e202
 md"""
--- 예시2: 센터링
+-- 예시1: 오징어게임 달고나
 """
 
-# ╔═╡ 121e6036-6655-455a-b3d9-0f59b940258b
-let
-	n = 6
-	X1 = [0,0,0,1,1,1]
-	X2 = [1,1,1,0,0,0]
-	X = [X1 X2]
-	j = ones(n)
-	J = j*j'
-	(I-1/n*J)*X ≈ [X1.-mean(X1) X2.-mean(X2)]
-end 
-
-# ╔═╡ 3dad080a-0849-415d-a738-5c4035d0ce3e
-md"""
--- 예시3: 공분산행렬
-"""
-
-# ╔═╡ df49f281-7275-485e-a943-ca628ec539ac
-let
-	n = 100
-	X1 = randn(n)
-	X2 = randn(n)*2 .+ 1 
-	X = [X1 X2]
-	j = ones(n)
-	J = j*j'
-	X'*(I-1/n*J)*X/(n-1) ≈ cov(X)
-end 
-
-# ╔═╡ a536bd0c-0b64-42b6-914d-ea46deadb5de
-md"""
--- 예시4: SST
-"""
-
-# ╔═╡ e712ebff-1f70-48e0-a65d-a27378296a16
-let
-	n = 100
-	y = randn(n)
-	j = ones(n)
-	J = j*j'
-	y'*(I-J/n)*y ≈ sum((y .- mean(y)).^2)
-end 
-
-# ╔═╡ a7f3d892-1be5-4b96-8aca-dd25a858da4c
-md"""
--- 예시6: 이동평균
-"""
-
-# ╔═╡ 59eb5cc9-4a13-4b56-8044-d242d3f583ae
-md"k = $(@bind k Slider(0:20,show_value=true,default=3))"
-
-# ╔═╡ 2b025cbb-7d49-4a03-a0c4-73e96ff6502a
-let 
-	Random.seed!(43052)
-	n = 100
-	t = (1:n)/n
-	y = sin.(2π*t) + randn(n)*0.2
-	scatter(t,y,alpha=0.2,color="gray")
-	dl,d,du = ones(n-1)/3, ones(n)/3, ones(n-1)/3
-	M = Tridiagonal(dl,d,du)
-	plot!(t,(M^k)*y,linewidth=2, color="red")
-end 
-
-# ╔═╡ 9c8779e6-3ee1-45c0-a2bc-cd2e937ee217
-md"""
-### B. 행 단위 변환 (row-wise transform)
-"""
-
-# ╔═╡ 0b3104d1-df93-414b-ba29-f5ee2f162234
-md"""
--- 변환을 의미하는 행렬 ${\bf A}$가 데이터를 의미하는 행렬 ${\bf X}$ 뒤에 곱해지는 경우 ${\bf A}$는 ${\bf X}$의 행별로 적용되는 어떠한 선형변환을 의미한다.
-"""
-
-# ╔═╡ 8fa00f0b-ba3b-4a49-821c-87ecc607c1d3
-md"""
-${\bf X}{\bf A} = \begin{bmatrix} {\boldsymbol x}^\top_1{\bf A} \\ {\boldsymbol x}^\top_2{\bf A} \\ \dots \\ {\boldsymbol x}^\top_n{\bf A}\end{bmatrix}$
-"""
-
-# ╔═╡ acc4ba11-477f-4f7c-a7d1-c0f115425a4e
+# ╔═╡ 64db45a4-4e6e-468f-ab95-91608e321e6e
 begin
 	url = "https://raw.githubusercontent.com/guebin/2021IR/master/_notebooks/round2.csv"
 	df = CSV.File(download(url))
-	X1,X2 = df.x[1:30:end], df.y[1:30:end]
+	X1,X2 = df.x[1:20:end], df.y[1:20:end]
+	X1 = (X1 .- mean(X1)) ./ std(X1)
+	X2 = (X2 .- mean(X2)) ./ std(X2)
 	X = [X1 X2]
-	scatter(
-		X1,X2,
-		xlim=(-1000,2000),ylim=(-750,1500),
-	)
+	scatter(X1,X2,xlim=(-4,4), ylim=(-3,3))
 end
 
-# ╔═╡ 9828643f-9e51-45da-a1c9-7b9cdbfc9daa
-md"""
--- 예시1: 스케일링
-"""
+# ╔═╡ e57fb7ad-d1fc-4e9e-8c12-c96a99fc3918
+[
+	(@bind a11 Slider(-5:0.1:5,show_value=true,default=2)),
+	(@bind a12 Slider(-5:0.1:5,show_value=true,default=3)),
+	(@bind a21 Slider(-5:0.1:5,show_value=true,default=0)),
+	(@bind a22 Slider(-5:0.1:5,show_value=true,default=1)),
+]
 
-# ╔═╡ 4c2acf0a-ecbd-4d4f-9fb7-8c1bb2a44893
-let
-	A = [2.0 0 
-		 0   0.5]
-	Z = X*A
-	Z1,Z2 = eachcol(Z)
-	scatter(X1,X2, xlim=(-1000,2000),ylim=(-750,1500))	
-	scatter!(Z1,Z2)
+# ╔═╡ 46658aa8-dc1d-4672-9051-f3ced47e99e9
+A = [a11 a12 
+	 a21 a22]
+
+# ╔═╡ 463bdaec-56ea-485c-b85e-a92d17d5f0b1
+let 
+	U,d,V = svd(A)
+	D = Diagonal(d)
+	@show d
+	base_plot = () -> scatter(X1,X2,alpha=0.5,xlim=(-4,4),ylim=(-3,3))
+	p1 = base_plot(); title!(p1,"X")
+	p2 = base_plot(); title!(p2,"X*U")
+		Z = X*(U); Z1,Z2 = eachcol(Z)
+		scatter!(p2,Z1,Z2)
+	p3 = base_plot(); title!(p3,"X*(UD)")
+		Z = X*(U*D); Z1,Z2 = eachcol(Z)
+		scatter!(p3,Z1,Z2)
+	p4 = base_plot(); title!(p4,"X*(UDV')")
+		Z = X*(U*D*V'); Z1,Z2 = eachcol(Z)
+		scatter!(p4,Z1,Z2)
+	plot(p1,p2,p3,p4,legend=false)
 end 
 
-# ╔═╡ af6c1445-b7ed-4fa9-8465-32af890da919
+# ╔═╡ f9b28c51-a16a-4b8d-8680-fbc7f2705c74
 md"""
--- 예시2: 사영
+### B. 디커플링
 """
 
-# ╔═╡ 1d257e08-68fb-449e-aed7-64b23047ec23
-let
-	A = [1 0 
-		 0 0]
-	Z = X*A
-	Z1,Z2 = eachcol(Z)
-	scatter(X1,X2, xlim=(-1000,2000),ylim=(-750,1500))	
-	scatter!(Z1,Z2)
-end 
-
-# ╔═╡ 9276a1a1-c7d4-47c6-841a-7ba7b0678b47
+# ╔═╡ 9fb62167-3685-4986-958b-8892dc74d14a
 md"""
--- 예시3: 대칭이동
+-- 예시2: 디커플링
 """
 
-# ╔═╡ 67dcaab6-c244-48ad-b354-c073faf41fa8
+# ╔═╡ 18a3e8ad-c63b-402e-b6b1-4bd03a7267bf
 let
 	Random.seed!(43052)
-	A = [-1  0 
-		  0 -1]
-	Z = X*A
-	Z1,Z2 = eachcol(Z)
-	scatter(X1,X2, xlim=(-1000,2000),ylim=(-750,1500))	
-	scatter!(Z1,Z2)
-end 
-
-# ╔═╡ e079a51a-92a3-44f5-af30-994f4c7c6c3e
-md"""
--- 예시4: 회전이동
-"""
-
-# ╔═╡ 9d8c4cbe-5b21-4633-b5ef-3bd7a78e0c4b
-md"θ = $(@bind θ Slider(-π:(2π/24):π,show_value=true,default= π/3))"
-
-# ╔═╡ 8797fe9b-879a-4d54-ac12-55a56b93b0a5
-let 
-	A = [ cos(θ) sin(θ)
-		 -sin(θ) cos(θ)]
-	Z = X*A
-	Z1,Z2 = eachcol(Z)
-	scatter(X1,X2, xlim=(-1000,2000),ylim=(-750,1500))	
-	scatter!(Z1,Z2)
-end 
-
-# ╔═╡ 92426a94-bf38-4e54-b8a1-a69c1bb1cb0a
-md"""
--- 예시5: 디커플링
-"""
-
-# ╔═╡ 4ad6d6fa-7345-4459-ae2d-b3321fc7a76d
-let 
-	Random.seed!(43052)
-	n = 500
+	n = 5000
 	μ = [0,0]
 	Σ = [1.0 0.7
 		 0.7 2.0]
 	X = rand(MvNormal(μ,Σ),n)'
 	X1,X2 = eachcol(X)
-	p1 = scatter(X1,X2,alpha=0.2,xlim=(-5,5),ylim=(-6,6),label="X")
 	Σ̂ = cov(X)
 	λ,Ψ = eigen(Σ̂)
 	A = Ψ*Diagonal(.√(1 ./λ))
-	Z = X*A 
-	Z1,Z2 = eachcol(Z)
-	p2 = scatter(Z1,Z2,alpha=0.2,xlim=(-5,5),ylim=(-6,6),label="Z")
-	plot(p1,p2)
-end 
+	#---#
+	U,d,V = svd(A)
+	D = Diagonal(d)
+	base_plot = () -> scatter(X1,X2,xlim=(-8,8),ylim=(-6,6))
+	p1 = base_plot(); title!(p1,"X")
+	p2 = base_plot(); title!(p2,"X*(U)")
+		Z = X*U; Z1,Z2 = eachcol(Z)
+		scatter!(p2,Z1,Z2)
+	p3 = base_plot(); title!(p3,"X*(UD)")
+		Z = X*U*D; Z1,Z2 = eachcol(Z)
+		scatter!(p3,Z1,Z2)
+	p4 = base_plot(); title!(p4,"X*(UDV')")
+		Z = X*U*D*V'; Z1,Z2 = eachcol(Z)
+		scatter!(p4,Z1,Z2)
+	plot(p1,p2,p3,p4,legend=false)
+end
 
-# ╔═╡ 1632539f-f0be-4640-bbc3-a113f0169d84
+# ╔═╡ eb5ece59-6fe7-4b61-bb7a-948f479c0300
 md"""
-## 4. 직교행렬과 변환
-"""
-
-# ╔═╡ d59c37b5-a201-4220-8a76-aadc50c343eb
-md"""
-### A. 직교변환의 특징
-"""
-
-# ╔═╡ fd9ae9d3-20a4-4765-9935-484d04ec09f3
-md"""
--- 어떠한 벡터에 직교행렬이 변환으로 적용되면, 그 벡터는 크기와 각도가 보존된다.
-
-**열벡터에 적용되는 경우**
-- 크기보존: $\|{\boldsymbol X}_1\|^2=\|{\bf A} {\boldsymbol X}_1\|^2$ 이므로 크기가 보존 
-- 각도보전: $\frac{{\boldsymbol X}_1 \cdot {\boldsymbol X}_2}{\|{\boldsymbol X}_1\|\|{\boldsymbol X}_2\|}=\frac{({\bf A}{\boldsymbol X}_1)\cdot ({\bf A}{\boldsymbol X}_2)}{\|{\bf A}{\boldsymbol X}_1\|\|{\bf A}{\boldsymbol X}_2\|}$ 이므로 각도도 보존 
-
-**행벡터에 적용되는 경우**
-- 크기보존: $\|{\boldsymbol x}_1^\top\|^2=\|{\boldsymbol x}_1^\top {\bf A} \|^2$ 이므로 크기가 보존 
-- 각도보전: $\frac{{\boldsymbol x}_1^\top \cdot {\boldsymbol x}_2^\top}{\|{\boldsymbol x}_1^\top\|\|{\boldsymbol x}_2^\top\|}=\frac{({\boldsymbol x}_1^\top{\bf A})\cdot ({\boldsymbol x}_2^\top{\bf A})}{\|{\boldsymbol x}_1^\top {\bf A}\|\|{\boldsymbol x}_2^\top{\bf A}\|}$ 이므로 각도도 보존 
-
-"""
-
-# ╔═╡ 8d72c6f7-d8aa-4f06-ae33-f9d7b4a53954
-md"""
-!!! warning "벡터의 크기"
-
-	벡터의 크기를 재기 위하여 ``\|\cdot\|^2`` 의 기호를 처리할때 col-vector일 경우와 row-vector일 경우 크기를 재는 공식을 아래와 같이 적용한다.
-	- row-vertor: ``\|{\boldsymbol x}_1^\top\|^2=x_{11}^2 + \dots + x_{1p}^2 = {\boldsymbol x}_1^\top{\boldsymbol x}_1``
-	- col-vector: ``\|{\boldsymbol X}_1\|^2=x_{11}^2 + \dots + x_{1n}^2 = {\boldsymbol X}_1^\top{\boldsymbol X}_1``
-	즉 아래와 같이 생각한다. 
+!!! info "변환을 의미하는 행렬의 분해"
+	임의의 매트릭스 ${\bf A}$는 아래와 같이 분해가능하다. 
 	
-	$\|\star\|^2 = \begin{cases} \star^\top\star & \text{⋆ is col-vector} \\ \star\star^\top & \text{⋆ is row-vector}\end{cases}$
+	$${\bf A} = {\bf U}{\bf D}{\bf V}^\top$$
+
+	여기에서 ${\bf D}$를 대각행렬로 가정하지 않는다면, ${\bf U} ,{\bf V}$ 는 언제나 직교행렬로 "선택"할 수 있다. 따라서 임의의 선형변환은 직교변환, 스케일링, 직교번환의 조합으로 재표현 가능하다. 
 """
 
-# ╔═╡ b8584068-76b5-4205-8de7-ddbfc6223f07
+# ╔═╡ d32ca55b-2ef3-4cd1-9f65-3f1b5852bbec
 md"""
-### B. 직교행렬(=직교변환)의 예시
+### C. 아이리스 자료와 PCA
 """
 
-# ╔═╡ e47e3400-35d8-4849-b624-4aafc8cae2de
-md"""
--- 예시1: 회전
-"""
+# ╔═╡ 1bab9c7b-c42a-4a7c-bf1f-e26eccfbb13f
+iris = dataset("datasets","iris")
 
-# ╔═╡ 2e94478d-af51-48e6-b908-cce77ef9f35b
+# ╔═╡ 840e86b0-2d5a-4794-96ce-2f6508140912
 let 
-	A = [ cos(θ) sin(θ)
-		 -sin(θ) cos(θ)]
-	@show A'A ≈ I
-	Z = X*A
-	Z1,Z2 = eachcol(Z)
-	i,j = 1,3
-	X[i,:]'X[j,:] ≈ Z[j,:]'Z[i,:]
-end 
-
-# ╔═╡ f7018fc2-1cc6-4674-a40e-85081e625616
-md"""
--- 예시2: 반사
-"""
-
-# ╔═╡ 711bfed6-c3ec-4726-94f8-53d1c389e7cd
-let
-	A = [-1  0 
-		  0 -1]
-	@show A'A ≈ I
-	Z = X*A
-	i,j = 1,3
-	X[i,:]'X[j,:] ≈ Z[j,:]'Z[i,:]
-end 
-
-# ╔═╡ e48c2c42-cb87-48f6-a4e7-8fb38f4961c6
-md"""
-!!! info "직교변환에 대한 성질"
-	아래의 성질을 기억하면 유용하다. 
-	- 모든 직교변환 ${\bf A}$는 (1) rotation matrix (2) non-rotational matrix 로 구분할 수 있다. 
-	- 2차원에 한정한다면 직교변환은 (즉 ${\bf A}$ 가 $2\times 2$ matrix 일 경우) 항상 (1) rotaion matrix 이거나 (2) reflection matrix 이다. 
-	- 1차원에 한정한다면 직교변환은 $\times 1$ 혹은 $\times -1$ 을 의미한다. 
-"""
-
-# ╔═╡ 34088cda-a940-4042-8bbd-278e8b0407d2
-md"""
-!!! warning "직교변환의 느낌"
-	직교변환이 데이터를 의미하는 행렬 ${\bf X}$ 뒤에 곱해질경우 각 관측치의 크기 및 각도(=상대적위치=형태)가 모두 보존된다. 따라서 어떠한 자료 ${\bf X}$가 있고 그러한 ${\bf X}$에 적당한 직교변환을 하여 ${\bf Z}$를 얻었다면, 즉 아래가 성립한다면 
-
-	$${\bf Z}={\bf X}{\bf A},\quad {\bf A}^\top{\bf A}={\bf I}$$
-
-	사실상 ${\bf Z}$는 ${\bf X}$와 거의 동등한 자료라고 보면 된다. (조금 틀어서 본것 밖에 없음)
-"""
-
-# ╔═╡ 13624ca3-3958-4481-9586-9f9ad5f50d7d
-md"""
-### C. PCA와 직교변환
-"""
-
-# ╔═╡ e543b1f4-693a-478b-a111-9da9279d1032
-md"""
--- 그렇다면 아래는 어떰?
-"""
-
-# ╔═╡ 9b2b7f7f-cee4-42f6-bf6d-6c9347fdba52
-let
-	df2 = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
-	X1,X2,X3 = eachcol(df2)
-	X = [X1 X2 X3] 
+	X1,X2,X3,_,y = eachcol(iris)
+	X = [X1 X2 X3]
+	function iris_plot(X)
+		X1,X2,X3 = eachcol(X)
+		fig = scatter3d()
+		for i in ["setosa","versicolor","virginica"]
+			scatter3d!(X1[y .== i],X2[y .== i],X3[y .== i],alpha=1,label=i)
+		end 
+		return fig
+	end
 	U,d,V = svd(X)
-	Z = X*V
-	Z1,Z2,Z3 = eachcol(Z)
-	i,j = 1,3
-	X[i,:]'X[j,:] ≈ Z[j,:]'Z[i,:]
-end 
+	d1,d2,d3 = d
+	V1,V2,V3 = eachcol(V)
+	D̃ = Diagonal([d1,d2,0])
+	Ṽ = [V1 V2 V3*0]
+	iris_plot(X)
+	#iris_plot(X*V)
+	#iris_plot(X*V*D)
+	#iris_plot(X*Ṽ)
+end
 
-# ╔═╡ 078a4099-d919-4121-859b-023c2a30edf0
+# ╔═╡ 9502bcef-147d-4dfc-bb34-e9064aeeef49
 md"""
-!!! warning "PCA의 이해"
-	임의의 행렬 ${\bf X}$ 에 대한 ${\bf Z}={\bf X}{\bf V}$ 는 ${\bf X}$를 재표현한것 뿐이다. ${\bf X}$의 각 관측치가 가지고 있는 크기, 및 모양이 모두 보존되므로 사실상 ${\bf Z}$는 ${\bf X}$와 같은 데이터라고 볼 수 있다.
-"""
-
-# ╔═╡ 456aa9bf-08be-4bfc-82b5-1f51d13f073d
-md"""
--- PCA를 해서 얻는 이득: 차원축소의 관점 말고 PCA를 사용해서 얻는 이득이 뭘까?
+-- 주성분분석의 이득 (직교화의 관점에서)
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+RDatasets = "ce6b1742-4840-55fa-b093-852dadbb1d8b"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 CSV = "~0.10.14"
-DataFrames = "~1.6.1"
 Distributions = "~0.25.108"
-HTTP = "~1.10.8"
 Plots = "~1.40.4"
 PlutoUI = "~0.7.59"
+RDatasets = "~0.7.7"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
@@ -417,7 +259,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "a0cf3412dce72c1ef49b5410b72f573a10aac538"
+project_hash = "295d041cbf9d1612e2e72847d51d2c57d1acb02b"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -469,6 +311,24 @@ deps = ["LinearAlgebra"]
 git-tree-sha1 = "f641eb0a4f00c343bbc32346e1217b86f3ce9dad"
 uuid = "49dc2e85-a5d0-5ad3-a950-438e2897f1b9"
 version = "0.5.1"
+
+[[deps.CategoricalArrays]]
+deps = ["DataAPI", "Future", "Missings", "Printf", "Requires", "Statistics", "Unicode"]
+git-tree-sha1 = "1568b28f91293458345dabba6a5ea3f183250a61"
+uuid = "324d7699-5711-5eae-9e2f-1d82baa6b597"
+version = "0.10.8"
+
+    [deps.CategoricalArrays.extensions]
+    CategoricalArraysJSONExt = "JSON"
+    CategoricalArraysRecipesBaseExt = "RecipesBase"
+    CategoricalArraysSentinelArraysExt = "SentinelArrays"
+    CategoricalArraysStructTypesExt = "StructTypes"
+
+    [deps.CategoricalArrays.weakdeps]
+    JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+    RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+    SentinelArrays = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
+    StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
@@ -618,6 +478,11 @@ git-tree-sha1 = "1c6317308b9dc757616f0b5cb379db10494443a7"
 uuid = "2e619515-83b5-522b-bb60-26c02a35a201"
 version = "2.6.2+0"
 
+[[deps.ExprTools]]
+git-tree-sha1 = "27415f162e6028e81c72b82ef756bf321213b6ec"
+uuid = "e2ba6199-217a-4e67-a87a-7c52f15ade04"
+version = "0.1.10"
+
 [[deps.FFMPEG]]
 deps = ["FFMPEG_jll"]
 git-tree-sha1 = "b57e3acbe22f8484b4b5ff66a7499717fe1a9cc8"
@@ -629,6 +494,12 @@ deps = ["Artifacts", "Bzip2_jll", "FreeType2_jll", "FriBidi_jll", "JLLWrappers",
 git-tree-sha1 = "466d45dc38e15794ec7d5d63ec03d776a9aff36e"
 uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"
 version = "4.4.4+1"
+
+[[deps.FileIO]]
+deps = ["Pkg", "Requires", "UUIDs"]
+git-tree-sha1 = "82d8afa92ecf4b52d78d869f038ebfb881267322"
+uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+version = "1.16.3"
 
 [[deps.FilePathsBase]]
 deps = ["Compat", "Dates", "Mmap", "Printf", "Test", "UUIDs"]
@@ -992,6 +863,12 @@ version = "1.2.0"
 [[deps.Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
+[[deps.Mocking]]
+deps = ["Compat", "ExprTools"]
+git-tree-sha1 = "bf17d9cb4f0d2882351dfad030598f64286e5936"
+uuid = "78c3b35d-d492-501b-9361-3d52fe80e533"
+version = "0.7.8"
+
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2022.10.11"
@@ -1167,6 +1044,18 @@ git-tree-sha1 = "9b23c31e76e333e6fb4c1595ae6afa74966a729e"
 uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
 version = "2.9.4"
 
+[[deps.RData]]
+deps = ["CategoricalArrays", "CodecZlib", "DataFrames", "Dates", "FileIO", "Requires", "TimeZones", "Unicode"]
+git-tree-sha1 = "19e47a495dfb7240eb44dc6971d660f7e4244a72"
+uuid = "df47a6cb-8c03-5eed-afd8-b6050d6c41da"
+version = "0.8.3"
+
+[[deps.RDatasets]]
+deps = ["CSV", "CodecZlib", "DataFrames", "FileIO", "Printf", "RData", "Reexport"]
+git-tree-sha1 = "2720e6f6afb3e562ccb70a6b62f8f308ff810333"
+uuid = "ce6b1742-4840-55fa-b093-852dadbb1d8b"
+version = "0.7.7"
+
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
@@ -1322,6 +1211,12 @@ deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 version = "1.0.3"
 
+[[deps.TZJData]]
+deps = ["Artifacts"]
+git-tree-sha1 = "1607ad46cf8d642aa779a1d45af1c8620dbf6915"
+uuid = "dc5dba14-91b3-4cab-a142-028a31da12f7"
+version = "1.2.0+2024a"
+
 [[deps.TableTraits]]
 deps = ["IteratorInterfaceExtensions"]
 git-tree-sha1 = "c06b2f539df1c6efa794486abfb6ed2022561a39"
@@ -1348,6 +1243,16 @@ version = "0.1.1"
 [[deps.Test]]
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[[deps.TimeZones]]
+deps = ["Dates", "Downloads", "InlineStrings", "Mocking", "Printf", "Scratch", "TZJData", "Unicode", "p7zip_jll"]
+git-tree-sha1 = "6505890535a2b2e5145522ac77bddeda85c250c4"
+uuid = "f269a46b-ccf7-5d73-abea-4c690281aa53"
+version = "1.16.1"
+weakdeps = ["RecipesBase"]
+
+    [deps.TimeZones.extensions]
+    TimeZonesRecipesBaseExt = "RecipesBase"
 
 [[deps.TranscodingStreams]]
 git-tree-sha1 = "5d54d076465da49d6746c647022f3b3674e64156"
@@ -1709,58 +1614,31 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╟─83e7bec4-1c6d-11ef-3f2b-591f94a974c8
-# ╟─974408b1-8167-41f8-bb1f-eb9b39838a79
-# ╠═7bf0dbd6-6ea2-41f2-8677-e57317a6f31e
-# ╟─ae425091-985a-4fac-b6b5-57e7c5d3a144
-# ╠═5e629d25-6118-444b-a59d-021da400f759
-# ╠═190e9d94-30b9-4a9f-9408-6325c6839590
-# ╠═fc43f2b3-9c5a-4ad5-be76-6ab36ba170db
-# ╟─3f064ea6-f4d7-4021-8238-b4068c8474b5
-# ╟─b2bcafa5-2d3b-4b96-ae41-42860f32919e
-# ╟─dde0da2a-dc19-415d-b6f1-9139024a99ca
-# ╟─d9a13225-5c3b-4f61-aff1-a533ceccf994
-# ╟─c805ca53-80e0-4b4f-b008-770153c59642
-# ╠═a648c2a0-e2d5-4215-a73a-49c739eca30c
-# ╟─91e05f69-5f30-4216-a14e-f563c2d6fe2e
-# ╠═121e6036-6655-455a-b3d9-0f59b940258b
-# ╟─3dad080a-0849-415d-a738-5c4035d0ce3e
-# ╠═df49f281-7275-485e-a943-ca628ec539ac
-# ╟─a536bd0c-0b64-42b6-914d-ea46deadb5de
-# ╠═e712ebff-1f70-48e0-a65d-a27378296a16
-# ╟─a7f3d892-1be5-4b96-8aca-dd25a858da4c
-# ╟─59eb5cc9-4a13-4b56-8044-d242d3f583ae
-# ╠═2b025cbb-7d49-4a03-a0c4-73e96ff6502a
-# ╟─9c8779e6-3ee1-45c0-a2bc-cd2e937ee217
-# ╟─0b3104d1-df93-414b-ba29-f5ee2f162234
-# ╟─8fa00f0b-ba3b-4a49-821c-87ecc607c1d3
-# ╠═acc4ba11-477f-4f7c-a7d1-c0f115425a4e
-# ╟─9828643f-9e51-45da-a1c9-7b9cdbfc9daa
-# ╠═4c2acf0a-ecbd-4d4f-9fb7-8c1bb2a44893
-# ╟─af6c1445-b7ed-4fa9-8465-32af890da919
-# ╠═1d257e08-68fb-449e-aed7-64b23047ec23
-# ╟─9276a1a1-c7d4-47c6-841a-7ba7b0678b47
-# ╠═67dcaab6-c244-48ad-b354-c073faf41fa8
-# ╟─e079a51a-92a3-44f5-af30-994f4c7c6c3e
-# ╟─9d8c4cbe-5b21-4633-b5ef-3bd7a78e0c4b
-# ╠═8797fe9b-879a-4d54-ac12-55a56b93b0a5
-# ╟─92426a94-bf38-4e54-b8a1-a69c1bb1cb0a
-# ╠═4ad6d6fa-7345-4459-ae2d-b3321fc7a76d
-# ╟─1632539f-f0be-4640-bbc3-a113f0169d84
-# ╟─d59c37b5-a201-4220-8a76-aadc50c343eb
-# ╟─fd9ae9d3-20a4-4765-9935-484d04ec09f3
-# ╟─8d72c6f7-d8aa-4f06-ae33-f9d7b4a53954
-# ╟─b8584068-76b5-4205-8de7-ddbfc6223f07
-# ╟─e47e3400-35d8-4849-b624-4aafc8cae2de
-# ╠═2e94478d-af51-48e6-b908-cce77ef9f35b
-# ╟─f7018fc2-1cc6-4674-a40e-85081e625616
-# ╠═711bfed6-c3ec-4726-94f8-53d1c389e7cd
-# ╟─e48c2c42-cb87-48f6-a4e7-8fb38f4961c6
-# ╟─34088cda-a940-4042-8bbd-278e8b0407d2
-# ╟─13624ca3-3958-4481-9586-9f9ad5f50d7d
-# ╟─e543b1f4-693a-478b-a111-9da9279d1032
-# ╠═9b2b7f7f-cee4-42f6-bf6d-6c9347fdba52
-# ╟─078a4099-d919-4121-859b-023c2a30edf0
-# ╟─456aa9bf-08be-4bfc-82b5-1f51d13f073d
+# ╟─7e60801c-1e1d-11ef-0cbb-abe6d18a8d96
+# ╟─ea4f159d-f310-4b9d-b9a3-006ea1eaf686
+# ╠═2a2a8120-3a68-48a9-894b-11437854819c
+# ╟─a4a4ad6f-4039-4fc9-9882-79f73fe67f2a
+# ╠═a5608d85-a589-481e-9621-eb127298e14f
+# ╠═f09b2fdf-4056-4873-a940-3a8a09073e79
+# ╠═c965ba95-abbf-4529-8d9f-9579dd92771f
+# ╠═dd0d1ce5-5ff4-4836-91dc-4740d116985f
+# ╟─3cca6dfb-f2c1-4c43-bc44-9dbb421c6aec
+# ╟─a9cb5710-eef2-4c02-abf6-a7e3f2176da5
+# ╠═478146f4-ed1a-46bf-af30-2d5e530af9b9
+# ╟─e7669a4c-0e63-4683-9640-a2183db236bf
+# ╟─7be6c908-97b5-47a9-a67b-58ab720f2e2f
+# ╟─cee1923c-39ec-4865-a7bc-2194ff45e202
+# ╠═64db45a4-4e6e-468f-ab95-91608e321e6e
+# ╠═e57fb7ad-d1fc-4e9e-8c12-c96a99fc3918
+# ╠═46658aa8-dc1d-4672-9051-f3ced47e99e9
+# ╠═463bdaec-56ea-485c-b85e-a92d17d5f0b1
+# ╟─f9b28c51-a16a-4b8d-8680-fbc7f2705c74
+# ╟─9fb62167-3685-4986-958b-8892dc74d14a
+# ╠═18a3e8ad-c63b-402e-b6b1-4bd03a7267bf
+# ╟─eb5ece59-6fe7-4b61-bb7a-948f479c0300
+# ╟─d32ca55b-2ef3-4cd1-9f65-3f1b5852bbec
+# ╠═1bab9c7b-c42a-4a7c-bf1f-e26eccfbb13f
+# ╠═840e86b0-2d5a-4794-96ce-2f6508140912
+# ╟─9502bcef-147d-4dfc-bb34-e9064aeeef49
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
