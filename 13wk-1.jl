@@ -47,7 +47,10 @@ md"""
 PlutoUI.TableOfContents()
 
 # ╔═╡ fc43f2b3-9c5a-4ad5-be76-6ab36ba170db
-Plots.plotly()
+begin
+	Plots.plotly()
+	default(markerstrokewidth = 0, alpha = 0.5)
+end
 
 # ╔═╡ 3f064ea6-f4d7-4021-8238-b4068c8474b5
 md"""
@@ -174,6 +177,7 @@ begin
 	scatter(
 		X1,X2,
 		xlim=(-1000,2000),ylim=(-750,1500),
+		label = "X"
 	)
 end
 
@@ -188,8 +192,8 @@ let
 		 0   0.5]
 	Z = X*A
 	Z1,Z2 = eachcol(Z)
-	scatter(X1,X2, xlim=(-1000,2000),ylim=(-750,1500))	
-	scatter!(Z1,Z2)
+	scatter(X1,X2, xlim=(-1000,2000),ylim=(-750,1500),label="X")	
+	scatter!(Z1,Z2,label="XA")
 end 
 
 # ╔═╡ af6c1445-b7ed-4fa9-8465-32af890da919
@@ -203,8 +207,8 @@ let
 		 0 0]
 	Z = X*A
 	Z1,Z2 = eachcol(Z)
-	scatter(X1,X2, xlim=(-1000,2000),ylim=(-750,1500))	
-	scatter!(Z1,Z2)
+	scatter(X1,X2, xlim=(-1000,2000),ylim=(-750,1500),label="X")	
+	scatter!(Z1,Z2,label="XA")
 end 
 
 # ╔═╡ 9276a1a1-c7d4-47c6-841a-7ba7b0678b47
@@ -219,8 +223,8 @@ let
 		  0 -1]
 	Z = X*A
 	Z1,Z2 = eachcol(Z)
-	scatter(X1,X2, xlim=(-1000,2000),ylim=(-750,1500))	
-	scatter!(Z1,Z2)
+	scatter(X1,X2, xlim=(-1000,2000),ylim=(-750,1500),label="X")	
+	scatter!(Z1,Z2,label="XA")
 end 
 
 # ╔═╡ e079a51a-92a3-44f5-af30-994f4c7c6c3e
@@ -233,12 +237,12 @@ md"θ = $(@bind θ Slider(-π:(2π/24):π,show_value=true,default= π/3))"
 
 # ╔═╡ 8797fe9b-879a-4d54-ac12-55a56b93b0a5
 let 
-	A = [ cos(θ) sin(θ)
-		 -sin(θ) cos(θ)]
+	A = [ cos(θ) -sin(θ)
+		  sin(θ)  cos(θ)]
 	Z = X*A
 	Z1,Z2 = eachcol(Z)
-	scatter(X1,X2, xlim=(-1000,2000),ylim=(-750,1500))	
-	scatter!(Z1,Z2)
+	scatter(X1,X2, xlim=(-1000,2000),ylim=(-750,1500),label="X")
+	scatter!(Z1,Z2,label="XA")
 end 
 
 # ╔═╡ 92426a94-bf38-4e54-b8a1-a69c1bb1cb0a
@@ -261,7 +265,7 @@ let
 	A = Ψ*Diagonal(.√(1 ./λ))
 	Z = X*A 
 	Z1,Z2 = eachcol(Z)
-	p2 = scatter(Z1,Z2,alpha=0.2,xlim=(-5,5),ylim=(-6,6),label="Z")
+	p2 = scatter(Z1,Z2,alpha=0.2,xlim=(-5,5),ylim=(-6,6),label="XA")
 	plot(p1,p2)
 end 
 
@@ -354,39 +358,6 @@ md"""
 	$${\bf Z}={\bf X}{\bf A},\quad {\bf A}^\top{\bf A}={\bf I}$$
 
 	사실상 ${\bf Z}$는 ${\bf X}$와 거의 동등한 자료라고 보면 된다. (조금 틀어서 본것 밖에 없음)
-"""
-
-# ╔═╡ 13624ca3-3958-4481-9586-9f9ad5f50d7d
-md"""
-### C. PCA와 직교변환
-"""
-
-# ╔═╡ e543b1f4-693a-478b-a111-9da9279d1032
-md"""
--- 그렇다면 아래는 어떰?
-"""
-
-# ╔═╡ 9b2b7f7f-cee4-42f6-bf6d-6c9347fdba52
-let
-	df2 = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
-	X1,X2,X3 = eachcol(df2)
-	X = [X1 X2 X3] 
-	U,d,V = svd(X)
-	Z = X*V
-	Z1,Z2,Z3 = eachcol(Z)
-	i,j = 1,3
-	X[i,:]'X[j,:] ≈ Z[j,:]'Z[i,:]
-end 
-
-# ╔═╡ 078a4099-d919-4121-859b-023c2a30edf0
-md"""
-!!! warning "PCA의 이해"
-	임의의 행렬 ${\bf X}$ 에 대한 ${\bf Z}={\bf X}{\bf V}$ 는 ${\bf X}$를 재표현한것 뿐이다. ${\bf X}$의 각 관측치가 가지고 있는 크기, 및 모양이 모두 보존되므로 사실상 ${\bf Z}$는 ${\bf X}$와 같은 데이터라고 볼 수 있다.
-"""
-
-# ╔═╡ 456aa9bf-08be-4bfc-82b5-1f51d13f073d
-md"""
--- PCA를 해서 얻는 이득: 차원축소의 관점 말고 PCA를 사용해서 얻는 이득이 뭘까?
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1711,7 +1682,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─83e7bec4-1c6d-11ef-3f2b-591f94a974c8
 # ╟─974408b1-8167-41f8-bb1f-eb9b39838a79
-# ╠═7bf0dbd6-6ea2-41f2-8677-e57317a6f31e
+# ╟─7bf0dbd6-6ea2-41f2-8677-e57317a6f31e
 # ╟─ae425091-985a-4fac-b6b5-57e7c5d3a144
 # ╠═5e629d25-6118-444b-a59d-021da400f759
 # ╠═190e9d94-30b9-4a9f-9408-6325c6839590
@@ -1757,10 +1728,5 @@ version = "1.4.1+1"
 # ╠═711bfed6-c3ec-4726-94f8-53d1c389e7cd
 # ╟─e48c2c42-cb87-48f6-a4e7-8fb38f4961c6
 # ╟─34088cda-a940-4042-8bbd-278e8b0407d2
-# ╟─13624ca3-3958-4481-9586-9f9ad5f50d7d
-# ╟─e543b1f4-693a-478b-a111-9da9279d1032
-# ╠═9b2b7f7f-cee4-42f6-bf6d-6c9347fdba52
-# ╟─078a4099-d919-4121-859b-023c2a30edf0
-# ╟─456aa9bf-08be-4bfc-82b5-1f51d13f073d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
