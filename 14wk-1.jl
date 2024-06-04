@@ -9,7 +9,7 @@ using PlutoUI,Plots,CSV,LinearAlgebra,Statistics,HTTP,Random,Distributions,RData
 
 # ╔═╡ 25e2820f-6b18-4bb8-be69-1e286c4a7700
 md"""
-# 14wk-2: 변환의 분해 (2) -- 멱등행렬
+# 14wk-2: PCR, 사영행렬
 """
 
 # ╔═╡ 2fb2f25b-0969-4d39-9178-36ee869a3643
@@ -403,7 +403,7 @@ end
 
 # ╔═╡ b5c38284-22da-4d25-97af-40ef0635bfaa
 md"""
-## C. 사영행렬의 특징
+### C. 사영행렬의 특징
 """
 
 # ╔═╡ 7e645e4a-ec19-4d34-bcc7-62ab82820a17
