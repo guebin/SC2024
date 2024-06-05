@@ -9,7 +9,7 @@ using PlutoUI,Plots,CSV,LinearAlgebra,Statistics,HTTP,Random,Distributions,RData
 
 # ╔═╡ 25e2820f-6b18-4bb8-be69-1e286c4a7700
 md"""
-# 14wk-2: PCR, 사영행렬
+# 14wk-1: PCR, 사영행렬
 """
 
 # ╔═╡ 2fb2f25b-0969-4d39-9178-36ee869a3643
@@ -62,6 +62,7 @@ begin
 		return fig
 	end
 	function toeic_data()
+		Random.seed!(43052)
 		df = DataFrame(CSV.File(HTTP.get("https://raw.githubusercontent.com/guebin/SC2024/main/toeic.csv").body))
 		n,_ = size(df)
 		X1,X2,X3 = eachcol(df)
@@ -176,10 +177,83 @@ let
 	β̂ = V*Diagonal([1/d1,1/d2,0])*U'*y	
 end 
 
+# ╔═╡ eb8d1307-b0dd-4057-a06f-6472e6be07bb
+md"""
+-- 다중공선성이 있을 경우 PCR이 우수한 이론적 근거
+"""
+
+# ╔═╡ fa53f898-2ae1-4f03-90a1-1fcda92b7620
+md"""
+!!! info "다중공선성과 PCR (이론)"
+	다중공선성이 있는 상황이면 모형을 아래와 같이 가정할 수 있다. 이때 ${\boldsymbol \epsilon} \sim N({\bf 0}, \sigma^2 {\bf I})$ 를 가정한다. 
+
+	$\begin{align}
+	{\bf y} &= {\bf X}{\boldsymbol \beta} + {\boldsymbol \epsilon}\\
+	&\approx {\bf U}_1{\bf D}_1 {\bf V}_1^\top{\boldsymbol \beta}  + {\boldsymbol \epsilon}\\
+	&= {\bf Z} {\boldsymbol \alpha} + {\boldsymbol \epsilon}
+	\end{align}$
+
+	여기에서 ${\bf Z}={\bf U}_1{\bf D}_1$ 이고, ${\boldsymbol \alpha} = {\bf V}_1^\top {\boldsymbol \beta}$ 이다. 논의한대로 ${\boldsymbol \beta}$는 
+	
+	$$\hat{\boldsymbol \beta}^{PCR}={\bf V}_1\hat{\boldsymbol \alpha}$$
+
+	와 같이 추정할 수 있다. (단 여기에서 $\hat{\boldsymbol \alpha}=({\bf Z}^\top{\bf Z})^{-1}{\bf Z}^\top{\bf y}$) 이제 이렇게 추정된 $\hat{\boldsymbol \beta}^{PCR}$ 이 일반적인 $\hat{\boldsymbol \beta}=({\bf X}^\top{\bf X})^{-1}{\bf X}^\top {\bf y}$ 보다 우수함을 보이자. 즉 아래를 보이면 된다. 
+
+	$$\text{MSE}(\hat{\boldsymbol \beta}^{PCR}) \leq \text{MSE}(\hat{\boldsymbol \beta})$$
+
+	아래를 체크하자. (계산과정이 좀 있는 경우도 있지만 대부분 어렵지 않게 체크할 수 있다)
+	
+	(1) ``\text{MSE}(\hat{\boldsymbol \beta})=\mathbb{V}(\hat{\boldsymbol \beta})=\sigma^2\sum_{j=1}^{p}\frac{1}{d_j^2}`` (-- 12wk-2 강의노트 참고)
+	
+	(2) ``\mathbb{E}(\hat{\boldsymbol \alpha})=({\bf Z}^\top{\bf Z})^{-1}{\bf Z}^\top{\bf X}{\boldsymbol \beta}={\bf V}_1^\top {\boldsymbol \beta}``
+	
+	(3) ``\mathbb{V}(\hat{\boldsymbol \alpha})=({\bf Z}^\top{\bf Z})^{-1}\sigma^2= {\bf D}_1^{-2}\sigma^2``
+
+	(4) ``\mathbb{E}(\hat{\boldsymbol \beta}^{PCR})={\bf V}_1{\bf V}_1^\top {\boldsymbol \beta}``
+
+	(5) ``\mathbb{V}(\hat{\boldsymbol \beta}^{PCR})={\bf V}_1{\bf D}_1^{-2}{\bf V}_1^\top \sigma^2``
+
+	(6) ``\mathbb{E}(\hat{\boldsymbol \beta}^{PCR})-{\boldsymbol \beta}={\bf V}_2{\bf V}_2^\top {\boldsymbol \beta}``
+
+	(7) ``\text{tr}\big(\mathbb{V}(\hat{\boldsymbol \beta}^{PCR})\big)=\sigma^2\sum_{j=1}^{q}\frac{1}{d_j^2}``
+
+	여기에서 (1)에서 첫등식은 ``\hat{\boldsymbol \beta}`` 이 unbiased estimator 이기 때문에 성립한다. (1) 을 관찰하면 다중공선성이 있는 상황에서 (즉 for some $j$에 대하여 $d_j\approx0$ 인상황) ``\text{MSE}(\hat{\boldsymbol \beta})`` 은 무한대로 커질 수 있음을 관찰할 수 있고 이는 이미 12wk-2에서 다룬내용이다. (4)에서 ${\bf V}_1{\bf V}_1^\top \neq {\bf I}$ 이므로 ``\hat{\boldsymbol \beta}^{PCR}``은 biased estimator 임을 알 수 있다. (4)와 (7)을 비교하면 다중공선성이 있는 상황에서 ``\hat{\boldsymbol \beta}^{PCR}`` 이 ``\hat{\boldsymbol \beta}`` 보다 분산면에서 우수함을 알 수 있다. (6)-(7)을 정리하면 아래와 같다. 
+
+	$$\text{MSE}(\hat{\boldsymbol \beta}^{PCR})= {\boldsymbol \beta}^\top {\bf V}_2{\bf V}_2^\top {\boldsymbol \beta} + \sigma^2\sum_{j=1}^{q}\frac{1}{d_j^2}$$
+
+	이 수식을 살펴보면 bias-term은 bounded 되어 있으므로 공선성이 존재하는 경우에 ``\hat{\boldsymbol \beta}^{PCR}`` 이 우수함을 쉽게 눈치챌 수 있다. 
+"""
+
+# ╔═╡ 05065881-2f15-440b-9f94-b7ba2cba66bd
+md"""
+!!! warning "PCR과 능형회귀"
+	
+	아래의 수식을 좀 더 생각해보자. 
+
+	$$\text{MSE}(\hat{\boldsymbol \beta}^{PCR})= {\boldsymbol \beta}^\top {\bf V}_2{\bf V}_2^\top {\boldsymbol \beta} + \sigma^2\sum_{j=1}^{q}\frac{1}{d_j^2}$$
+
+	(1) 만약에 ${\bf V}_1={\bf V}$ 으로 설정한다면 (즉 ${\bf D}$의 모든 대각선을 버리지 않는다면) ${\bf V}_2$ 는 소멸하고 결과적으로 
+	
+	$\text{MSE}(\hat{\boldsymbol \beta}^{PCR})=\text{MSE}(\hat{\boldsymbol \beta})$ 
+	
+	와 같이 될 것이다. 이는 능형회귀에서 $\lambda$를 0으로 설정한 것과 같은 효과이다. 
+	
+	(2) 만약 ${\bf V}_2={\bf V}$ 로 설정한다면, (즉 ${\bf D}$의 모든 대각선을 버린다면) 분산텀은 소멸하고 
+
+	$\text{MSE}({\boldsymbol \beta}^{PCR})={\boldsymbol \beta}^\top{\boldsymbol \beta}$ 
+	
+	가 된다. 이것은 ${\boldsymbol \beta}$를 ${\bf 0}$으로 추정했을 경우 생기는 bias-term 이며 이는 능형회귀에서 $\lambda$를 무한대로 설정했을 경우와 같은 효과이다. 
+
+	결국 능형회귀에서는 $\lambda$ 를 이용해 bias-term과 variance-term을 조정하고 최종적으로 MSE를 줄여보려고 노력하는 모형이고 PCR은 ${\bf D}$의 대각원소를 통하여 bias-term과 variance-term을 조정하고 최종적으로 MSE를 줄여보려고 노력하는 모형이라 볼 수 있다. 
+"""
+
 # ╔═╡ 3f217bb7-6767-4eb2-b816-956b796c5d7d
 md"""
 ### C. 변환된 차원 자체에 관심있는 경우
 """
+
+# ╔═╡ db6824cd-6516-4954-92cc-8757b38ed347
+# 이 내용은 다음기회에..
 
 # ╔═╡ 32f4e3e4-afc3-44a2-9358-d449d92ff218
 md"""
@@ -446,7 +520,7 @@ RDatasets = "~0.7.7"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.5"
+julia_version = "1.9.2"
 manifest_format = "2.0"
 project_hash = "23969155bb74e321ced7fb145e4d0b732028e347"
 
@@ -507,17 +581,37 @@ git-tree-sha1 = "1568b28f91293458345dabba6a5ea3f183250a61"
 uuid = "324d7699-5711-5eae-9e2f-1d82baa6b597"
 version = "0.10.8"
 
+    [deps.CategoricalArrays.extensions]
+    CategoricalArraysJSONExt = "JSON"
+    CategoricalArraysRecipesBaseExt = "RecipesBase"
+    CategoricalArraysSentinelArraysExt = "SentinelArrays"
+    CategoricalArraysStructTypesExt = "StructTypes"
+
+    [deps.CategoricalArrays.weakdeps]
+    JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+    RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+    SentinelArrays = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
+    StructTypes = "856f2bd8-1eba-4b0a-8007-ebc267875bd4"
+
 [[deps.ChainRulesCore]]
-deps = ["Compat", "LinearAlgebra", "SparseArrays"]
+deps = ["Compat", "LinearAlgebra"]
 git-tree-sha1 = "575cd02e080939a33b6df6c5853d14924c08e35b"
 uuid = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
 version = "1.23.0"
+weakdeps = ["SparseArrays"]
+
+    [deps.ChainRulesCore.extensions]
+    ChainRulesCoreSparseArraysExt = "SparseArrays"
 
 [[deps.ChangesOfVariables]]
-deps = ["InverseFunctions", "LinearAlgebra", "Test"]
+deps = ["LinearAlgebra", "Test"]
 git-tree-sha1 = "2fba81a302a7be671aefe194f0525ef231104e7f"
 uuid = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
 version = "0.1.8"
+weakdeps = ["InverseFunctions"]
+
+    [deps.ChangesOfVariables.extensions]
+    ChangesOfVariablesInverseFunctionsExt = "InverseFunctions"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
@@ -542,6 +636,10 @@ deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "Requires", "Statist
 git-tree-sha1 = "a1f44953f2382ebb937d60dafbe2deea4bd23249"
 uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
 version = "0.10.0"
+weakdeps = ["SpecialFunctions"]
+
+    [deps.ColorVectorSpace.extensions]
+    SpecialFunctionsExt = "SpecialFunctions"
 
 [[deps.Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
@@ -550,15 +648,19 @@ uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.12.11"
 
 [[deps.Compat]]
-deps = ["Dates", "LinearAlgebra", "TOML", "UUIDs"]
+deps = ["TOML", "UUIDs"]
 git-tree-sha1 = "b1c55339b7c6c350ee89f2c1604299660525b248"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
 version = "4.15.0"
+weakdeps = ["Dates", "LinearAlgebra"]
+
+    [deps.Compat.extensions]
+    CompatLinearAlgebraExt = "LinearAlgebra"
 
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.1+0"
+version = "1.0.5+0"
 
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
@@ -571,6 +673,14 @@ deps = ["LinearAlgebra"]
 git-tree-sha1 = "260fd2400ed2dab602a7c15cf10c1933c59930a2"
 uuid = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
 version = "1.5.5"
+
+    [deps.ConstructionBase.extensions]
+    ConstructionBaseIntervalSetsExt = "IntervalSets"
+    ConstructionBaseStaticArraysExt = "StaticArrays"
+
+    [deps.ConstructionBase.weakdeps]
+    IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+    StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [[deps.Contour]]
 git-tree-sha1 = "439e35b0b36e2e5881738abc8857bd92ad6ff9a8"
@@ -612,6 +722,7 @@ uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 deps = ["Mmap"]
 git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+version = "1.9.1"
 
 [[deps.DensityInterface]]
 deps = ["InverseFunctions", "Test"]
@@ -620,10 +731,16 @@ uuid = "b429d917-457f-4dbc-8f4c-0cc954292b1d"
 version = "0.4.0"
 
 [[deps.Distributions]]
-deps = ["AliasTables", "ChainRulesCore", "DensityInterface", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns", "Test"]
+deps = ["AliasTables", "FillArrays", "LinearAlgebra", "PDMats", "Printf", "QuadGK", "Random", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns"]
 git-tree-sha1 = "22c595ca4146c07b16bcf9c8bea86f731f7109d2"
 uuid = "31c24e10-a181-5473-b8eb-7969acd0382f"
 version = "0.25.108"
+weakdeps = ["ChainRulesCore", "DensityInterface", "Test"]
+
+    [deps.Distributions.extensions]
+    DistributionsChainRulesCoreExt = "ChainRulesCore"
+    DistributionsDensityInterfaceExt = "DensityInterface"
+    DistributionsTestExt = "Test"
 
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
@@ -693,10 +810,16 @@ version = "0.9.21"
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
 [[deps.FillArrays]]
-deps = ["LinearAlgebra", "PDMats", "SparseArrays", "Statistics"]
+deps = ["LinearAlgebra"]
 git-tree-sha1 = "0653c0a2396a6da5bc4766c43041ef5fd3efbe57"
 uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
 version = "1.11.0"
+weakdeps = ["PDMats", "SparseArrays", "Statistics"]
+
+    [deps.FillArrays.extensions]
+    FillArraysPDMatsExt = "PDMats"
+    FillArraysSparseArraysExt = "SparseArrays"
+    FillArraysStatisticsExt = "Statistics"
 
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
@@ -819,10 +942,14 @@ deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
 [[deps.InverseFunctions]]
-deps = ["Dates", "Test"]
+deps = ["Test"]
 git-tree-sha1 = "e7cbed5032c4c397a6ac23d1493f3289e01231c4"
 uuid = "3587e190-3f89-42d0-90ee-14403ec27112"
 version = "0.1.14"
+weakdeps = ["Dates"]
+
+    [deps.InverseFunctions.extensions]
+    DatesExt = "Dates"
 
 [[deps.InvertedIndices]]
 git-tree-sha1 = "0dc7b50b8d436461be01300fd8cd45aa0274b038"
@@ -898,6 +1025,14 @@ git-tree-sha1 = "e0b5cd21dc1b44ec6e64f351976f961e6f31d6c4"
 uuid = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
 version = "0.16.3"
 
+    [deps.Latexify.extensions]
+    DataFramesExt = "DataFrames"
+    SymEngineExt = "SymEngine"
+
+    [deps.Latexify.weakdeps]
+    DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+    SymEngine = "123dc426-2d89-5057-bbad-38513e3affd8"
+
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
 uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
@@ -969,14 +1104,20 @@ uuid = "38a345b3-de98-5d2b-a5d3-14cd9215e700"
 version = "2.40.1+0"
 
 [[deps.LinearAlgebra]]
-deps = ["Libdl", "libblastrampoline_jll"]
+deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [[deps.LogExpFunctions]]
-deps = ["ChainRulesCore", "ChangesOfVariables", "DocStringExtensions", "InverseFunctions", "IrrationalConstants", "LinearAlgebra"]
+deps = ["DocStringExtensions", "IrrationalConstants", "LinearAlgebra"]
 git-tree-sha1 = "18144f3e9cbe9b15b070288eef858f71b291ce37"
 uuid = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
 version = "0.3.27"
+weakdeps = ["ChainRulesCore", "ChangesOfVariables", "InverseFunctions"]
+
+    [deps.LogExpFunctions.extensions]
+    LogExpFunctionsChainRulesCoreExt = "ChainRulesCore"
+    LogExpFunctionsChangesOfVariablesExt = "ChangesOfVariables"
+    LogExpFunctionsInverseFunctionsExt = "InverseFunctions"
 
 [[deps.Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -1011,7 +1152,7 @@ version = "1.1.9"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.0+0"
+version = "2.28.2+0"
 
 [[deps.Measures]]
 git-tree-sha1 = "c13304c81eec1ed3af7fc20e75fb6b26092a1102"
@@ -1035,7 +1176,7 @@ version = "0.7.8"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2022.2.1"
+version = "2022.10.11"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
@@ -1056,7 +1197,7 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.20+0"
+version = "0.3.21+4"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1095,7 +1236,7 @@ version = "1.6.3"
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
-version = "10.40.0+0"
+version = "10.42.0+0"
 
 [[deps.PDMats]]
 deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
@@ -1121,9 +1262,9 @@ uuid = "30392449-352a-5448-841d-b1acce4e97dc"
 version = "0.43.4+0"
 
 [[deps.Pkg]]
-deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
+deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.8.0"
+version = "1.9.2"
 
 [[deps.PlotThemes]]
 deps = ["PlotUtils", "Statistics"]
@@ -1142,6 +1283,20 @@ deps = ["Base64", "Contour", "Dates", "Downloads", "FFMPEG", "FixedPointNumbers"
 git-tree-sha1 = "442e1e7ac27dd5ff8825c3fa62fbd1e86397974b"
 uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 version = "1.40.4"
+
+    [deps.Plots.extensions]
+    FileIOExt = "FileIO"
+    GeometryBasicsExt = "GeometryBasics"
+    IJuliaExt = "IJulia"
+    ImageInTerminalExt = "ImageInTerminal"
+    UnitfulExt = "Unitful"
+
+    [deps.Plots.weakdeps]
+    FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+    GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
+    IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
+    ImageInTerminal = "d8c32880-2388-543b-8c61-d9f865259254"
+    Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -1295,18 +1450,23 @@ uuid = "a2af1166-a08f-5f64-846c-94a0d3cef48c"
 version = "1.2.1"
 
 [[deps.SparseArrays]]
-deps = ["LinearAlgebra", "Random"]
+deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[deps.SpecialFunctions]]
-deps = ["ChainRulesCore", "IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
+deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
 git-tree-sha1 = "2f5d4697f21388cbe1ff299430dd169ef97d7e14"
 uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
 version = "2.4.0"
+weakdeps = ["ChainRulesCore"]
+
+    [deps.SpecialFunctions.extensions]
+    SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
 
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+version = "1.9.0"
 
 [[deps.StatsAPI]]
 deps = ["LinearAlgebra"]
@@ -1321,10 +1481,15 @@ uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.34.3"
 
 [[deps.StatsFuns]]
-deps = ["ChainRulesCore", "HypergeometricFunctions", "InverseFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
+deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
 git-tree-sha1 = "cef0472124fab0695b58ca35a77c6fb942fdab8a"
 uuid = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
 version = "1.3.1"
+weakdeps = ["ChainRulesCore", "InverseFunctions"]
+
+    [deps.StatsFuns.extensions]
+    StatsFunsChainRulesCoreExt = "ChainRulesCore"
+    StatsFunsInverseFunctionsExt = "InverseFunctions"
 
 [[deps.StringManipulation]]
 deps = ["PrecompileTools"]
@@ -1336,10 +1501,15 @@ version = "0.3.4"
 deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
 uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
 
+[[deps.SuiteSparse_jll]]
+deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
+uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
+version = "5.10.1+6"
+
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
-version = "1.0.0"
+version = "1.0.3"
 
 [[deps.TZJData]]
 deps = ["Artifacts"]
@@ -1362,7 +1532,7 @@ version = "1.11.1"
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
-version = "1.10.1"
+version = "1.10.0"
 
 [[deps.TensorCore]]
 deps = ["LinearAlgebra"]
@@ -1375,16 +1545,23 @@ deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[deps.TimeZones]]
-deps = ["Dates", "Downloads", "InlineStrings", "Mocking", "Printf", "RecipesBase", "Scratch", "TZJData", "Unicode", "p7zip_jll"]
+deps = ["Dates", "Downloads", "InlineStrings", "Mocking", "Printf", "Scratch", "TZJData", "Unicode", "p7zip_jll"]
 git-tree-sha1 = "6505890535a2b2e5145522ac77bddeda85c250c4"
 uuid = "f269a46b-ccf7-5d73-abea-4c690281aa53"
 version = "1.16.1"
+weakdeps = ["RecipesBase"]
+
+    [deps.TimeZones.extensions]
+    TimeZonesRecipesBaseExt = "RecipesBase"
 
 [[deps.TranscodingStreams]]
-deps = ["Random", "Test"]
 git-tree-sha1 = "5d54d076465da49d6746c647022f3b3674e64156"
 uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
 version = "0.10.8"
+weakdeps = ["Random", "Test"]
+
+    [deps.TranscodingStreams.extensions]
+    TestExt = ["Test", "Random"]
 
 [[deps.Tricks]]
 git-tree-sha1 = "eae1bb484cd63b36999ee58be2de6c178105112f"
@@ -1410,10 +1587,15 @@ uuid = "1cfade01-22cf-5700-b092-accc4b62d6e1"
 version = "0.4.1"
 
 [[deps.Unitful]]
-deps = ["ConstructionBase", "Dates", "InverseFunctions", "LinearAlgebra", "Random"]
+deps = ["Dates", "LinearAlgebra", "Random"]
 git-tree-sha1 = "dd260903fdabea27d9b6021689b3cd5401a57748"
 uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
 version = "1.20.0"
+weakdeps = ["ConstructionBase", "InverseFunctions"]
+
+    [deps.Unitful.extensions]
+    ConstructionBaseUnitfulExt = "ConstructionBase"
+    InverseFunctionsUnitfulExt = "InverseFunctions"
 
 [[deps.UnitfulLatexify]]
 deps = ["LaTeXStrings", "Latexify", "Unitful"]
@@ -1620,7 +1802,7 @@ version = "1.5.0+0"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.12+3"
+version = "1.2.13+0"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1659,9 +1841,9 @@ uuid = "0ac62f75-1d6f-5e53-bd7c-93b484bb37c0"
 version = "0.15.1+0"
 
 [[deps.libblastrampoline_jll]]
-deps = ["Artifacts", "Libdl", "OpenBLAS_jll"]
+deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.1.1+0"
+version = "5.8.0+0"
 
 [[deps.libevdev_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1748,7 +1930,11 @@ version = "1.4.1+1"
 # ╠═0baea7b2-5aed-4a01-aeed-3b79f7bbcc48
 # ╟─c70349a2-7419-4fdf-b301-93e8bb6d2c00
 # ╠═baa5aa93-405b-4338-b344-4a6cb4a1a7e0
+# ╟─eb8d1307-b0dd-4057-a06f-6472e6be07bb
+# ╟─fa53f898-2ae1-4f03-90a1-1fcda92b7620
+# ╟─05065881-2f15-440b-9f94-b7ba2cba66bd
 # ╟─3f217bb7-6767-4eb2-b816-956b796c5d7d
+# ╠═db6824cd-6516-4954-92cc-8757b38ed347
 # ╟─32f4e3e4-afc3-44a2-9358-d449d92ff218
 # ╟─436088d7-6f2f-403b-9aa9-0089f4084d2f
 # ╟─906b3272-1cf6-4b09-818e-3ca8d6a5458f
