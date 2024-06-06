@@ -17,6 +17,17 @@ md"""
 ## 1. 강의영상
 """
 
+# ╔═╡ af2fb51d-dc51-4efe-b09a-797326494d5c
+html"""
+<div style="display: flex; justify-content: center;">
+<div  notthestyle="position: relative; right: 0; top: 0; z-index: 300;">
+<iframe src=
+"
+https://youtube.com/embed/playlist?list=PLQqh36zP38-w1KTeEkTrrUkW6TPPBGEfi&si=8M4h0JYIh5RHYF8N
+"
+width=600 height=375  frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+"""
+
 # ╔═╡ 7dbab2de-137d-4636-a4df-aa34a5dce316
 md"""
 ## 2. Imports
@@ -124,8 +135,7 @@ md"""
 # ╔═╡ 5d007ee9-6822-42fb-b485-2f0eaf7a8b8e
 md"""
 !!! info "PCR" 
-
-	아래의 수식을 관찰하자. 
+	다중공선성이 존재하는 아래의 회귀모형을 고려하자. 
 	
 	$\begin{align}
 	{\bf y} &= {\bf X}{\boldsymbol \beta} + {\boldsymbol \epsilon}\\
@@ -133,7 +143,7 @@ md"""
 	&= {\bf Z} {\boldsymbol \alpha} + {\boldsymbol \epsilon}
 	\end{align}$
 
-	여기에서 ${\bf Z}={\bf U}_1{\bf D}_1$ 이고, ${\boldsymbol \alpha} = {\bf V}_1^\top {\boldsymbol \beta}$ 로 정의한다. 이때 ${\boldsymbol \alpha}$는 아래와 같이 추정할 수 있는데, 
+	여기에서 ${\bf Z}_{n \times q}={\bf U}_1{\bf D}_1$ 이고, ${\boldsymbol \alpha}_{q \times 1} = {\bf V}_1^\top {\boldsymbol \beta}$ 로 정의한다. 이때 ${\boldsymbol \alpha}$는 아래와 같이 추정할 수 있는데, 
 
 	$\hat{\boldsymbol \alpha} = ({\bf Z}^\top{\bf Z})^{-1}{\bf Z}^\top{\bf y}$
 
@@ -193,7 +203,7 @@ md"""
 	&= {\bf Z} {\boldsymbol \alpha} + {\boldsymbol \epsilon}
 	\end{align}$
 
-	여기에서 ${\bf Z}={\bf U}_1{\bf D}_1$ 이고, ${\boldsymbol \alpha} = {\bf V}_1^\top {\boldsymbol \beta}$ 이다. 논의한대로 ${\boldsymbol \beta}$는 
+	여기에서 ${\bf Z}_{n \times q}={\bf U}_1{\bf D}_1$ 이고, ${\boldsymbol \alpha}_{q \times 1} = {\bf V}_1^\top {\boldsymbol \beta}$ 이다. 논의한대로 ${\boldsymbol \beta}$는 
 	
 	$$\hat{\boldsymbol \beta}^{PCR}={\bf V}_1\hat{\boldsymbol \alpha}$$
 
@@ -213,7 +223,7 @@ md"""
 
 	(5) ``\mathbb{V}(\hat{\boldsymbol \beta}^{PCR})={\bf V}_1{\bf D}_1^{-2}{\bf V}_1^\top \sigma^2``
 
-	(6) ``\mathbb{E}(\hat{\boldsymbol \beta}^{PCR})-{\boldsymbol \beta}={\bf V}_2{\bf V}_2^\top {\boldsymbol \beta}``
+	(6) ``{\boldsymbol \beta}-\mathbb{E}(\hat{\boldsymbol \beta}^{PCR})={\bf V}_2{\bf V}_2^\top {\boldsymbol \beta}``
 
 	(7) ``\text{tr}\big(\mathbb{V}(\hat{\boldsymbol \beta}^{PCR})\big)=\sigma^2\sum_{j=1}^{q}\frac{1}{d_j^2}``
 
@@ -254,6 +264,11 @@ md"""
 
 # ╔═╡ db6824cd-6516-4954-92cc-8757b38ed347
 # 이 내용은 다음기회에..
+
+# ╔═╡ 2499add2-e4dc-4435-b689-745b8b0d895d
+md"""
+---
+"""
 
 # ╔═╡ 32f4e3e4-afc3-44a2-9358-d449d92ff218
 md"""
@@ -1913,6 +1928,7 @@ version = "1.4.1+1"
 # ╔═╡ Cell order:
 # ╟─25e2820f-6b18-4bb8-be69-1e286c4a7700
 # ╟─2fb2f25b-0969-4d39-9178-36ee869a3643
+# ╟─af2fb51d-dc51-4efe-b09a-797326494d5c
 # ╟─7dbab2de-137d-4636-a4df-aa34a5dce316
 # ╠═9af7fdd3-3d97-48d1-8cd4-71cdefdf2ec0
 # ╠═0f330506-a8be-462b-b4f0-f8a5692de0d1
@@ -1935,6 +1951,7 @@ version = "1.4.1+1"
 # ╟─05065881-2f15-440b-9f94-b7ba2cba66bd
 # ╟─3f217bb7-6767-4eb2-b816-956b796c5d7d
 # ╠═db6824cd-6516-4954-92cc-8757b38ed347
+# ╟─2499add2-e4dc-4435-b689-745b8b0d895d
 # ╟─32f4e3e4-afc3-44a2-9358-d449d92ff218
 # ╟─436088d7-6f2f-403b-9aa9-0089f4084d2f
 # ╟─906b3272-1cf6-4b09-818e-3ca8d6a5458f

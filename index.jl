@@ -53,7 +53,7 @@ md"""
 - [12wk-1](https://guebin.github.io/SC2024/12wk-1.html): 능형회귀 (1)
 - [12wk-2](https://guebin.github.io/SC2024/12wk-2.html): 능형회귀 (2)
 - [13wk-1](https://guebin.github.io/SC2024/13wk-1.html): 변환을 의미하는 행렬
-- [13wk-2](https://guebin.github.io/SC2024/13wk-2.html): 변환의 분해 (1)
+- [13wk-2](https://guebin.github.io/SC2024/13wk-2.html): 변환의 분해
 - [14wk-1](https://guebin.github.io/SC2024/14wk-1.html): PCR, 사영행렬
 """
 
