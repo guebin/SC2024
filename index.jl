@@ -55,6 +55,7 @@ md"""
 - [13wk-1](https://guebin.github.io/SC2024/13wk-1.html): 변환을 의미하는 행렬
 - [13wk-2](https://guebin.github.io/SC2024/13wk-2.html): 변환의 분해
 - [14wk-1](https://guebin.github.io/SC2024/14wk-1.html): PCR, 사영행렬
+- [15wk-2](https://guebin.github.io/SC2024/15wk-2.html): 기말고사
 """
 
 
